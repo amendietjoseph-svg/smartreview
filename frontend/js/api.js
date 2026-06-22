@@ -7,7 +7,7 @@ class API {
     constructor() {
         this.BASE_URL = window.location.hostname === 'localhost'
             ? 'http://localhost:8001'
-            : 'https://smartreview-api.up.railway.app';
+            : 'https://smartreview-production-951d.up.railway.app';
     }
 
     /**
