@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartReview - Calendrier de Performance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        /* Calendar-specific styles */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+        }
+
+        .calendar-title {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .calendar-controls {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .view-buttons {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+
+        .view-btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .view-btn:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .view-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .month-stats {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .month-stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            min-width: 120px;
+        }
+
+        .month-stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .month-stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .month-stat-value.positive {
+            color: var(--green);
+        }
+
+        .month-stat-value.negative {
+            color: var(--red);
+        }
+
+        /* Calendar Grid */
+        .calendar-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .calendar-weekday {
+            padding: var(--spacing-md);
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        .calendar-day {
+            min-height: 100px;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border);
+            border-top: none;
+            border-left: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .calendar-day.current {
+            border: 2px solid var(--accent);
+        }
+
+        .calendar-day.future {
+            opacity: 0.5;
+        }
+
+        .calendar-day.empty {
+            background: var(--bg-secondary);
+            cursor: default;
+        }
+
+        .calendar-day-number {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .day-pnl {
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .day-pnl.positive {
+            color: var(--green);
+        }
+
+        .day-pnl.negative {
+            color: var(--red);
+        }
+
+        .day-trades-count {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .day-winrate-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+        }
+
+        .day-winrate-badge.high {
+            background: var(--green-dim);
+            color: var(--green);
+        }
+
+        .day-winrate-badge.medium {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--gold);
+        }
+
+        .day-winrate-badge.low {
+            background: var(--red-dim);
+            color: var(--red);
+        }
+
+        /* Day Detail Panel */
+        .day-detail-panel {
+            position: fixed;
+            top: 0;
+            right: -500px;
+            width: 500px;
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border);
+            z-index: 1001;
+            transition: right var(--transition-normal);
+            overflow-y: auto;
+        }
+
+        .day-detail-panel.active {
+            right: 0;
+        }
+
+        .day-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: var(--bg-secondary);
+            z-index: 10;
+        }
+
+        .day-detail-content {
+            padding: var(--spacing-lg);
+        }
+
+        .day-detail-section {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .day-detail-section h3 {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .day-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+        }
+
+        .day-stat-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: var(--spacing-md);
+        }
+
+        .day-stat-item-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .day-stat-item-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .day-trade-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .day-trade-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-light);
+        }
+
+        .day-trade-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .day-trade-card-asset {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .day-trade-card-direction {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .day-trade-card-direction.buy {
+            background: var(--green-dim);
+            color: var(--green);
+        }
+
+        .day-trade-card-direction.sell {
+            background: var(--red-dim);
+            color: var(--red);
+        }
+
+        .day-trade-card-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-sm);
+            font-size: 12px;
+        }
+
+        .day-trade-card-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .day-trade-card-detail-label {
+            color: var(--text-muted);
+        }
+
+        .day-trade-card-detail-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .day-notes {
+            width: 100%;
+            min-height: 100px;
+            padding: var(--spacing-md);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 13px;
+            resize: vertical;
+        }
+
+        .analyze-day-btn {
+            width: 100%;
+            padding: var(--spacing-md);
+            background: var(--accent);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            margin-top: var(--spacing-md);
+        }
+
+        .analyze-day-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Heatmap */
+        .heatmap-section {
+            margin-top: var(--spacing-xl);
+        }
+
+        .heatmap-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: repeat(24, 1fr);
+            gap: 2px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+
+        .heatmap-cell.very-positive {
+            background: rgba(34, 197, 94, 0.8);
+        }
+
+        .heatmap-cell.positive {
+            background: rgba(34, 197, 94, 0.5);
+        }
+
+        .heatmap-cell.slightly-positive {
+            background: rgba(34, 197, 94, 0.3);
+        }
+
+        .heatmap-cell.neutral {
+            background: var(--bg-secondary);
+        }
+
+        .heatmap-cell.slightly-negative {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .heatmap-cell.negative {
+            background: rgba(239, 68, 68, 0.5);
+        }
+
+        .heatmap-cell.very-negative {
+            background: rgba(239, 68, 68, 0.8);
+        }
+
+        .heatmap-tooltip {
+            position: absolute;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: var(--spacing-sm);
+            font-size: 12px;
+            z-index: 100;
+            pointer-events: none;
+            white-space: nowrap;
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Best/Worst Days */
+        .best-worst-section {
+            margin-top: var(--spacing-xl);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+        }
+
+        .best-worst-list {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+        }
+
+        .best-worst-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .best-worst-item:last-child {
+            border-bottom: none;
+        }
+
+        .best-worst-item-date {
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .best-worst-item-value {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .best-worst-item-value.positive {
+            color: var(--green);
+        }
+
+        .best-worst-item-value.negative {
+            color: var(--red);
+        }
+
+        /* Monthly Statistics */
+        .monthly-stats-section {
+            margin-top: var(--spacing-xl);
+        }
+
+        .monthly-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+        }
+
+        .monthly-chart {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            height: 300px;
+        }
+
+        .weekly-summary-table {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+        }
+
+        .weekly-summary-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .weekly-summary-table th,
+        .weekly-summary-table td {
+            padding: var(--spacing-sm);
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .weekly-summary-table th {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        /* Week View */
+        .week-view {
+            display: none;
+        }
+
+        .week-view.active {
+            display: block;
+        }
+
+        .week-timeline {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: var(--spacing-md);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+        }
+
+        .week-day-column {
+            min-height: 600px;
+            border-left: 1px solid var(--border);
+            padding-left: var(--spacing-sm);
+        }
+
+        .week-day-column:first-child {
+            border-left: none;
+        }
+
+        .week-day-header {
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .week-trade-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+            font-size: 12px;
+        }
+
+        /* Year View */
+        .year-view {
+            display: none;
+        }
+
+        .year-view.active {
+            display: block;
+        }
+
+        .year-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-md);
+        }
+
+        .year-month {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .year-month:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent);
+        }
+
+        .year-month-name {
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .year-month-stats {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .year-month-pnl {
+            font-weight: 700;
+            margin-top: var(--spacing-xs);
+        }
+
+        .year-month-pnl.positive {
+            color: var(--green);
+        }
+
+        .year-month-pnl.negative {
+            color: var(--red);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .day-detail-panel {
+                width: 100%;
+                right: -100%;
+            }
+
+            .calendar-grid {
+                grid-template-columns: repeat(7, 1fr);
+            }
+
+            .calendar-day {
+                min-height: 80px;
+            }
+
+            .month-stats {
+                flex-direction: column;
+            }
+
+            .best-worst-section {
+                grid-template-columns: 1fr;
+            }
+
+            .monthly-stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .year-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .calendar-grid {
+                grid-template-columns: repeat(7, 1fr);
+            }
+
+            .calendar-day {
+                min-height: 60px;
+                padding: var(--spacing-xs);
+            }
+
+            .day-pnl,
+            .day-trades-count,
+            .day-winrate-badge {
+                display: none;
+            }
+
+            .week-timeline {
+                grid-template-columns: 1fr;
+            }
+
+            .week-day-column {
+                border-left: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .year-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="10" fill="#E11D48"/>
+                        <polyline points="6,22 12,14 17,18 22,10 26,10"
+                            stroke="white" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <circle cx="26" cy="10" r="2.5" fill="white"/>
+                    </svg>
+                    <div class="logo-text-group">
+                        <div class="logo-name">SmartReview</div>
+                        <div class="logo-sub">Trading Analytics</div>
+                    </div>
+                </div>
+                <div class="user-avatar">TR</div>
+            </div>
+            
+            <div class="search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" class="search-input" placeholder="Rechercher...">
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">DASHBOARDS</div>
+                <a href="index.html" class="nav-item">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="journal.html" class="nav-item">
+                    <i data-lucide="book-open"></i>
+                    <span>Journal</span>
+                </a>
+                <a href="calendar.html" class="nav-item active">
+                    <i data-lucide="calendar"></i>
+                    <span>Calendrier</span>
+                </a>
+                <a href="stats.html" class="nav-item">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span>Statistiques</span>
+                </a>
+                <a href="coach.html" class="nav-item">
+                    <i data-lucide="brain"></i>
+                    <span>IA Coach</span>
+                </a>
+                <a href="accounts.html" class="nav-item">
+                    <i data-lucide="wallet"></i>
+                    <span>Comptes</span>
+                </a>
+
+                <div class="nav-section-label">OUTILS</div>
+                <a href="notes.html" class="nav-item">
+                    <i data-lucide="file-text"></i>
+                    <span>Notes & Projets</span>
+                </a>
+                <a href="backtesting.html" class="nav-item">
+                    <i data-lucide="activity"></i>
+                    <span>Backtesting</span>
+                </a>
+                <a href="strategy-builder.html" class="nav-item">
+                    <i data-lucide="layers"></i>
+                    <span>Strategy Builder</span>
+                </a>
+                <a href="copy-trading.html" class="nav-item">
+                    <i data-lucide="copy"></i>
+                    <span>Copy Trading</span>
+                </a>
+
+                <div class="nav-section-label">COMMUNAUTÉ</div>
+                <a href="marketplace.html" class="nav-item">
+                    <i data-lucide="shopping-bag"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="community.html" class="nav-item">
+                    <i data-lucide="users"></i>
+                    <span>Communauté</span>
+                </a>
+                <a href="podcasts.html" class="nav-item">
+                    <i data-lucide="headphones"></i>
+                    <span>Podcasts</span>
+                </a>
+                <a href="live.html" class="nav-item">
+                    <i data-lucide="radio"></i>
+                    <span>Live Direct</span>
+                </a>
+
+                <div class="nav-section-label">SETTINGS</div>
+                <a href="settings.html" class="nav-item" id="nav-settings">
+                    <i data-lucide="settings"></i>
+                    <span>Paramètres</span>
+                </a>
+                <a href="help.html" class="nav-item" id="nav-help">
+                    <i data-lucide="help-circle"></i>
+                    <span>Aide</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="account-selector">
+                    <label>Compte Actif</label>
+                    <select id="activeAccount" class="select-input">
+                        <option value="">Chargement...</option>
+                    </select>
+                </div>
+                <div class="backend-status">
+                    <span class="status-dot" id="backendStatus"></span>
+                    <span class="status-text" id="backendStatusText">Vérification...</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Calendar Header -->
+            <div class="calendar-header">
+                <h1 class="calendar-title">Calendrier de Performance</h1>
+                <div class="calendar-controls">
+                    <button class="btn btn-secondary" id="prevPeriod">
+                        <i data-lucide="chevron-left"></i>
+                    </button>
+                    <span id="currentPeriodLabel" style="font-weight: 600; min-width: 150px; text-align: center;">Janvier 2025</span>
+                    <button class="btn btn-secondary" id="nextPeriod">
+                        <i data-lucide="chevron-right"></i>
+                    </button>
+                    <div class="view-buttons">
+                        <button class="view-btn active" data-view="month">Mois</button>
+                        <button class="view-btn" data-view="week">Semaine</button>
+                        <button class="view-btn" data-view="year">Année</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Month Stats -->
+            <div class="month-stats" id="monthStats">
+                <div class="month-stat-card">
+                    <div class="month-stat-label">P&L du mois</div>
+                    <div class="month-stat-value" id="monthPnL">$0</div>
+                </div>
+                <div class="month-stat-card">
+                    <div class="month-stat-label">Win Rate</div>
+                    <div class="month-stat-value" id="monthWinRate">0%</div>
+                </div>
+                <div class="month-stat-card">
+                    <div class="month-stat-label">Jours tradés</div>
+                    <div class="month-stat-value" id="monthTradedDays">0</div>
+                </div>
+                <div class="month-stat-card">
+                    <div class="month-stat-label">Meilleur jour</div>
+                    <div class="month-stat-value" id="monthBestDay">--</div>
+                </div>
+                <div class="month-stat-card">
+                    <div class="month-stat-label">Pire jour</div>
+                    <div class="month-stat-value" id="monthWorstDay">--</div>
+                </div>
+            </div>
+
+            <!-- Month View -->
+            <div class="calendar-container month-view active" id="monthView">
+                <div class="calendar-weekdays">
+                    <div class="calendar-weekday">Lun</div>
+                    <div class="calendar-weekday">Mar</div>
+                    <div class="calendar-weekday">Mer</div>
+                    <div class="calendar-weekday">Jeu</div>
+                    <div class="calendar-weekday">Ven</div>
+                    <div class="calendar-weekday">Sam</div>
+                    <div class="calendar-weekday">Dim</div>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar days will be generated by JS -->
+                </div>
+            </div>
+
+            <!-- Week View -->
+            <div class="week-view" id="weekView">
+                <div class="week-timeline" id="weekTimeline">
+                    <!-- Week timeline will be generated by JS -->
+                </div>
+            </div>
+
+            <!-- Year View -->
+            <div class="year-view" id="yearView">
+                <div class="year-grid" id="yearGrid">
+                    <!-- Year grid will be generated by JS -->
+                </div>
+            </div>
+
+            <!-- Heatmap Section -->
+            <div class="heatmap-section">
+                <h3 class="heatmap-title">Heatmap Horaire (Performance par heure)</h3>
+                <div class="heatmap-grid" id="heatmapGrid">
+                    <!-- Heatmap cells will be generated by JS -->
+                </div>
+            </div>
+
+            <!-- Best/Worst Days -->
+            <div class="best-worst-section">
+                <div class="best-worst-list">
+                    <h3 style="font-size: 14px; margin-bottom: var(--spacing-md);">🏆 Top 3 Meilleures Journées</h3>
+                    <div id="bestDaysList">
+                        <!-- Best days will be generated by JS -->
+                    </div>
+                </div>
+                <div class="best-worst-list">
+                    <h3 style="font-size: 14px; margin-bottom: var(--spacing-md);">📉 Top 3 Pires Journées</h3>
+                    <div id="worstDaysList">
+                        <!-- Worst days will be generated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Statistics -->
+            <div class="monthly-stats-section">
+                <h3 class="heatmap-title">Statistiques Mensuelles</h3>
+                <div class="monthly-stats-grid">
+                    <div class="monthly-chart" id="pnlChart"></div>
+                    <div class="monthly-chart" id="winRateChart"></div>
+                </div>
+                <div class="weekly-summary-table" style="margin-top: var(--spacing-lg);">
+                    <h3 style="font-size: 14px; margin-bottom: var(--spacing-md);">Récapitulatif Hebdomadaire</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Semaine</th>
+                                <th>Trades</th>
+                                <th>P&L</th>
+                                <th>Win Rate</th>
+                                <th>RR Moyen</th>
+                            </tr>
+                        </thead>
+                        <tbody id="weeklySummaryBody">
+                            <!-- Weekly summary will be generated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Day Detail Panel -->
+    <div class="day-detail-panel" id="dayDetailPanel">
+        <div class="day-detail-header">
+            <div>
+                <h2 id="detailDateTitle">Détails du jour</h2>
+                <span id="detailDateSubtitle" style="font-size: 13px; color: var(--text-muted);"></span>
+            </div>
+            <button class="modal-close" id="closeDetailPanel">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="day-detail-content" id="detailContent">
+            <!-- Content will be populated by JS -->
+        </div>
+    </div>
+    
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/calendar.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartReview - Backtesting</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .config-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .config-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .slider-container input[type="range"] {
+            flex: 1;
+        }
+
+        .slider-value {
+            min-width: 50px;
+            text-align: right;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .results-section {
+            display: none;
+        }
+
+        .results-section.visible {
+            display: block;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+        }
+
+        .kpi-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .kpi-value.positive {
+            color: #10B981;
+        }
+
+        .kpi-value.negative {
+            color: #EF4444;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .chart-card h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .trades-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .trades-table th {
+            padding: 12px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .trades-table td {
+            padding: 12px;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .trades-table .win {
+            color: #10B981;
+            font-weight: 600;
+        }
+
+        .trades-table .loss {
+            color: #EF4444;
+            font-weight: 600;
+        }
+
+        .analysis-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+        }
+
+        .analysis-card h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .analysis-text {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .analysis-text strong {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="10" fill="#E11D48"/>
+                        <polyline points="6,22 12,14 17,18 22,10 26,10"
+                            stroke="white" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <circle cx="26" cy="10" r="2.5" fill="white"/>
+                    </svg>
+                    <div class="logo-text-group">
+                        <div class="logo-name">SmartReview</div>
+                        <div class="logo-sub">Trading Analytics</div>
+                    </div>
+                </div>
+                <div class="user-avatar">TR</div>
+            </div>
+
+            <div class="search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" class="search-input" placeholder="Rechercher...">
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">DASHBOARDS</div>
+                <a href="index.html" class="nav-item">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="journal.html" class="nav-item">
+                    <i data-lucide="book-open"></i>
+                    <span>Journal</span>
+                </a>
+                <a href="calendar.html" class="nav-item">
+                    <i data-lucide="calendar"></i>
+                    <span>Calendrier</span>
+                </a>
+                <a href="stats.html" class="nav-item">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span>Statistiques</span>
+                </a>
+                <a href="coach.html" class="nav-item">
+                    <i data-lucide="brain"></i>
+                    <span>IA Coach</span>
+                </a>
+                <a href="accounts.html" class="nav-item">
+                    <i data-lucide="wallet"></i>
+                    <span>Comptes</span>
+                </a>
+
+                <div class="nav-section-label">OUTILS</div>
+                <a href="notes.html" class="nav-item">
+                    <i data-lucide="file-text"></i>
+                    <span>Notes & Projets</span>
+                </a>
+                <a href="backtesting.html" class="nav-item active">
+                    <i data-lucide="activity"></i>
+                    <span>Backtesting</span>
+                </a>
+                <a href="strategy-builder.html" class="nav-item">
+                    <i data-lucide="layers"></i>
+                    <span>Strategy Builder</span>
+                </a>
+                <a href="copy-trading.html" class="nav-item">
+                    <i data-lucide="copy"></i>
+                    <span>Copy Trading</span>
+                </a>
+
+                <div class="nav-section-label">COMMUNAUTÉ</div>
+                <a href="marketplace.html" class="nav-item">
+                    <i data-lucide="shopping-bag"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="community.html" class="nav-item">
+                    <i data-lucide="users"></i>
+                    <span>Communauté</span>
+                </a>
+                <a href="podcasts.html" class="nav-item">
+                    <i data-lucide="headphones"></i>
+                    <span>Podcasts</span>
+                </a>
+                <a href="live.html" class="nav-item">
+                    <i data-lucide="radio"></i>
+                    <span>Live Direct</span>
+                </a>
+
+                <div class="nav-section-label">SETTINGS</div>
+                <a href="settings.html" class="nav-item" id="nav-settings">
+                    <i data-lucide="settings"></i>
+                    <span>Paramètres</span>
+                </a>
+                <a href="help.html" class="nav-item" id="nav-help">
+                    <i data-lucide="help-circle"></i>
+                    <span>Aide</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="account-selector">
+                    <label>Compte Actif</label>
+                    <select id="activeAccount" class="select-input">
+                        <option value="">Chargement...</option>
+                    </select>
+                </div>
+                <div class="backend-status">
+                    <span class="status-dot" id="backendStatus"></span>
+                    <span class="status-text" id="backendStatusText">Vérification...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <div class="breadcrumb">Outils / Backtesting</div>
+                    <h1 class="page-title">Backtesting</h1>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <!-- Configuration Section -->
+                <div class="config-card">
+                    <h3>Configuration du Backtest</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Stratégie/Setup</label>
+                            <input type="text" id="strategy" placeholder="MSS+Sweep, BOS+OB, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label>Actif</label>
+                            <select id="asset">
+                                <option value="EURUSD">EURUSD</option>
+                                <option value="GBPUSD">GBPUSD</option>
+                                <option value="XAUUSD">XAUUSD</option>
+                                <option value="US30">US30</option>
+                                <option value="NAS100">NAS100</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date Début</label>
+                            <input type="date" id="startDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Date Fin</label>
+                            <input type="date" id="endDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Session</label>
+                            <select id="session">
+                                <option value="ASIA">ASIA</option>
+                                <option value="LONDON">LONDON</option>
+                                <option value="NY">NY</option>
+                                <option value="ALL">TOUTES</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Win Rate Supposé (%)</label>
+                            <div class="slider-container">
+                                <input type="range" id="winRate" min="1" max="100" value="50">
+                                <span class="slider-value" id="winRateValue">50%</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>RR Moyen Supposé</label>
+                            <div class="slider-container">
+                                <input type="range" id="avgRR" min="0.5" max="5" step="0.1" value="2">
+                                <span class="slider-value" id="avgRRValue">2.0</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Nombre de Trades Simulés</label>
+                            <div class="slider-container">
+                                <input type="range" id="numTrades" min="10" max="500" value="100">
+                                <span class="slider-value" id="numTradesValue">100</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Capital Initial ($)</label>
+                            <input type="number" id="initialCapital" value="10000">
+                        </div>
+                        <div class="form-group">
+                            <label>Risque par Trade (%)</label>
+                            <div class="slider-container">
+                                <input type="range" id="riskPercent" min="0.5" max="5" step="0.1" value="1">
+                                <span class="slider-value" id="riskPercentValue">1%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="runBacktest" style="width: 100%; margin-top: 16px; padding: 14px; border-radius: 8px; font-size: 14px; font-weight: 600; gap: 8px;">
+                        <i data-lucide="play"></i>
+                        Lancer le Backtest
+                    </button>
+                </div>
+
+                <!-- Results Section -->
+                <div class="results-section" id="resultsSection">
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-label">P&L Final</div>
+                            <div class="kpi-value" id="finalPnL">$0</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">Win Rate Réel</div>
+                            <div class="kpi-value" id="realWinRate">0%</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">Profit Factor</div>
+                            <div class="kpi-value" id="profitFactor">0</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">Drawdown Max</div>
+                            <div class="kpi-value negative" id="maxDrawdown">0%</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">Meilleure Série</div>
+                            <div class="kpi-value positive" id="bestStreak">0</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">Pire Série</div>
+                            <div class="kpi-value negative" id="worstStreak">0</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3>Courbe d'Équité Simulée</h3>
+                        <div id="equityChart"></div>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3>Trades Simulés (20 premiers)</h3>
+                        <table class="trades-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Résultat</th>
+                                    <th>P&L ($)</th>
+                                    <th>Balance ($)</th>
+                                    <th>RR</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tradesTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="analysis-card">
+                        <h3>Analyse des Résultats</h3>
+                        <div class="analysis-text" id="analysisText"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        // Slider value updates
+        document.getElementById('winRate').addEventListener('input', (e) => {
+            document.getElementById('winRateValue').textContent = e.target.value + '%';
+        });
+        document.getElementById('avgRR').addEventListener('input', (e) => {
+            document.getElementById('avgRRValue').textContent = parseFloat(e.target.value).toFixed(1);
+        });
+        document.getElementById('numTrades').addEventListener('input', (e) => {
+            document.getElementById('numTradesValue').textContent = e.target.value;
+        });
+        document.getElementById('riskPercent').addEventListener('input', (e) => {
+            document.getElementById('riskPercentValue').textContent = e.target.value + '%';
+        });
+
+        // Set default dates
+        const today = new Date();
+        const oneMonthAgo = new Date(today);
+        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+        document.getElementById('startDate').value = oneMonthAgo.toISOString().split('T')[0];
+        document.getElementById('endDate').value = today.toISOString().split('T')[0];
+
+        // Backtest simulation
+        document.getElementById('runBacktest').addEventListener('click', runBacktest);
+
+        function runBacktest() {
+            const winRate = parseInt(document.getElementById('winRate').value) / 100;
+            const avgRR = parseFloat(document.getElementById('avgRR').value);
+            const numTrades = parseInt(document.getElementById('numTrades').value);
+            const initialCapital = parseFloat(document.getElementById('initialCapital').value);
+            const riskPercent = parseFloat(document.getElementById('riskPercent').value) / 100;
+
+            const trades = [];
+            let balance = initialCapital;
+            let equityCurve = [initialCapital];
+            let wins = 0;
+            let losses = 0;
+            let currentStreak = 0;
+            let bestStreak = 0;
+            let worstStreak = 0;
+            let maxBalance = initialCapital;
+            let maxDrawdown = 0;
+            let totalProfit = 0;
+            let totalLoss = 0;
+
+            for (let i = 0; i < numTrades; i++) {
+                const isWin = Math.random() < winRate;
+                const risk = balance * riskPercent;
+
+                if (isWin) {
+                    const rrVariation = 0.8 + Math.random() * 0.4;
+                    const profit = risk * avgRR * rrVariation;
+                    balance += profit;
+                    totalProfit += profit;
+                    wins++;
+                    currentStreak = currentStreak > 0 ? currentStreak + 1 : 1;
+                    bestStreak = Math.max(bestStreak, currentStreak);
+                    worstStreak = 0;
+
+                    trades.push({
+                        number: i + 1,
+                        result: 'WIN',
+                        pnl: profit,
+                        balance: balance,
+                        rr: (avgRR * rrVariation).toFixed(2)
+                    });
+                } else {
+                    const loss = -risk;
+                    balance += loss;
+                    totalLoss += Math.abs(loss);
+                    losses++;
+                    currentStreak = currentStreak < 0 ? currentStreak - 1 : -1;
+                    worstStreak = Math.min(worstStreak, currentStreak);
+                    bestStreak = 0;
+
+                    trades.push({
+                        number: i + 1,
+                        result: 'LOSS',
+                        pnl: loss,
+                        balance: balance,
+                        rr: '-1.00'
+                    });
+                }
+
+                equityCurve.push(balance);
+
+                if (balance > maxBalance) {
+                    maxBalance = balance;
+                }
+
+                const drawdown = (maxBalance - balance) / maxBalance;
+                maxDrawdown = Math.max(maxDrawdown, drawdown);
+            }
+
+            // Calculate metrics
+            const finalPnL = balance - initialCapital;
+            const realWinRate = (wins / numTrades * 100).toFixed(1);
+            const profitFactor = totalLoss > 0 ? (totalProfit / totalLoss).toFixed(2) : '∞';
+
+            // Update UI
+            document.getElementById('finalPnL').textContent = (finalPnL >= 0 ? '+' : '') + '$' + finalPnL.toFixed(2);
+            document.getElementById('finalPnL').className = 'kpi-value ' + (finalPnL >= 0 ? 'positive' : 'negative');
+            document.getElementById('realWinRate').textContent = realWinRate + '%';
+            document.getElementById('profitFactor').textContent = profitFactor;
+            document.getElementById('maxDrawdown').textContent = (maxDrawdown * 100).toFixed(2) + '%';
+            document.getElementById('bestStreak').textContent = bestStreak;
+            document.getElementById('worstStreak').textContent = worstStreak;
+
+            // Render equity chart
+            renderEquityChart(equityCurve);
+
+            // Render trades table
+            const tableBody = document.getElementById('tradesTableBody');
+            tableBody.innerHTML = trades.slice(0, 20).map(trade => `
+                <tr>
+                    <td>${trade.number}</td>
+                    <td class="${trade.result.toLowerCase()}">${trade.result}</td>
+                    <td class="${trade.result.toLowerCase()}">${trade.pnl >= 0 ? '+' : ''}$${trade.pnl.toFixed(2)}</td>
+                    <td>$${trade.balance.toFixed(2)}</td>
+                    <td>${trade.rr}</td>
+                </tr>
+            `).join('');
+
+            // Generate analysis
+            const analysis = generateAnalysis(finalPnL, realWinRate, profitFactor, maxDrawdown, bestStreak, worstStreak, numTrades);
+            document.getElementById('analysisText').innerHTML = analysis;
+
+            // Show results
+            document.getElementById('resultsSection').classList.add('visible');
+        }
+
+        function renderEquityChart(equityCurve) {
+            const options = {
+                series: [{
+                    name: 'Balance',
+                    data: equityCurve
+                }],
+                chart: {
+                    type: 'area',
+                    height: 300,
+                    toolbar: { show: false }
+                },
+                colors: ['#E11D48'],
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.7,
+                        opacityTo: 0.1,
+                        stops: [0, 90, 100]
+                    }
+                },
+                dataLabels: { enabled: false },
+                stroke: {
+                    curve: 'smooth',
+                    width: 2
+                },
+                xaxis: {
+                    categories: equityCurve.map((_, i) => i),
+                    labels: { show: false }
+                },
+                yaxis: {
+                    labels: {
+                        formatter: (value) => '$' + value.toFixed(0)
+                    }
+                },
+                tooltip: {
+                    y: {
+                        formatter: (value) => '$' + value.toFixed(2)
+                    }
+                }
+            };
+
+            const chart = new ApexCharts(document.getElementById('equityChart'), options);
+            chart.render();
+        }
+
+        function generateAnalysis(finalPnL, winRate, profitFactor, maxDrawdown, bestStreak, worstStreak, numTrades) {
+            let analysis = '';
+
+            analysis += `<p><strong>Performance Globale:</strong> `;
+            if (finalPnL > 0) {
+                analysis += `Le backtest montre une performance positive avec un gain de <strong>$${finalPnL.toFixed(2)}</strong>. `;
+            } else {
+                analysis += `Le backtest montre une performance négative avec une perte de <strong>$${finalPnL.toFixed(2)}</strong>. `;
+            }
+            analysis += `Le Win Rate de <strong>${winRate}%</strong> ${winRate >= 50 ? 'est satisfaisant' : 'est inférieur à 50%'}.</p>`;
+
+            analysis += `<p><strong>Gestion du Risque:</strong> `;
+            if (maxDrawdown < 0.1) {
+                analysis += `Le drawdown maximum de <strong>${(maxDrawdown * 100).toFixed(2)}%</strong> est excellent et indique une bonne gestion du risque. `;
+            } else if (maxDrawdown < 0.2) {
+                analysis += `Le drawdown maximum de <strong>${(maxDrawdown * 100).toFixed(2)}%</strong> est acceptable. `;
+            } else {
+                analysis += `Le drawdown maximum de <strong>${(maxDrawdown * 100).toFixed(2)}%</strong> est élevé et pourrait être réduit en ajustant le risque par trade. `;
+            }
+
+            analysis += `Le Profit Factor de <strong>${profitFactor}</strong> ${profitFactor >= 2 ? 'indique une stratégie rentable' : profitFactor >= 1 ? 'indique une stratégie marginale' : 'indique une stratégie non rentable'}.</p>`;
+
+            analysis += `<p><strong>Séquences:</strong> La meilleure série gagnante est de <strong>${bestStreak} trades</strong> et la pire série perdante est de <strong>${Math.abs(worstStreak)} trades</strong>. `;
+            analysis += `Ces séquences sont ${bestStreak > 5 ? 'impressionnantes' : 'normales'} pour ${numTrades} trades simulés.</p>`;
+
+            analysis += `<p><strong>Recommandations:</strong> `;
+            if (winRate < 50) {
+                analysis += `Améliorez la sélection de vos setups pour augmenter le Win Rate. `;
+            }
+            if (maxDrawdown > 0.15) {
+                analysis += `Réduisez le risque par trade pour limiter le drawdown. `;
+            }
+            if (profitFactor < 1.5) {
+                analysis += `Augmentez le RR moyen ou améliorez le Win Rate pour améliorer le Profit Factor. `;
+            }
+            analysis += `Testez avec différents paramètres pour optimiser votre stratégie.</p>`;
+
+            return analysis;
+        }
+
+        // Backend status check
+        setInterval(() => {
+            fetch('http://localhost:5000/api/health')
+                .then(res => res.json())
+                .then(online => {
+                    const dot = document.getElementById('backendStatus');
+                    const text = document.getElementById('backendStatusText');
+                    if (online) {
+                        dot.className = 'status-dot online';
+                        text.textContent = 'En ligne';
+                    } else {
+                        dot.className = 'status-dot offline';
+                        text.textContent = 'Hors ligne';
+                    }
+                })
+                .catch(() => {
+                    const dot = document.getElementById('backendStatus');
+                    const text = document.getElementById('backendStatusText');
+                    dot.className = 'status-dot offline';
+                    text.textContent = 'Hors ligne';
+                });
+        }, 5000);
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>

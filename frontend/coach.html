@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartReview - IA Coach</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        /* Coach-specific styles */
+        .hero-section {
+            background: linear-gradient(135deg, var(--accent) 0%, #8B5CF6 100%);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-2xl);
+            margin-bottom: var(--spacing-xl);
+            color: white;
+        }
+
+        .hero-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .hero-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .hero-btn {
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-md);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .hero-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .hero-btn.primary {
+            background: white;
+            color: var(--accent);
+        }
+
+        .hero-btn.primary:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .last-analysis {
+            margin-top: var(--spacing-lg);
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        /* Analysis Section */
+        .analysis-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .analysis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .analysis-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .analysis-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .analysis-content {
+            padding: var(--spacing-lg);
+            min-height: 400px;
+        }
+
+        .analysis-content.markdown h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+        }
+
+        .analysis-content.markdown h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            margin-top: var(--spacing-lg);
+            color: var(--text-primary);
+        }
+
+        .analysis-content.markdown h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+            color: var(--text-primary);
+        }
+
+        .analysis-content.markdown p {
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .analysis-content.markdown ul,
+        .analysis-content.markdown ol {
+            margin-left: var(--spacing-lg);
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-secondary);
+        }
+
+        .analysis-content.markdown li {
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .analysis-content.markdown strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .analysis-content.markdown code {
+            background: var(--bg-secondary);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            gap: var(--spacing-md);
+        }
+
+        .loading-dots {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+
+        .loading-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        .loading-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loading-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .loading-text {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Edge Tracker */
+        .edge-tracker-card {
+            background: var(--bg-card);
+            border: 2px solid var(--gold);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .edge-tracker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .edge-tracker-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .edge-badge {
+            background: var(--gold);
+            color: white;
+            padding: 4px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .edge-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .edge-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+        }
+
+        .edge-rank {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .edge-rank.gold {
+            background: linear-gradient(135deg, var(--gold) 0%, #FFD700 100%);
+            color: white;
+        }
+
+        .edge-rank.silver {
+            background: linear-gradient(135deg, #C0C0C0 0%, #E8E8E8 100%);
+            color: #333;
+        }
+
+        .edge-rank.bronze {
+            background: linear-gradient(135deg, #CD7F32 0%, #E8A862 100%);
+            color: white;
+        }
+
+        .edge-details {
+            flex: 1;
+        }
+
+        .edge-combination {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .edge-stats {
+            display: flex;
+            gap: var(--spacing-md);
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .edge-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .edge-confidence {
+            width: 100px;
+            height: 8px;
+            background: var(--bg-card);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .edge-confidence-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-green) 0%, var(--accent-blue) 100%);
+            border-radius: 4px;
+            transition: width var(--transition-normal);
+        }
+
+        /* Reports Section */
+        .reports-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .report-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+        }
+
+        .report-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+        }
+
+        .report-content {
+            min-height: 200px;
+        }
+
+        .report-content.markdown {
+            font-size: 13px;
+        }
+
+        /* History Timeline */
+        .history-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .history-section h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-primary);
+        }
+
+        .history-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .history-item {
+            display: flex;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .history-item:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .history-date {
+            min-width: 100px;
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        .history-summary {
+            flex: 1;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Psychological Correlations */
+        .psych-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+        }
+
+        .psych-section h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+        }
+
+        .psych-insight {
+            margin-top: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .psych-chart {
+            height: 400px;
+        }
+
+        /* Onboarding */
+        .onboarding-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-2xl);
+            text-align: center;
+        }
+
+        .onboarding-icon {
+            font-size: 64px;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .onboarding-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+        }
+
+        .onboarding-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-lg);
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-actions {
+                flex-direction: column;
+            }
+
+            .reports-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="10" fill="#E11D48"/>
+                        <polyline points="6,22 12,14 17,18 22,10 26,10"
+                            stroke="white" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <circle cx="26" cy="10" r="2.5" fill="white"/>
+                    </svg>
+                    <div class="logo-text-group">
+                        <div class="logo-name">SmartReview</div>
+                        <div class="logo-sub">Trading Analytics</div>
+                    </div>
+                </div>
+                <div class="user-avatar">TR</div>
+            </div>
+            
+            <div class="search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" class="search-input" placeholder="Rechercher...">
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">DASHBOARDS</div>
+                <a href="index.html" class="nav-item">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="journal.html" class="nav-item">
+                    <i data-lucide="book-open"></i>
+                    <span>Journal</span>
+                </a>
+                <a href="calendar.html" class="nav-item">
+                    <i data-lucide="calendar"></i>
+                    <span>Calendrier</span>
+                </a>
+                <a href="stats.html" class="nav-item">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span>Statistiques</span>
+                </a>
+                <a href="coach.html" class="nav-item active">
+                    <i data-lucide="brain"></i>
+                    <span>IA Coach</span>
+                </a>
+                <a href="accounts.html" class="nav-item">
+                    <i data-lucide="wallet"></i>
+                    <span>Comptes</span>
+                </a>
+
+                <div class="nav-section-label">OUTILS</div>
+                <a href="notes.html" class="nav-item">
+                    <i data-lucide="file-text"></i>
+                    <span>Notes & Projets</span>
+                </a>
+                <a href="backtesting.html" class="nav-item">
+                    <i data-lucide="activity"></i>
+                    <span>Backtesting</span>
+                </a>
+                <a href="strategy-builder.html" class="nav-item">
+                    <i data-lucide="layers"></i>
+                    <span>Strategy Builder</span>
+                </a>
+                <a href="copy-trading.html" class="nav-item">
+                    <i data-lucide="copy"></i>
+                    <span>Copy Trading</span>
+                </a>
+
+                <div class="nav-section-label">COMMUNAUTÉ</div>
+                <a href="marketplace.html" class="nav-item">
+                    <i data-lucide="shopping-bag"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="community.html" class="nav-item">
+                    <i data-lucide="users"></i>
+                    <span>Communauté</span>
+                </a>
+                <a href="podcasts.html" class="nav-item">
+                    <i data-lucide="headphones"></i>
+                    <span>Podcasts</span>
+                </a>
+                <a href="live.html" class="nav-item">
+                    <i data-lucide="radio"></i>
+                    <span>Live Direct</span>
+                </a>
+
+                <div class="nav-section-label">SETTINGS</div>
+                <a href="settings.html" class="nav-item" id="nav-settings">
+                    <i data-lucide="settings"></i>
+                    <span>Paramètres</span>
+                </a>
+                <a href="help.html" class="nav-item" id="nav-help">
+                    <i data-lucide="help-circle"></i>
+                    <span>Aide</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="account-selector">
+                    <label>Compte Actif</label>
+                    <select id="activeAccount" class="select-input">
+                        <option value="">Chargement...</option>
+                    </select>
+                </div>
+                <div class="backend-status">
+                    <span class="status-dot" id="backendStatus"></span>
+                    <span class="status-text" id="backendStatusText">Vérification...</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <h1 class="hero-title">IA Coach SmartReview</h1>
+                <p class="hero-subtitle">Votre copilote intelligent pour une trading de performance</p>
+                <div class="hero-actions">
+                    <button class="hero-btn primary" id="analyzePerformanceBtn">
+                        <i data-lucide="sparkles"></i>
+                        Analyser mes performances
+                    </button>
+                    <button class="hero-btn" id="detectEdgeBtn">
+                        <i data-lucide="target"></i>
+                        Détecter mon Edge
+                    </button>
+                    <button class="hero-btn" id="dailyReportBtn">
+                        <i data-lucide="calendar-days"></i>
+                        Rapport du jour
+                    </button>
+                </div>
+                <div class="last-analysis" id="lastAnalysisTime">
+                    Dernière analyse : Jamais
+                </div>
+            </section>
+
+            <!-- Onboarding State -->
+            <div class="onboarding-card" id="onboardingCard">
+                <div class="onboarding-icon">🧠</div>
+                <h2 class="onboarding-title">Bienvenue sur l'IA Coach</h2>
+                <p class="onboarding-text">
+                    Commencez par enregistrer vos trades dans le Journal.<br>
+                    Une fois que vous aurez suffisamment de données, l'IA Coach pourra analyser vos performances,<br>
+                    détecter vos edges statistiques et vous fournir des recommandations personnalisées.
+                </p>
+                <button class="btn btn-primary" onclick="window.location.href='journal.html'">
+                    <i data-lucide="plus"></i>
+                    Ajouter mon premier trade
+                </button>
+            </div>
+
+            <!-- Main Analysis Section -->
+            <div class="analysis-card" id="analysisCard" style="display: none;">
+                <div class="analysis-header">
+                    <h2>Analyse de Performance</h2>
+                    <div class="analysis-actions">
+                        <select class="select-input" id="periodSelect" style="width: 120px;">
+                            <option value="7d">7 jours</option>
+                            <option value="30d" selected>30 jours</option>
+                            <option value="90d">90 jours</option>
+                            <option value="1y">1 an</option>
+                            <option value="all">Tout</option>
+                        </select>
+                        <button class="btn btn-secondary" id="refreshAnalysisBtn">
+                            <i data-lucide="refresh-cw"></i>
+                        </button>
+                        <button class="btn btn-secondary" id="copyAnalysisBtn">
+                            <i data-lucide="copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="analysis-content" id="analysisContent">
+                    <div class="loading-state">
+                        <div class="loading-dots">
+                            <div class="loading-dot"></div>
+                            <div class="loading-dot"></div>
+                            <div class="loading-dot"></div>
+                        </div>
+                        <p class="loading-text">L'IA analyse vos performances...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edge Tracker Section -->
+            <div class="edge-tracker-card" id="edgeTrackerCard" style="display: none;">
+                <div class="edge-tracker-header">
+                    <h2 class="edge-tracker-title">Edge Tracker™️</h2>
+                    <span class="edge-badge">EXCLUSIF</span>
+                </div>
+                <div class="edge-list" id="edgeList">
+                    <!-- Edges will be populated by JS -->
+                </div>
+            </div>
+
+            <!-- Reports Section -->
+            <div class="reports-grid" id="reportsGrid" style="display: none;">
+                <div class="report-card">
+                    <h3>Rapport du Jour</h3>
+                    <div class="report-content" id="dailyReportContent">
+                        <!-- Daily report will be populated by JS -->
+                    </div>
+                </div>
+                <div class="report-card">
+                    <h3>Résumé Hebdomadaire</h3>
+                    <div class="report-content" id="weeklyReportContent">
+                        <!-- Weekly summary will be populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis History -->
+            <div class="history-section" id="historySection" style="display: none;">
+                <h3>Historique des Analyses</h3>
+                <div class="history-timeline" id="historyTimeline">
+                    <!-- History will be populated by JS -->
+                </div>
+            </div>
+
+            <!-- Psychological Correlations -->
+            <div class="psych-section" id="psychSection" style="display: none;">
+                <h3>Corrélations Psychologiques</h3>
+                <div class="psych-chart" id="psychChart"></div>
+                <div class="psych-insight" id="psychInsight">
+                    <!-- Insight will be populated by JS -->
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/coach.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

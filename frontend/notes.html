@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartReview - Notes & Projets</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .tab-btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-light);
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .note-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .note-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+
+        .note-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .note-preview {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .note-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .note-date {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .note-tag {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .tag-trading { background: rgba(225, 29, 72, 0.1); color: var(--accent); }
+        .tag-psychologie { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+        .tag-strategie { background: rgba(16, 185, 129, 0.1); color: #10B981; }
+        .tag-autre { background: rgba(107, 114, 128, 0.1); color: #6B7280; }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            color: var(--text-muted);
+        }
+
+        .slide-panel {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: var(--bg-primary);
+            border-left: 1px solid var(--border);
+            z-index: 1000;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide-panel.open {
+            right: 0;
+        }
+
+        .slide-panel-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slide-panel-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .slide-panel-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+        }
+
+        .note-title-input {
+            width: 100%;
+            padding: 8px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .note-textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+        }
+
+        .note-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .tag-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .tag-option {
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .tag-option:hover {
+            border-color: var(--accent);
+        }
+
+        .tag-option.selected {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .kanban-column {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+        }
+
+        .kanban-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .kanban-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .kanban-add {
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .kanban-tasks {
+            min-height: 200px;
+        }
+
+        .task-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: grab;
+            transition: all var(--transition-fast);
+        }
+
+        .task-card:hover {
+            border-color: var(--accent);
+        }
+
+        .task-card.dragging {
+            opacity: 0.5;
+        }
+
+        .task-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .task-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-priority {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .priority-high { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
+        .priority-medium { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
+        .priority-low { background: rgba(16, 185, 129, 0.1); color: #10B981; }
+
+        .task-date {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="10" fill="#E11D48"/>
+                        <polyline points="6,22 12,14 17,18 22,10 26,10"
+                            stroke="white" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <circle cx="26" cy="10" r="2.5" fill="white"/>
+                    </svg>
+                    <div class="logo-text-group">
+                        <div class="logo-name">SmartReview</div>
+                        <div class="logo-sub">Trading Analytics</div>
+                    </div>
+                </div>
+                <div class="user-avatar">TR</div>
+            </div>
+
+            <div class="search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" class="search-input" placeholder="Rechercher...">
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">DASHBOARDS</div>
+                <a href="index.html" class="nav-item">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="journal.html" class="nav-item">
+                    <i data-lucide="book-open"></i>
+                    <span>Journal</span>
+                </a>
+                <a href="calendar.html" class="nav-item">
+                    <i data-lucide="calendar"></i>
+                    <span>Calendrier</span>
+                </a>
+                <a href="stats.html" class="nav-item">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span>Statistiques</span>
+                </a>
+                <a href="coach.html" class="nav-item">
+                    <i data-lucide="brain"></i>
+                    <span>IA Coach</span>
+                </a>
+                <a href="accounts.html" class="nav-item">
+                    <i data-lucide="wallet"></i>
+                    <span>Comptes</span>
+                </a>
+
+                <div class="nav-section-label">OUTILS</div>
+                <a href="notes.html" class="nav-item active">
+                    <i data-lucide="file-text"></i>
+                    <span>Notes & Projets</span>
+                </a>
+                <a href="backtesting.html" class="nav-item">
+                    <i data-lucide="activity"></i>
+                    <span>Backtesting</span>
+                </a>
+                <a href="strategy-builder.html" class="nav-item">
+                    <i data-lucide="layers"></i>
+                    <span>Strategy Builder</span>
+                </a>
+                <a href="copy-trading.html" class="nav-item">
+                    <i data-lucide="copy"></i>
+                    <span>Copy Trading</span>
+                </a>
+
+                <div class="nav-section-label">COMMUNAUTÉ</div>
+                <a href="marketplace.html" class="nav-item">
+                    <i data-lucide="shopping-bag"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="community.html" class="nav-item">
+                    <i data-lucide="users"></i>
+                    <span>Communauté</span>
+                </a>
+                <a href="podcasts.html" class="nav-item">
+                    <i data-lucide="headphones"></i>
+                    <span>Podcasts</span>
+                </a>
+                <a href="live.html" class="nav-item">
+                    <i data-lucide="radio"></i>
+                    <span>Live Direct</span>
+                </a>
+
+                <div class="nav-section-label">SETTINGS</div>
+                <a href="settings.html" class="nav-item" id="nav-settings">
+                    <i data-lucide="settings"></i>
+                    <span>Paramètres</span>
+                </a>
+                <a href="help.html" class="nav-item" id="nav-help">
+                    <i data-lucide="help-circle"></i>
+                    <span>Aide</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="account-selector">
+                    <label>Compte Actif</label>
+                    <select id="activeAccount" class="select-input">
+                        <option value="">Chargement...</option>
+                    </select>
+                </div>
+                <div class="backend-status">
+                    <span class="status-dot" id="backendStatus"></span>
+                    <span class="status-text" id="backendStatusText">Vérification...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <div class="breadcrumb">Outils / Notes & Projets</div>
+                    <h1 class="page-title">Notes & Projets</h1>
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-primary" id="newNoteBtn">
+                        <i data-lucide="plus"></i>
+                        Nouvelle Note
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="notes">Notes</button>
+                    <button class="tab-btn" data-tab="projects">Projets</button>
+                </div>
+
+                <!-- Notes Tab -->
+                <div class="tab-content active" id="notes-tab">
+                    <div class="notes-grid" id="notesGrid">
+                        <!-- Notes will be populated by JS -->
+                    </div>
+                    <div class="empty-state" id="notesEmpty">
+                        <i data-lucide="pencil"></i>
+                        <p>Aucune note — Créez votre première note</p>
+                    </div>
+                </div>
+
+                <!-- Projects Tab -->
+                <div class="tab-content" id="projects-tab">
+                    <div class="kanban-board">
+                        <div class="kanban-column" data-status="todo">
+                            <div class="kanban-header">
+                                <span class="kanban-title">À faire</span>
+                                <button class="kanban-add" onclick="addTask('todo')">
+                                    <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+                                </button>
+                            </div>
+                            <div class="kanban-tasks" id="todo-tasks"></div>
+                        </div>
+                        <div class="kanban-column" data-status="inprogress">
+                            <div class="kanban-header">
+                                <span class="kanban-title">En cours</span>
+                                <button class="kanban-add" onclick="addTask('inprogress')">
+                                    <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+                                </button>
+                            </div>
+                            <div class="kanban-tasks" id="inprogress-tasks"></div>
+                        </div>
+                        <div class="kanban-column" data-status="done">
+                            <div class="kanban-header">
+                                <span class="kanban-title">Terminé</span>
+                                <button class="kanban-add" onclick="addTask('done')">
+                                    <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+                                </button>
+                            </div>
+                            <div class="kanban-tasks" id="done-tasks"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Note Slide Panel -->
+    <div class="slide-panel" id="notePanel">
+        <div class="slide-panel-header">
+            <h2 style="font-size: 16px; font-weight: 600; color: var(--text-primary);">Éditer la note</h2>
+            <button class="modal-close" id="closeNotePanel">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="slide-panel-content">
+            <input type="text" class="note-title-input" id="noteTitle" placeholder="Titre de la note">
+            <div class="tag-selector" id="tagSelector">
+                <span class="tag-option" data-tag="trading">Trading</span>
+                <span class="tag-option" data-tag="psychologie">Psychologie</span>
+                <span class="tag-option" data-tag="strategie">Stratégie</span>
+                <span class="tag-option" data-tag="autre">Autre</span>
+            </div>
+            <textarea class="note-textarea" id="noteContent" placeholder="Écrivez votre note ici..."></textarea>
+        </div>
+        <div class="slide-panel-footer">
+            <button class="btn btn-secondary" id="deleteNoteBtn">Supprimer</button>
+            <button class="btn btn-primary" id="saveNoteBtn">Sauvegarder</button>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        // Notes functionality
+        let notes = JSON.parse(localStorage.getItem('smartreview_notes')) || [];
+        let currentNoteId = null;
+        let selectedTag = 'trading';
+
+        // Render notes
+        function renderNotes() {
+            const grid = document.getElementById('notesGrid');
+            const empty = document.getElementById('notesEmpty');
+
+            if (notes.length === 0) {
+                grid.innerHTML = '';
+                empty.style.display = 'block';
+                return;
+            }
+
+            empty.style.display = 'none';
+            grid.innerHTML = notes.map(note => `
+                <div class="note-card" onclick="openNote('${note.id}')">
+                    <div class="note-title">${note.title}</div>
+                    <div class="note-preview">${note.content}</div>
+                    <div class="note-meta">
+                        <span class="note-date">${new Date(note.date).toLocaleDateString('fr-FR')}</span>
+                        <span class="note-tag tag-${note.tag}">${note.tag}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Open note editor
+        function openNote(id) {
+            const note = notes.find(n => n.id === id);
+            if (!note) return;
+
+            currentNoteId = id;
+            document.getElementById('noteTitle').value = note.title;
+            document.getElementById('noteContent').value = note.content;
+            selectedTag = note.tag;
+            updateTagSelector();
+            document.getElementById('notePanel').classList.add('open');
+        }
+
+        // Create new note
+        function createNote() {
+            const newNote = {
+                id: Date.now().toString(),
+                title: 'Nouvelle note',
+                content: '',
+                tag: 'trading',
+                date: new Date().toISOString()
+            };
+            notes.unshift(newNote);
+            localStorage.setItem('smartreview_notes', JSON.stringify(notes));
+            openNote(newNote.id);
+            renderNotes();
+        }
+
+        // Save note
+        function saveNote() {
+            if (!currentNoteId) return;
+
+            const note = notes.find(n => n.id === currentNoteId);
+            if (!note) return;
+
+            note.title = document.getElementById('noteTitle').value;
+            note.content = document.getElementById('noteContent').value;
+            note.tag = selectedTag;
+            note.date = new Date().toISOString();
+
+            localStorage.setItem('smartreview_notes', JSON.stringify(notes));
+            renderNotes();
+            closeNotePanel();
+        }
+
+        // Delete note
+        function deleteNote() {
+            if (!currentNoteId) return;
+
+            notes = notes.filter(n => n.id !== currentNoteId);
+            localStorage.setItem('smartreview_notes', JSON.stringify(notes));
+            renderNotes();
+            closeNotePanel();
+        }
+
+        // Close panel
+        function closeNotePanel() {
+            document.getElementById('notePanel').classList.remove('open');
+            currentNoteId = null;
+        }
+
+        // Update tag selector
+        function updateTagSelector() {
+            document.querySelectorAll('.tag-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.tag === selectedTag);
+            });
+        }
+
+        // Projects functionality
+        let projects = JSON.parse(localStorage.getItem('smartreview_projects')) || [];
+
+        function renderProjects() {
+            ['todo', 'inprogress', 'done'].forEach(status => {
+                const container = document.getElementById(`${status}-tasks`);
+                const tasks = projects.filter(p => p.status === status);
+
+                if (tasks.length === 0) {
+                    container.innerHTML = '<div class="empty-state" style="padding: 20px;"><p style="font-size: 12px;">Aucune tâche</p></div>';
+                    return;
+                }
+
+                container.innerHTML = tasks.map(task => `
+                    <div class="task-card" draggable="true" data-id="${task.id}">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-meta">
+                            <span class="task-priority priority-${task.priority}">${task.priority}</span>
+                            <span class="task-date">${task.dueDate}</span>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Add drag events
+                container.querySelectorAll('.task-card').forEach(card => {
+                    card.addEventListener('dragstart', handleDragStart);
+                    card.addEventListener('dragend', handleDragEnd);
+                });
+            });
+        }
+
+        function addTask(status) {
+            const title = prompt('Titre de la tâche:');
+            if (!title) return;
+
+            const priority = prompt('Priorité (high/medium/low):', 'medium') || 'medium';
+            const dueDate = prompt('Date limite (YYYY-MM-DD):', '') || '';
+
+            const task = {
+                id: Date.now().toString(),
+                title,
+                priority,
+                dueDate,
+                status
+            };
+
+            projects.push(task);
+            localStorage.setItem('smartreview_projects', JSON.stringify(projects));
+            renderProjects();
+        }
+
+        function handleDragStart(e) {
+            e.target.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', e.target.dataset.id);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        // Initialize drag and drop
+        document.querySelectorAll('.kanban-column').forEach(column => {
+            column.addEventListener('dragover', e => {
+                e.preventDefault();
+                column.style.borderColor = 'var(--accent)';
+            });
+
+            column.addEventListener('dragleave', () => {
+                column.style.borderColor = 'var(--border)';
+            });
+
+            column.addEventListener('drop', e => {
+                e.preventDefault();
+                column.style.borderColor = 'var(--border)';
+                const taskId = e.dataTransfer.getData('text/plain');
+                const newStatus = column.dataset.status;
+
+                const task = projects.find(p => p.id === taskId);
+                if (task) {
+                    task.status = newStatus;
+                    localStorage.setItem('smartreview_projects', JSON.stringify(projects));
+                    renderProjects();
+                }
+            });
+        });
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(`${btn.dataset.tab}-tab`).classList.add('active');
+            });
+        });
+
+        // Event listeners
+        document.getElementById('newNoteBtn').addEventListener('click', createNote);
+        document.getElementById('closeNotePanel').addEventListener('click', closeNotePanel);
+        document.getElementById('saveNoteBtn').addEventListener('click', saveNote);
+        document.getElementById('deleteNoteBtn').addEventListener('click', deleteNote);
+
+        document.querySelectorAll('.tag-option').forEach(el => {
+            el.addEventListener('click', () => {
+                selectedTag = el.dataset.tag;
+                updateTagSelector();
+            });
+        });
+
+        // Initialize
+        renderNotes();
+        renderProjects();
+        lucide.createIcons();
+    </script>
+</body>
+</html>

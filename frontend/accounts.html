@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartReview - Gestion des Comptes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        /* Accounts-specific styles */
+        .accounts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .account-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            transition: all var(--transition-fast);
+        }
+
+        .account-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .account-card.selected {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        .account-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .account-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .account-type-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .account-type-badge.personal {
+            background: var(--accent);
+            color: white;
+        }
+
+        .account-type-badge.prop-firm {
+            background: var(--gold);
+            color: white;
+        }
+
+        .account-card-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .account-metric {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .metric-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .metric-value.positive {
+            color: var(--green);
+        }
+
+        .metric-value.negative {
+            color: var(--red);
+        }
+
+        .account-card-footer {
+            display: flex;
+            gap: var(--spacing-sm);
+            border-top: 1px solid var(--border);
+            padding-top: var(--spacing-md);
+        }
+
+        /* Prop Firm Dashboard */
+        .prop-firm-dashboard {
+            background: var(--bg-card);
+            border: 2px solid var(--gold);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .prop-firm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .prop-firm-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .prop-firm-phase {
+            padding: 8px 16px;
+            background: var(--gold);
+            color: white;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+        }
+
+        .prop-firm-status {
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .prop-firm-status.in-progress {
+            background: var(--accent);
+            color: white;
+        }
+
+        .prop-firm-status.passed {
+            background: var(--green);
+            color: white;
+        }
+
+        .prop-firm-status.failed {
+            background: var(--red);
+            color: white;
+        }
+
+        .progress-section {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .progress-bar {
+            height: 24px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width var(--transition-normal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .progress-fill.green {
+            background: linear-gradient(90deg, var(--green), #00C853);
+        }
+
+        .progress-fill.orange {
+            background: linear-gradient(90deg, var(--gold), #FF6D00);
+        }
+
+        .progress-fill.red {
+            background: linear-gradient(90deg, var(--red), #D50000);
+        }
+
+        /* Risk Gauges */
+        .risk-gauges {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .risk-gauge {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            text-align: center;
+        }
+
+        .gauge-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin: var(--spacing-md) 0;
+        }
+
+        .gauge-value.green {
+            color: var(--green);
+        }
+
+        .gauge-value.orange {
+            color: var(--gold);
+        }
+
+        .gauge-value.red {
+            color: var(--red);
+        }
+
+        /* Recommendations */
+        .recommendations-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .recommendation-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .recommendation-icon {
+            font-size: 24px;
+        }
+
+        /* Account Comparison */
+        .comparison-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+        }
+
+        .comparison-chart {
+            height: 400px;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: var(--spacing-sm);
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table th {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Modal enhancements */
+        .modal-content {
+            max-width: 600px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 768px) {
+            .accounts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .risk-gauges {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="10" fill="#E11D48"/>
+                        <polyline points="6,22 12,14 17,18 22,10 26,10"
+                            stroke="white" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <circle cx="26" cy="10" r="2.5" fill="white"/>
+                    </svg>
+                    <div class="logo-text-group">
+                        <div class="logo-name">SmartReview</div>
+                        <div class="logo-sub">Trading Analytics</div>
+                    </div>
+                </div>
+                <div class="user-avatar">TR</div>
+            </div>
+            
+            <div class="search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" class="search-input" placeholder="Rechercher...">
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">DASHBOARDS</div>
+                <a href="index.html" class="nav-item">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="journal.html" class="nav-item">
+                    <i data-lucide="book-open"></i>
+                    <span>Journal</span>
+                </a>
+                <a href="calendar.html" class="nav-item">
+                    <i data-lucide="calendar"></i>
+                    <span>Calendrier</span>
+                </a>
+                <a href="stats.html" class="nav-item">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span>Statistiques</span>
+                </a>
+                <a href="coach.html" class="nav-item">
+                    <i data-lucide="brain"></i>
+                    <span>IA Coach</span>
+                </a>
+                <a href="accounts.html" class="nav-item active">
+                    <i data-lucide="wallet"></i>
+                    <span>Comptes</span>
+                </a>
+
+                <div class="nav-section-label">OUTILS</div>
+                <a href="notes.html" class="nav-item">
+                    <i data-lucide="file-text"></i>
+                    <span>Notes & Projets</span>
+                </a>
+                <a href="backtesting.html" class="nav-item">
+                    <i data-lucide="activity"></i>
+                    <span>Backtesting</span>
+                </a>
+                <a href="strategy-builder.html" class="nav-item">
+                    <i data-lucide="layers"></i>
+                    <span>Strategy Builder</span>
+                </a>
+                <a href="copy-trading.html" class="nav-item">
+                    <i data-lucide="copy"></i>
+                    <span>Copy Trading</span>
+                </a>
+
+                <div class="nav-section-label">COMMUNAUTÉ</div>
+                <a href="marketplace.html" class="nav-item">
+                    <i data-lucide="shopping-bag"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="community.html" class="nav-item">
+                    <i data-lucide="users"></i>
+                    <span>Communauté</span>
+                </a>
+                <a href="podcasts.html" class="nav-item">
+                    <i data-lucide="headphones"></i>
+                    <span>Podcasts</span>
+                </a>
+                <a href="live.html" class="nav-item">
+                    <i data-lucide="radio"></i>
+                    <span>Live Direct</span>
+                </a>
+
+                <div class="nav-section-label">SETTINGS</div>
+                <a href="settings.html" class="nav-item" id="nav-settings">
+                    <i data-lucide="settings"></i>
+                    <span>Paramètres</span>
+                </a>
+                <a href="help.html" class="nav-item" id="nav-help">
+                    <i data-lucide="help-circle"></i>
+                    <span>Aide</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="account-selector">
+                    <label>Compte Actif</label>
+                    <select id="activeAccount" class="select-input">
+                        <option value="">Chargement...</option>
+                    </select>
+                </div>
+                <div class="backend-status">
+                    <span class="status-dot" id="backendStatus"></span>
+                    <span class="status-text" id="backendStatusText">Vérification...</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1 class="page-title">Gestion des Comptes</h1>
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-primary" id="newAccountBtn">
+                        <i data-lucide="plus"></i>
+                        Nouveau Compte
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Prop Firm Dashboard (shown when prop firm account selected) -->
+            <div class="prop-firm-dashboard" id="propFirmDashboard" style="display: none;">
+                <div class="prop-firm-header">
+                    <div>
+                        <h2 class="prop-firm-title" id="propFirmName">FTMO Challenge</h2>
+                        <span class="prop-firm-phase" id="propFirmPhase">Phase 1</span>
+                    </div>
+                    <span class="prop-firm-status in-progress" id="propFirmStatus">EN COURS</span>
+                </div>
+
+                <!-- Progress Section -->
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span>Objectif de Profit</span>
+                        <span id="profitProgress">8% / 10%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill green" id="profitProgressBar" style="width: 80%">80%</div>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span>Jours Tradés</span>
+                        <span id="daysProgress">12 / 30 jours</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill green" id="daysProgressBar" style="width: 40%">40%</div>
+                    </div>
+                </div>
+
+                <!-- Risk Gauges -->
+                <div class="risk-gauges">
+                    <div class="risk-gauge">
+                        <h3>Drawdown Journalier</h3>
+                        <div class="gauge-value green" id="dailyDDGauge">3.2%</div>
+                        <p>sur 5% autorisé</p>
+                    </div>
+                    <div class="risk-gauge">
+                        <h3>Drawdown Maximum</h3>
+                        <div class="gauge-value green" id="maxDDGauge">4.8%</div>
+                        <p>sur 10% autorisé</p>
+                    </div>
+                </div>
+
+                <!-- Recommendations -->
+                <div class="recommendations-card">
+                    <h3>Recommandations Dynamiques</h3>
+                    <div class="recommendation-item">
+                        <span class="recommendation-icon">💡</span>
+                        <div>
+                            <strong>Risque optimal recommandé</strong>
+                            <p>1.5% du capital pour les prochains trades</p>
+                        </div>
+                    </div>
+                    <div class="recommendation-item">
+                        <span class="recommendation-icon">📊</span>
+                        <div>
+                            <strong>Trades restants conseillés</strong>
+                            <p>3 trades maximum aujourd'hui</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History -->
+                <div class="recommendations-card">
+                    <h3>Historique des Challenges</h3>
+                    <div id="propFirmHistory">
+                        <!-- History will be populated by JS -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Accounts Grid -->
+            <section class="accounts-section">
+                <div class="accounts-grid" id="accountsGrid">
+                    <div class="empty-state">Chargement...</div>
+                </div>
+            </section>
+
+            <!-- Account Comparison (shown when multiple accounts) -->
+            <div class="comparison-section" id="comparisonSection" style="display: none;">
+                <h3>Comparaison des Comptes</h3>
+                <div class="comparison-chart" id="comparisonChart"></div>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Métrique</th>
+                            <th id="comparisonHeader1">Compte 1</th>
+                            <th id="comparisonHeader2">Compte 2</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comparisonTableBody">
+                        <!-- Comparison data will be populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+    
+    <!-- New Account Modal -->
+    <div class="modal" id="accountModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Nouveau Compte</h2>
+                <button class="modal-close" id="closeModal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="accountForm">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>Nom du Compte</label>
+                        <input type="text" name="name" required placeholder="Mon Compte" class="input">
+                    </div>
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select name="type" required class="select-input" id="accountType">
+                            <option value="PERSONAL">Personnel</option>
+                            <option value="PROP_FIRM">Prop Firm</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Devise</label>
+                        <select name="currency" class="select-input">
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                        </select>
+                    </div>
+                    <div class="form-group personal-field">
+                        <label>Broker</label>
+                        <select name="broker" class="select-input">
+                            <option value="">Sélectionner</option>
+                            <option value="Exness">Exness</option>
+                            <option value="XM">XM</option>
+                            <option value="OANDA">OANDA</option>
+                            <option value="IC Markets">IC Markets</option>
+                            <option value="Pepperstone">Pepperstone</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+                    <div class="form-group personal-field" id="otherBrokerField" style="display: none;">
+                        <label>Nom du Broker</label>
+                        <input type="text" name="broker_other" placeholder="Nom du broker" class="input">
+                    </div>
+                    <div class="form-group prop-firm-field" style="display: none;">
+                        <label>Nom de la Prop Firm</label>
+                        <select name="prop_firm_name" class="select-input">
+                            <option value="">Sélectionner</option>
+                            <option value="FundedNext">FundedNext</option>
+                            <option value="FTMO">FTMO</option>
+                            <option value="The5ers">The5ers</option>
+                            <option value="FundingPips">FundingPips</option>
+                            <option value="Topstep">Topstep</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+                    <div class="form-group prop-firm-field" style="display: none;">
+                        <label>Phase</label>
+                        <select name="challenge_phase" class="select-input">
+                            <option value="Challenge 1">Challenge Phase 1</option>
+                            <option value="Challenge 2">Challenge Phase 2</option>
+                            <option value="Funded">Funded</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Solde Initial ($)</label>
+                        <input type="number" step="0.01" name="initial_balance" required class="input">
+                    </div>
+                    <div class="form-group">
+                        <label>Solde Actuel ($)</label>
+                        <input type="number" step="0.01" name="current_balance" required class="input">
+                    </div>
+                    <div class="form-group prop-firm-field" style="display: none;">
+                        <label>Objectif Profit (%)</label>
+                        <input type="number" step="0.1" name="profit_target" class="input">
+                    </div>
+                    <div class="form-group prop-firm-field" style="display: none;">
+                        <label>Drawdown Journalier Max (%)</label>
+                        <input type="number" step="0.1" name="daily_drawdown_limit" class="input">
+                    </div>
+                    <div class="form-group prop-firm-field" style="display: none;">
+                        <label>Drawdown Maximum (%)</label>
+                        <input type="number" step="0.1" name="max_drawdown_limit" class="input">
+                    </div>
+                    <div class="form-group prop-firm-field" style="display: none;">
+                        <label>Jours Minimum</label>
+                        <input type="number" name="min_days" class="input">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Date de Création</label>
+                        <input type="date" name="created_at" class="input">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <button type="button" class="btn btn-secondary" id="cancelModal">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/accounts.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

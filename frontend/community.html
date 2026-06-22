@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartReview - Communauté</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .demo-badge {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: rgba(225, 29, 72, 0.1);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            z-index: 100;
+        }
+
+        .community-layout {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 24px;
+        }
+
+        .feed-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+        }
+
+        .post-input {
+            margin-bottom: 24px;
+        }
+
+        .post-input textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.5;
+            resize: vertical;
+            margin-bottom: 12px;
+        }
+
+        .post-input textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .post-input-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .post-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: white;
+        }
+
+        .post-info {
+            flex: 1;
+        }
+
+        .post-author {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .post-time {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .post-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color var(--transition-fast);
+        }
+
+        .post-action:hover {
+            color: var(--accent);
+        }
+
+        .post-action i {
+            width: 16px;
+            height: 16px;
+        }
+
+        .sidebar-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .member-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .member-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+            color: white;
+        }
+
+        .member-name {
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            padding: 6px 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .tag:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .trader-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .trader-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .trader-rank {
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .trader-info {
+            flex: 1;
+        }
+
+        .trader-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .trader-stats {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="10" fill="#E11D48"/>
+                        <polyline points="6,22 12,14 17,18 22,10 26,10"
+                            stroke="white" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <circle cx="26" cy="10" r="2.5" fill="white"/>
+                    </svg>
+                    <div class="logo-text-group">
+                        <div class="logo-name">SmartReview</div>
+                        <div class="logo-sub">Trading Analytics</div>
+                    </div>
+                </div>
+                <div class="user-avatar">TR</div>
+            </div>
+
+            <div class="search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" class="search-input" placeholder="Rechercher...">
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">DASHBOARDS</div>
+                <a href="index.html" class="nav-item">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="journal.html" class="nav-item">
+                    <i data-lucide="book-open"></i>
+                    <span>Journal</span>
+                </a>
+                <a href="calendar.html" class="nav-item">
+                    <i data-lucide="calendar"></i>
+                    <span>Calendrier</span>
+                </a>
+                <a href="stats.html" class="nav-item">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span>Statistiques</span>
+                </a>
+                <a href="coach.html" class="nav-item">
+                    <i data-lucide="brain"></i>
+                    <span>IA Coach</span>
+                </a>
+                <a href="accounts.html" class="nav-item">
+                    <i data-lucide="wallet"></i>
+                    <span>Comptes</span>
+                </a>
+
+                <div class="nav-section-label">OUTILS</div>
+                <a href="notes.html" class="nav-item">
+                    <i data-lucide="file-text"></i>
+                    <span>Notes & Projets</span>
+                </a>
+                <a href="backtesting.html" class="nav-item">
+                    <i data-lucide="activity"></i>
+                    <span>Backtesting</span>
+                </a>
+                <a href="strategy-builder.html" class="nav-item">
+                    <i data-lucide="layers"></i>
+                    <span>Strategy Builder</span>
+                </a>
+                <a href="copy-trading.html" class="nav-item">
+                    <i data-lucide="copy"></i>
+                    <span>Copy Trading</span>
+                </a>
+
+                <div class="nav-section-label">COMMUNAUTÉ</div>
+                <a href="marketplace.html" class="nav-item">
+                    <i data-lucide="shopping-bag"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="community.html" class="nav-item active">
+                    <i data-lucide="users"></i>
+                    <span>Communauté</span>
+                </a>
+                <a href="podcasts.html" class="nav-item">
+                    <i data-lucide="headphones"></i>
+                    <span>Podcasts</span>
+                </a>
+                <a href="live.html" class="nav-item">
+                    <i data-lucide="radio"></i>
+                    <span>Live Direct</span>
+                </a>
+
+                <div class="nav-section-label">SETTINGS</div>
+                <a href="settings.html" class="nav-item" id="nav-settings">
+                    <i data-lucide="settings"></i>
+                    <span>Paramètres</span>
+                </a>
+                <a href="help.html" class="nav-item" id="nav-help">
+                    <i data-lucide="help-circle"></i>
+                    <span>Aide</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="account-selector">
+                    <label>Compte Actif</label>
+                    <select id="activeAccount" class="select-input">
+                        <option value="">Chargement...</option>
+                    </select>
+                </div>
+                <div class="backend-status">
+                    <span class="status-dot" id="backendStatus"></span>
+                    <span class="status-text" id="backendStatusText">Vérification...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <div class="breadcrumb">Communauté / Communauté</div>
+                    <h1 class="page-title">Communauté</h1>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <div class="demo-badge">DÉMO</div>
+
+                <div class="community-layout">
+                    <!-- Feed Section -->
+                    <div class="feed-section">
+                        <div class="post-input">
+                            <textarea placeholder="Partagez vos pensées avec la communauté..."></textarea>
+                            <div class="post-input-actions">
+                                <button class="btn btn-primary">Publier</button>
+                            </div>
+                        </div>
+
+                        <div id="postsFeed">
+                            <!-- Posts will be populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="sidebar">
+                        <div class="sidebar-section">
+                            <div class="sidebar-title">Membres actifs</div>
+                            <div class="member-list">
+                                <div class="member-item">
+                                    <div class="member-avatar" style="background: #E11D48;">JP</div>
+                                    <span class="member-name">Jean Pierre</span>
+                                </div>
+                                <div class="member-item">
+                                    <div class="member-avatar" style="background: #3B82F6;">MC</div>
+                                    <span class="member-name">Marie Curie</span>
+                                </div>
+                                <div class="member-item">
+                                    <div class="member-avatar" style="background: #10B981;">PD</div>
+                                    <span class="member-name">Paul Dupont</span>
+                                </div>
+                                <div class="member-item">
+                                    <div class="member-avatar" style="background: #F59E0B;">SL</div>
+                                    <span class="member-name">Sophie Laurent</span>
+                                </div>
+                                <div class="member-item">
+                                    <div class="member-avatar" style="background: #8B5CF6;">AM</div>
+                                    <span class="member-name">Antoine Martin</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-section">
+                            <div class="sidebar-title">Sujets populaires</div>
+                            <div class="tag-cloud">
+                                <span class="tag">#priceaction</span>
+                                <span class="tag">#scalping</span>
+                                <span class="tag">#psychology</span>
+                                <span class="tag">#riskmanagement</span>
+                                <span class="tag">#forex</span>
+                                <span class="tag">#indices</span>
+                                <span class="tag">#gold</span>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-section">
+                            <div class="sidebar-title">Traders du mois</div>
+                            <div class="trader-list">
+                                <div class="trader-item">
+                                    <div class="trader-rank">1</div>
+                                    <div class="trader-info">
+                                        <div class="trader-name">Jean Pierre</div>
+                                        <div class="trader-stats">+15.2% ce mois</div>
+                                    </div>
+                                </div>
+                                <div class="trader-item">
+                                    <div class="trader-rank">2</div>
+                                    <div class="trader-info">
+                                        <div class="trader-name">Marie Curie</div>
+                                        <div class="trader-stats">+12.8% ce mois</div>
+                                    </div>
+                                </div>
+                                <div class="trader-item">
+                                    <div class="trader-rank">3</div>
+                                    <div class="trader-info">
+                                        <div class="trader-name">Paul Dupont</div>
+                                        <div class="trader-stats">+10.5% ce mois</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        const posts = [
+            {
+                author: "Jean Pierre",
+                avatar: "JP",
+                avatarColor: "#E11D48",
+                time: "Il y a 2 heures",
+                content: "J'ai testé ma nouvelle stratégie sur EURUSD cette semaine. Résultats impressionnants avec un RR de 3.5! Quelqu'un d'autre a testé des setups sur le dollar?",
+                likes: 24,
+                replies: 8
+            },
+            {
+                author: "Marie Curie",
+                avatar: "MC",
+                avatarColor: "#3B82F6",
+                time: "Il y a 4 heures",
+                content: "La psychologie est vraiment la clé du trading. J'ai réduit mes tailles de position de 50% et mes résultats se sont améliorés de façon spectaculaire. Moins de stress = meilleures décisions.",
+                likes: 45,
+                replies: 12
+            },
+            {
+                author: "Paul Dupont",
+                avatar: "PD",
+                avatarColor: "#10B981",
+                time: "Il y a 6 heures",
+                content: "Attention à la volatilité sur XAUUSD cette semaine! La FED annonce demain. Je préfère rester en cash jusqu'à l'annonce. Prudence avant tout.",
+                likes: 18,
+                replies: 5
+            },
+            {
+                author: "Sophie Laurent",
+                avatar: "SL",
+                avatarColor: "#F59E0B",
+                time: "Il y a 8 heures",
+                content: "Quelqu'un utilise l'indicateur Smart RSI disponible sur la Marketplace? J'hésite à l'acheter. Vos retours?",
+                likes: 12,
+                replies: 7
+            },
+            {
+                author: "Antoine Martin",
+                avatar: "AM",
+                avatarColor: "#8B5CF6",
+                time: "Il y a 12 heures",
+                content: "Nouveau record personnel ce mois: +18% sur mon compte de démonstration! Je pense passer en réel le mois prochain. Conseils?",
+                likes: 67,
+                replies: 23
+            }
+        ];
+
+        function renderPosts() {
+            const feed = document.getElementById('postsFeed');
+            feed.innerHTML = posts.map(post => `
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="post-avatar" style="background: ${post.avatarColor};">${post.avatar}</div>
+                        <div class="post-info">
+                            <div class="post-author">${post.author}</div>
+                            <div class="post-time">${post.time}</div>
+                        </div>
+                    </div>
+                    <div class="post-content">${post.content}</div>
+                    <div class="post-actions">
+                        <div class="post-action">
+                            <i data-lucide="thumbs-up"></i>
+                            <span>${post.likes}</span>
+                        </div>
+                        <div class="post-action">
+                            <i data-lucide="message-circle"></i>
+                            <span>${post.replies}</span>
+                        </div>
+                        <div class="post-action">
+                            <i data-lucide="bookmark"></i>
+                            <span>Sauvegarder</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Backend status check
+        setInterval(() => {
+            fetch('http://localhost:5000/api/health')
+                .then(res => res.json())
+                .then(online => {
+                    const dot = document.getElementById('backendStatus');
+                    const text = document.getElementById('backendStatusText');
+                    if (online) {
+                        dot.className = 'status-dot online';
+                        text.textContent = 'En ligne';
+                    } else {
+                        dot.className = 'status-dot offline';
+                        text.textContent = 'Hors ligne';
+                    }
+                })
+                .catch(() => {
+                    const dot = document.getElementById('backendStatus');
+                    const text = document.getElementById('backendStatusText');
+                    dot.className = 'status-dot offline';
+                    text.textContent = 'Hors ligne';
+                });
+        }, 5000);
+
+        // Initialize
+        renderPosts();
+        lucide.createIcons();
+    </script>
+</body>
+</html>

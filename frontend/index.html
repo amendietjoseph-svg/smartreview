@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartReview - Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <!-- Backend Offline Banner -->
+    <div class="backend-banner hidden" id="backendBanner">
+        Backend hors ligne — Lancez le serveur pour accéder aux données
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="10" fill="#E11D48"/>
+                        <polyline points="6,22 12,14 17,18 22,10 26,10"
+                            stroke="white" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <circle cx="26" cy="10" r="2.5" fill="white"/>
+                    </svg>
+                    <div class="logo-text-group">
+                        <span class="logo-name">SmartReview</span>
+                        <span class="logo-sub">Trading Analytics</span>
+                    </div>
+                </div>
+                <div class="avatar">TR</div>
+            </div>
+            
+            <div class="search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" class="search-input" placeholder="Rechercher...">
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">DASHBOARDS</div>
+                <a href="index.html" class="nav-item active">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="journal.html" class="nav-item">
+                    <i data-lucide="book-open"></i>
+                    <span>Journal</span>
+                </a>
+                <a href="calendar.html" class="nav-item">
+                    <i data-lucide="calendar"></i>
+                    <span>Calendrier</span>
+                </a>
+                <a href="stats.html" class="nav-item">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span>Statistiques</span>
+                </a>
+                <a href="coach.html" class="nav-item">
+                    <i data-lucide="brain"></i>
+                    <span>IA Coach</span>
+                </a>
+                <a href="accounts.html" class="nav-item">
+                    <i data-lucide="wallet"></i>
+                    <span>Comptes</span>
+                </a>
+
+                <div class="nav-section-label">OUTILS</div>
+                <a href="notes.html" class="nav-item">
+                    <i data-lucide="file-text"></i>
+                    <span>Notes & Projets</span>
+                </a>
+                <a href="backtesting.html" class="nav-item">
+                    <i data-lucide="activity"></i>
+                    <span>Backtesting</span>
+                </a>
+                <a href="strategy-builder.html" class="nav-item">
+                    <i data-lucide="layers"></i>
+                    <span>Strategy Builder</span>
+                </a>
+                <a href="copy-trading.html" class="nav-item">
+                    <i data-lucide="copy"></i>
+                    <span>Copy Trading</span>
+                </a>
+
+                <div class="nav-section-label">COMMUNAUTÉ</div>
+                <a href="marketplace.html" class="nav-item">
+                    <i data-lucide="shopping-bag"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="community.html" class="nav-item">
+                    <i data-lucide="users"></i>
+                    <span>Communauté</span>
+                </a>
+                <a href="podcasts.html" class="nav-item">
+                    <i data-lucide="headphones"></i>
+                    <span>Podcasts</span>
+                </a>
+                <a href="live.html" class="nav-item">
+                    <i data-lucide="radio"></i>
+                    <span>Live Direct</span>
+                </a>
+
+                <div class="nav-section-label">SETTINGS</div>
+                <a href="settings.html" class="nav-item" id="nav-settings">
+                    <i data-lucide="settings"></i>
+                    <span>Paramètres</span>
+                </a>
+                <a href="help.html" class="nav-item" id="nav-help">
+                    <i data-lucide="help-circle"></i>
+                    <span>Aide</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="account-selector">
+                    <label>Compte Actif</label>
+                    <select id="activeAccount" class="select-input">
+                        <option value="">Chargement...</option>
+                    </select>
+                </div>
+                <div class="backend-status">
+                    <span class="status-dot" id="backendStatus"></span>
+                    <span class="status-text" id="backendStatusText">Vérification...</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-area">
+                <!-- Header -->
+                <header class="header">
+                    <div class="header-left">
+                        <p class="breadcrumb">Dashboards / Overview</p>
+                        <h1 class="page-title">Overview</h1>
+                    </div>
+                    <div class="header-center">
+                        <div class="period-selector">
+                            <button class="period-btn active" data-period="7d">7j</button>
+                            <button class="period-btn" data-period="30d">30j</button>
+                            <button class="period-btn" data-period="90d">3m</button>
+                            <button class="period-btn" data-period="1y">1an</button>
+                            <button class="period-btn" data-period="all">Tout</button>
+                        </div>
+                    </div>
+                    <div class="header-right">
+                        <button class="btn-icon" id="refreshBtn">
+                            <i data-lucide="refresh-cw"></i>
+                        </button>
+                        <button class="btn-icon" id="notifBtn">
+                            <i data-lucide="bell"></i>
+                        </button>
+                        <div class="datetime" id="currentDateTime"></div>
+                        <button class="btn-primary" id="newTradeBtn">
+                            <i data-lucide="plus"></i>
+                            Nouveau Trade
+                        </button>
+                    </div>
+                </header>
+                
+                <div class="dashboard-grid">
+                    <div class="content-left">
+                        <!-- KPI Cards Row 1 -->
+                <section class="kpi-section">
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-title">Profit Total</div>
+                            <div class="kpi-value" id="totalProfit">--</div>
+                            <div class="kpi-change" id="totalProfitChange">--</div>
+                        </div>
+                        
+                        <div class="kpi-card">
+                            <div class="kpi-title">Win Rate</div>
+                            <div class="kpi-value" id="winRate">--</div>
+                            <div class="kpi-change" id="winRateChange">--</div>
+                        </div>
+                        
+                        <div class="kpi-card">
+                            <div class="kpi-title">Profit Factor</div>
+                            <div class="kpi-value" id="profitFactor">--</div>
+                            <div class="kpi-change" id="profitFactorChange">--</div>
+                        </div>
+                        
+                        <div class="kpi-card">
+                            <div class="kpi-title">RR Moyen</div>
+                            <div class="kpi-value" id="avgRR">--</div>
+                            <div class="kpi-change" id="avgRRChange">--</div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- KPI Cards Row 2 -->
+                <section class="kpi-section">
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-title">Profit du Jour</div>
+                            <div class="kpi-value" id="dailyProfit">--</div>
+                            <div class="kpi-change" id="dailyProfitChange">--</div>
+                        </div>
+                        
+                        <div class="kpi-card">
+                            <div class="kpi-title">Profit du Mois</div>
+                            <div class="kpi-value" id="monthlyProfit">--</div>
+                            <div class="kpi-change" id="monthlyProfitChange">--</div>
+                        </div>
+                        
+                        <div class="kpi-card">
+                            <div class="kpi-title">Drawdown Actuel</div>
+                            <div class="kpi-value" id="currentDrawdown">--</div>
+                            <div class="kpi-change" id="currentDrawdownChange">--</div>
+                        </div>
+                        
+                        <div class="kpi-card">
+                            <div class="kpi-title">Drawdown Max</div>
+                            <div class="kpi-value" id="maxDrawdown">--</div>
+                            <div class="kpi-change" id="maxDrawdownChange">--</div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Equity Curve Card -->
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Courbe d'Équité</h3>
+                        <div class="card-meta">
+                            <span>Total: <span id="equityTotal">--</span></span>
+                            <span>Period: <span id="equityTrades">0</span> trades</span>
+                        </div>
+                    </div>
+                    <div id="equityChart"></div>
+                    <div class="empty-chart" id="equityEmptyState" style="display:none;">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2D2D2D" stroke-width="1.5">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg>
+                        <p class="empty-title">Aucun trade enregistré</p>
+                        <p class="empty-sub">Enregistrez vos trades pour visualiser votre progression</p>
+                        <button class="btn-primary" style="margin-top:16px;font-size:12px;padding:7px 14px" onclick="document.getElementById('newTradeBtn').click()">
+                            Ajouter un trade
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Recent Trades -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Trades Récents</h3>
+                    </div>
+                    <table class="trades-table">
+                        <thead>
+                            <tr>
+                                <th>Actif</th>
+                                <th>Direction</th>
+                                <th>Date</th>
+                                <th>P&L</th>
+                                <th>Score</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentTradesBody">
+                            <tr>
+                                <td colspan="6" class="empty-state">Chargement...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                    </div>
+                    
+                    <!-- Right Panel -->
+                    <div class="content-right">
+                <!-- Trading Score Card -->
+                <div class="trading-score-card">
+                    <div class="score-title">Trading Score™</div>
+                    <div class="score-circle">
+                        <svg viewBox="0 0 36 36">
+                            <circle class="score-circle-bg" cx="18" cy="18" r="15.9155" />
+                            <circle class="score-circle-progress" id="scoreProgress" cx="18" cy="18" r="15.9155" stroke-dasharray="0, 100" />
+                        </svg>
+                        <div class="score-value" id="tradingScoreValue">--</div>
+                    </div>
+                    <div class="score-metrics">
+                        <div class="score-metric">
+                            <div class="score-metric-label">Discipline</div>
+                            <div class="score-metric-bar">
+                                <div class="score-metric-fill" id="disciplineFill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="score-metric">
+                            <div class="score-metric-label">Risque</div>
+                            <div class="score-metric-bar">
+                                <div class="score-metric-fill" id="riskFill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="score-metric">
+                            <div class="score-metric-label">Exécution</div>
+                            <div class="score-metric-bar">
+                                <div class="score-metric-fill" id="executionFill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="score-metric">
+                            <div class="score-metric-label">Cohérence</div>
+                            <div class="score-metric-bar">
+                                <div class="score-metric-fill" id="coherenceFill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Buy/Sell Donut -->
+                <div class="donut-card">
+                    <h3 class="chart-title">Répartition BUY/SELL</h3>
+                    <div id="buySellChart" class="donut-chart"></div>
+                    <div class="donut-legend" id="buySellLegend">
+                        <!-- Legend populated by JS -->
+                    </div>
+                </div>
+                
+                <!-- Session Performance -->
+                <div class="session-card">
+                    <h3 class="chart-title">Performance par Session</h3>
+                    <div class="session-bar">
+                        <div class="session-label">ASIA</div>
+                        <div class="session-bar-bg">
+                            <div class="session-bar-fill" id="asiaFill" style="width: 0%">--</div>
+                        </div>
+                    </div>
+                    <div class="session-bar">
+                        <div class="session-label">LONDON</div>
+                        <div class="session-bar-bg">
+                            <div class="session-bar-fill" id="londonFill" style="width: 0%">--</div>
+                        </div>
+                    </div>
+                    <div class="session-bar">
+                        <div class="session-label">NEW_YORK</div>
+                        <div class="session-bar-bg">
+                            <div class="session-bar-fill" id="nyFill" style="width: 0%">--</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Activity Panel -->
+                <div class="activity-panel">
+                    <h3 class="activity-title">Notifications</h3>
+                    <div id="notificationsList">
+                        <div class="empty-state">
+                            <i data-lucide="bell"></i>
+                            <h3>Aucune notification</h3>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Accounts Panel -->
+                <div class="activity-panel">
+                    <h3 class="activity-title">Comptes</h3>
+                    <div id="accountsList">
+                        <div class="empty-state">
+                            <i data-lucide="wallet"></i>
+                            <h3>Aucun compte</h3>
+                            <p>Ajoutez votre premier compte pour commencer</p>
+                        </div>
+                    </div>
+                </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- New Trade Modal -->
+    <div class="modal" id="tradeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nouveau Trade</h2>
+                <button class="modal-close" id="closeModal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="tradeForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Actif</label>
+                        <input type="text" name="asset" required placeholder="EURUSD" class="input">
+                    </div>
+                    <div class="form-group">
+                        <label>Direction</label>
+                        <select name="direction" required class="select-input">
+                            <option value="BUY">BUY</option>
+                            <option value="SELL">SELL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Prix d'Entrée</label>
+                        <input type="number" step="0.00001" name="entry_price" required class="input">
+                    </div>
+                    <div class="form-group">
+                        <label>Stop Loss</label>
+                        <input type="number" step="0.00001" name="stop_loss" class="input">
+                    </div>
+                    <div class="form-group">
+                        <label>Take Profit</label>
+                        <input type="number" step="0.00001" name="take_profit" class="input">
+                    </div>
+                    <div class="form-group">
+                        <label>Lot Size</label>
+                        <input type="number" step="0.01" name="lot_size" required class="input">
+                    </div>
+                    <div class="form-group">
+                        <label>Montant Risqué</label>
+                        <input type="number" step="0.01" name="risk_amount" class="input">
+                    </div>
+                    <div class="form-group">
+                        <label>Setup</label>
+                        <input type="text" name="setup" placeholder="MSS+Sweep" class="input">
+                    </div>
+                    <div class="form-group">
+                        <label>Session</label>
+                        <select name="session" class="select-input">
+                            <option value="">Sélectionner</option>
+                            <option value="ASIA">ASIA</option>
+                            <option value="LONDON">LONDON</option>
+                            <option value="NEW_YORK">NEW_YORK</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Confiance (1-10)</label>
+                        <input type="number" min="1" max="10" name="confidence_level" class="input">
+                    </div>
+                    <div class="form-group">
+                        <label>Plan Respecté</label>
+                        <select name="plan_respected" class="select-input">
+                            <option value="true">Oui</option>
+                            <option value="false">Non</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <button type="button" class="btn btn-secondary" id="cancelModal">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

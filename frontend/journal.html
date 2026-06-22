@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartReview - Journal de Trading</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        /* Journal-specific styles */
+        .journal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+        }
+
+        .journal-title {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .journal-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .quick-filters {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+
+        .quick-filter-btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .quick-filter-btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-light);
+        }
+
+        .quick-filter-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .trades-counter {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .trades-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .trades-table thead {
+            background: var(--bg-secondary);
+        }
+
+        .trades-table th {
+            padding: var(--spacing-md);
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .trades-table td {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .trades-table tbody tr {
+            transition: background var(--transition-fast);
+            cursor: pointer;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .trades-table tbody tr:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .asset-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: var(--spacing-xs);
+            color: var(--accent-gold);
+        }
+
+        .direction-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .direction-badge.buy {
+            background: var(--green-dim);
+            color: var(--green);
+        }
+
+        .direction-badge.sell {
+            background: var(--red-dim);
+            color: var(--red);
+        }
+
+        .session-badge {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+        }
+
+        .price-info {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .score-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .score-badge.high {
+            background: var(--green-dim);
+            color: var(--green);
+        }
+
+        .score-badge.medium {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--gold);
+        }
+
+        .score-badge.low {
+            background: var(--red-dim);
+            color: var(--red);
+        }
+
+        .result-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .result-badge.win {
+            background: var(--green-dim);
+            color: var(--green);
+        }
+
+        .result-badge.loss {
+            background: var(--red-dim);
+            color: var(--red);
+        }
+
+        .result-badge.breakeven {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--accent);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+
+        .action-btn {
+            padding: 4px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .action-btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-light);
+        }
+
+        .action-btn i {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-md);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 var(--radius-md) var(--radius-md);
+        }
+
+        .pagination-info {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .pagination-btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--bg-card-hover);
+            border-color: var(--border-light);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Full-screen modal */
+        .modal-fullscreen {
+            max-width: 900px;
+            max-height: 90vh;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: var(--spacing-xs);
+            border-bottom: 1px solid var(--border);
+            margin-bottom: var(--spacing-lg);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Toggle buttons */
+        .toggle-group {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .toggle-btn:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .toggle-btn.active {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .toggle-btn.active.buy {
+            background: var(--green-dim);
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .toggle-btn.active.sell {
+            background: var(--red-dim);
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        /* Slider */
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--bg-secondary);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Upload zone */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .upload-zone:hover {
+            border-color: var(--accent);
+            background: var(--bg-card-hover);
+        }
+
+        .upload-zone i {
+            width: 48px;
+            height: 48px;
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .upload-zone p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .upload-preview {
+            margin-top: var(--spacing-md);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .upload-preview img {
+            width: 100%;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        /* Trading score in modal */
+        .modal-score {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .modal-score-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .modal-score-value.high {
+            color: var(--green);
+        }
+
+        .modal-score-value.medium {
+            color: var(--gold);
+        }
+
+        .modal-score-value.low {
+            color: var(--red);
+        }
+
+        .modal-score-breakdown {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Slide panel */
+        .slide-panel {
+            position: fixed;
+            top: 0;
+            right: -600px;
+            width: 600px;
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border);
+            z-index: 1001;
+            transition: right var(--transition-normal);
+            overflow-y: auto;
+        }
+
+        .slide-panel.active {
+            right: 0;
+        }
+
+        .slide-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: var(--bg-secondary);
+            z-index: 10;
+        }
+
+        .slide-panel-content {
+            padding: var(--spacing-lg);
+        }
+
+        .slide-panel-section {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .slide-panel-section h3 {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .detail-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+        }
+
+        .screenshot-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .screenshot-container img {
+            width: 100%;
+            height: auto;
+        }
+
+        .screenshot-label {
+            padding: var(--spacing-sm);
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+            background: var(--bg-secondary);
+        }
+
+        .score-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm);
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+        }
+
+        .score-item-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .score-item-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-xl);
+        }
+
+        .panel-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-card-hover) 50%, var(--bg-card) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: var(--radius-sm);
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-row {
+            height: 50px;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .slide-panel {
+                width: 100%;
+                right: -100%;
+            }
+
+            .trades-table {
+                font-size: 12px;
+            }
+
+            .trades-table th,
+            .trades-table td {
+                padding: var(--spacing-sm);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="10" fill="#E11D48"/>
+                        <polyline points="6,22 12,14 17,18 22,10 26,10"
+                            stroke="white" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <circle cx="26" cy="10" r="2.5" fill="white"/>
+                    </svg>
+                    <div class="logo-text-group">
+                        <div class="logo-name">SmartReview</div>
+                        <div class="logo-sub">Trading Analytics</div>
+                    </div>
+                </div>
+                <div class="user-avatar">TR</div>
+            </div>
+            
+            <div class="search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" class="search-input" placeholder="Rechercher...">
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">DASHBOARDS</div>
+                <a href="index.html" class="nav-item">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="journal.html" class="nav-item active">
+                    <i data-lucide="book-open"></i>
+                    <span>Journal</span>
+                </a>
+                <a href="calendar.html" class="nav-item">
+                    <i data-lucide="calendar"></i>
+                    <span>Calendrier</span>
+                </a>
+                <a href="stats.html" class="nav-item">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span>Statistiques</span>
+                </a>
+                <a href="coach.html" class="nav-item">
+                    <i data-lucide="brain"></i>
+                    <span>IA Coach</span>
+                </a>
+                <a href="accounts.html" class="nav-item">
+                    <i data-lucide="wallet"></i>
+                    <span>Comptes</span>
+                </a>
+
+                <div class="nav-section-label">OUTILS</div>
+                <a href="notes.html" class="nav-item">
+                    <i data-lucide="file-text"></i>
+                    <span>Notes & Projets</span>
+                </a>
+                <a href="backtesting.html" class="nav-item">
+                    <i data-lucide="activity"></i>
+                    <span>Backtesting</span>
+                </a>
+                <a href="strategy-builder.html" class="nav-item">
+                    <i data-lucide="layers"></i>
+                    <span>Strategy Builder</span>
+                </a>
+                <a href="copy-trading.html" class="nav-item">
+                    <i data-lucide="copy"></i>
+                    <span>Copy Trading</span>
+                </a>
+
+                <div class="nav-section-label">COMMUNAUTÉ</div>
+                <a href="marketplace.html" class="nav-item">
+                    <i data-lucide="shopping-bag"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="community.html" class="nav-item">
+                    <i data-lucide="users"></i>
+                    <span>Communauté</span>
+                </a>
+                <a href="podcasts.html" class="nav-item">
+                    <i data-lucide="headphones"></i>
+                    <span>Podcasts</span>
+                </a>
+                <a href="live.html" class="nav-item">
+                    <i data-lucide="radio"></i>
+                    <span>Live Direct</span>
+                </a>
+
+                <div class="nav-section-label">SETTINGS</div>
+                <a href="settings.html" class="nav-item" id="nav-settings">
+                    <i data-lucide="settings"></i>
+                    <span>Paramètres</span>
+                </a>
+                <a href="help.html" class="nav-item" id="nav-help">
+                    <i data-lucide="help-circle"></i>
+                    <span>Aide</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="account-selector">
+                    <label>Compte Actif</label>
+                    <select id="activeAccount" class="select-input">
+                        <option value="">Chargement...</option>
+                    </select>
+                </div>
+                <div class="backend-status">
+                    <span class="status-dot" id="backendStatus"></span>
+                    <span class="status-text" id="backendStatusText">Vérification...</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Journal Header -->
+            <div class="journal-header">
+                <h1 class="journal-title">Journal de Trading</h1>
+                <div class="journal-actions">
+                    <div class="quick-filters">
+                        <button class="quick-filter-btn active" data-filter="all">Tous</button>
+                        <button class="quick-filter-btn" data-filter="WIN">Wins</button>
+                        <button class="quick-filter-btn" data-filter="LOSS">Losses</button>
+                        <button class="quick-filter-btn" data-filter="today">Aujourd'hui</button>
+                        <button class="quick-filter-btn" data-filter="week">Cette semaine</button>
+                    </div>
+                    <div class="search-box">
+                        <i data-lucide="search" class="search-icon"></i>
+                        <input type="text" placeholder="Rechercher actif ou setup..." class="search-input" id="searchTrades">
+                    </div>
+                    <span class="trades-counter" id="tradesCounter">0 trades affichés</span>
+                    <button class="btn btn-primary" id="newTradeBtn">
+                        <i data-lucide="plus"></i>
+                        Nouveau Trade
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Trades Table -->
+            <div class="table-container">
+                <table class="trades-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Actif</th>
+                            <th>Direction</th>
+                            <th>Date & Heure</th>
+                            <th>Setup</th>
+                            <th>Session</th>
+                            <th>Entrée / SL / TP</th>
+                            <th>RR Prévu / Obtenu</th>
+                            <th>P&L</th>
+                            <th>Score™</th>
+                            <th>Résultat</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tradesTableBody">
+                        <tr>
+                            <td colspan="12" class="empty-state">Chargement...</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="pagination" id="pagination">
+                    <div class="pagination-info" id="paginationInfo">Page 1 sur 1</div>
+                    <div class="pagination-controls">
+                        <button class="pagination-btn" id="prevPage" disabled>
+                            <i data-lucide="chevron-left"></i>
+                        </button>
+                        <button class="pagination-btn" id="nextPage" disabled>
+                            <i data-lucide="chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Trade Modal (Full Screen) -->
+    <div class="modal" id="tradeModal">
+        <div class="modal-content modal-fullscreen">
+            <div class="modal-header">
+                <h2 id="modalTitle">Nouveau Trade</h2>
+                <button class="modal-close" id="closeModal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="technical">Informations Techniques</button>
+                <button class="tab-btn" data-tab="strategic">Analyse Stratégique</button>
+                <button class="tab-btn" data-tab="psychology">Psychologie</button>
+                <button class="tab-btn" data-tab="media">Médias</button>
+            </div>
+            
+            <form id="tradeForm">
+                <!-- Tab 1: Technical Info -->
+                <div class="tab-content active" id="tab-technical">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Compte</label>
+                            <select name="account_id" required class="select-input" id="formAccount">
+                                <option value="">Sélectionner</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Actif</label>
+                            <input type="text" name="asset" required placeholder="EURUSD, GBPUSD, XAUUSD..." class="input" list="assetSuggestions">
+                            <datalist id="assetSuggestions">
+                                <option value="EURUSD">
+                                <option value="GBPUSD">
+                                <option value="USDJPY">
+                                <option value="XAUUSD">
+                                <option value="US30">
+                                <option value="NAS100">
+                                <option value="BTCUSD">
+                                <option value="ETHUSD">
+                            </datalist>
+                        </div>
+                        <div class="form-group">
+                            <label>Direction</label>
+                            <div class="toggle-group">
+                                <button type="button" class="toggle-btn active buy" data-value="BUY">BUY</button>
+                                <button type="button" class="toggle-btn" data-value="SELL">SELL</button>
+                            </div>
+                            <input type="hidden" name="direction" value="BUY" id="directionInput">
+                        </div>
+                        <div class="form-group">
+                            <label>Session</label>
+                            <div class="toggle-group">
+                                <button type="button" class="toggle-btn" data-value="ASIA">ASIA</button>
+                                <button type="button" class="toggle-btn" data-value="LONDON">LONDON</button>
+                                <button type="button" class="toggle-btn" data-value="NEW_YORK">NY</button>
+                            </div>
+                            <input type="hidden" name="session" id="sessionInput">
+                        </div>
+                        <div class="form-group">
+                            <label>Date d'entrée</label>
+                            <input type="date" name="entry_date" class="input" id="entryDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Heure d'entrée</label>
+                            <input type="time" name="entry_time" class="input" id="entryTime">
+                        </div>
+                        <div class="form-group">
+                            <label>Date de sortie</label>
+                            <input type="date" name="exit_date" class="input" id="exitDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Heure de sortie</label>
+                            <input type="time" name="exit_time" class="input" id="exitTime">
+                        </div>
+                        <div class="form-group">
+                            <label>Prix d'entrée</label>
+                            <input type="number" step="0.00001" name="entry_price" required class="input" id="entryPrice">
+                        </div>
+                        <div class="form-group">
+                            <label>Stop Loss</label>
+                            <input type="number" step="0.00001" name="stop_loss" class="input" id="stopLoss">
+                        </div>
+                        <div class="form-group">
+                            <label>Take Profit</label>
+                            <input type="number" step="0.00001" name="take_profit" class="input" id="takeProfit">
+                        </div>
+                        <div class="form-group">
+                            <label>Prix de sortie</label>
+                            <input type="number" step="0.00001" name="exit_price" class="input" id="exitPrice">
+                        </div>
+                        <div class="form-group">
+                            <label>Taille de position (Lots)</label>
+                            <input type="number" step="0.01" name="lot_size" required class="input" id="lotSize">
+                        </div>
+                        <div class="form-group">
+                            <label>Risque engagé ($)</label>
+                            <input type="number" step="0.01" name="risk_amount" class="input" id="riskAmount">
+                        </div>
+                        <div class="form-group">
+                            <label>RR Prévu</label>
+                            <input type="number" step="0.1" name="rr_planned" class="input" id="rrPlanned" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>RR Obtenu</label>
+                            <input type="number" step="0.1" name="rr_obtained" class="input" id="rrObtained" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Résultat</label>
+                            <select name="result" class="select-input" id="resultSelect">
+                                <option value="">Auto-détect</option>
+                                <option value="WIN">WIN</option>
+                                <option value="LOSS">LOSS</option>
+                                <option value="BREAKEVEN">BREAKEVEN</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>P&L ($)</label>
+                            <input type="number" step="0.01" name="profit_loss" class="input" id="profitLoss" readonly>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tab 2: Strategic Analysis -->
+                <div class="tab-content" id="tab-strategic">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Setup utilisé</label>
+                            <input type="text" name="setup" placeholder="MSS+Sweep, BOS+OB, FVG+OB..." class="input" list="setupSuggestions">
+                            <datalist id="setupSuggestions">
+                                <option value="MSS+Sweep">
+                                <option value="BOS+OB">
+                                <option value="FVG+OB">
+                                <option value="Liquidity Grab">
+                                <option value="Break & Retest">
+                                <option value="Choch+OB">
+                                <option value="Turtle Soup">
+                                <option value="Order Block">
+                            </datalist>
+                        </div>
+                        <div class="form-group">
+                            <label>Structure du marché</label>
+                            <select name="market_structure" class="select-input">
+                                <option value="">Sélectionner</option>
+                                <option value="bullish">Haussière</option>
+                                <option value="bearish">Baissière</option>
+                                <option value="range">Range</option>
+                                <option value="neutral">Neutre</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label>Contexte de marché</label>
+                            <textarea name="market_context" rows="3" class="textarea" placeholder="Nouvelle, tendance, range, news importantes..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Liquidité ciblée</label>
+                            <input type="text" name="liquidity_targeted" placeholder="Bullish OB, Bearish OB, FVG..." class="input">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: var(--spacing-md);">
+                        <label>Raisonnement du trader</label>
+                        <textarea name="reasoning" rows="5" class="textarea" placeholder="Pourquoi ce trade ? Quels sont les facteurs de décision ?"></textarea>
+                    </div>
+                </div>
+                
+                <!-- Tab 3: Psychology -->
+                <div class="tab-content" id="tab-psychology">
+                    <div class="form-grid">
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label>Niveau de confiance: <span id="confidenceValue">5</span>/10</label>
+                            <div class="slider-container">
+                                <input type="range" name="confidence_level" min="1" max="10" value="5" class="slider" id="confidenceSlider">
+                            </div>
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label>État émotionnel</label>
+                            <div class="toggle-group">
+                                <button type="button" class="toggle-btn emotion-btn" data-value="calm">Calme</button>
+                                <button type="button" class="toggle-btn emotion-btn" data-value="focused">Focalisé</button>
+                                <button type="button" class="toggle-btn emotion-btn" data-value="stressed">Stressé</button>
+                                <button type="button" class="toggle-btn emotion-btn" data-value="impulsive">Impulsif</button>
+                                <button type="button" class="toggle-btn emotion-btn" data-value="tired">Fatigué</button>
+                                <button type="button" class="toggle-btn emotion-btn" data-value="euphoric">Euphorique</button>
+                            </div>
+                            <input type="hidden" name="emotional_state" id="emotionalStateInput">
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label>Discipline ressentie: <span id="disciplineValue">5</span>/10</label>
+                            <div class="slider-container">
+                                <input type="range" name="discipline_felt" min="1" max="10" value="5" class="slider" id="disciplineSlider">
+                            </div>
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label>Respect du plan</label>
+                            <div class="toggle-group">
+                                <button type="button" class="toggle-btn active plan-btn" data-value="true">OUI</button>
+                                <button type="button" class="toggle-btn plan-btn" data-value="false">NON</button>
+                            </div>
+                            <input type="hidden" name="plan_respected" value="true" id="planRespectedInput">
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label>Notes libres</label>
+                            <textarea name="notes" rows="4" class="textarea" placeholder="Réflexions personnelles, leçons apprises..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tab 4: Media -->
+                <div class="tab-content" id="tab-media">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Screenshot AVANT</label>
+                            <div class="upload-zone" id="uploadBefore">
+                                <i data-lucide="upload-cloud"></i>
+                                <p>Glissez-déposez ou cliquez pour uploader</p>
+                                <input type="file" accept="image/*" style="display: none;" id="fileBefore">
+                            </div>
+                            <div class="upload-preview" id="previewBefore"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Screenshot APRÈS</label>
+                            <div class="upload-zone" id="uploadAfter">
+                                <i data-lucide="upload-cloud"></i>
+                                <p>Glissez-déposez ou cliquez pour uploader</p>
+                                <input type="file" accept="image/*" style="display: none;" id="fileAfter">
+                            </div>
+                            <div class="upload-preview" id="previewAfter"></div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: var(--spacing-md);">
+                        <label>Notes d'annotation</label>
+                        <textarea name="annotation_notes" rows="3" class="textarea" placeholder="Annotations sur les screenshots..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="modal-score">
+                    <div>
+                        <div class="modal-score-value" id="modalScoreValue">0</div>
+                        <div class="modal-score-breakdown" id="modalScoreBreakdown">Plan: 0 | Confiance: 0 | Discipline: 0 | RR: 0</div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelModal">Annuler</button>
+                    <button type="submit" class="btn btn-primary" id="saveTradeBtn">
+                        <i data-lucide="save"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Trade Detail Slide Panel -->
+    <div class="slide-panel" id="tradeDetailPanel">
+        <div class="slide-panel-header">
+            <div id="detailHeader">
+                <h2 id="detailTitle">EURUSD BUY</h2>
+                <span class="result-badge win" id="detailResult">WIN</span>
+            </div>
+            <button class="modal-close" id="closeDetailPanel">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="slide-panel-content" id="detailContent">
+            <!-- Content will be populated by JS -->
+        </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Confirmer la suppression</h2>
+                <button class="modal-close" id="closeDeleteModal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <p style="margin-bottom: var(--spacing-lg);">Êtes-vous sûr de vouloir supprimer ce trade ? Cette action est irréversible.</p>
+            <div class="form-actions">
+                <button class="btn btn-secondary" id="cancelDelete">Annuler</button>
+                <button class="btn btn-danger" id="confirmDelete">Supprimer</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/journal.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartReview - Marketplace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .demo-badge {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: rgba(225, 29, 72, 0.1);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            z-index: 100;
+        }
+
+        .marketplace-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .marketplace-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .marketplace-search {
+            display: flex;
+            gap: 12px;
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .marketplace-search input {
+            flex: 1;
+            padding: 10px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+
+        .marketplace-search input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .filter-btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-light);
+        }
+
+        .filter-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+
+        .product-category {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .product-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .product-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .product-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .product-price.free {
+            color: #10B981;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .product-rating i {
+            width: 14px;
+            height: 14px;
+            color: #F59E0B;
+        }
+
+        .product-rating span {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .product-downloads {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .product-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--accent);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background var(--transition-fast);
+        }
+
+        .product-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .product-btn.secondary {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .product-btn.secondary:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-screenshots {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .screenshot-placeholder {
+            aspect-ratio: 16/9;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .screenshot-placeholder i {
+            width: 32px;
+            height: 32px;
+            color: var(--text-muted);
+        }
+
+        .modal-description {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .modal-reviews {
+            margin-bottom: 24px;
+        }
+
+        .modal-reviews h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .review-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .review-author {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .review-rating {
+            display: flex;
+            gap: 2px;
+        }
+
+        .review-rating i {
+            width: 12px;
+            height: 12px;
+            color: #F59E0B;
+        }
+
+        .review-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="10" fill="#E11D48"/>
+                        <polyline points="6,22 12,14 17,18 22,10 26,10"
+                            stroke="white" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <circle cx="26" cy="10" r="2.5" fill="white"/>
+                    </svg>
+                    <div class="logo-text-group">
+                        <div class="logo-name">SmartReview</div>
+                        <div class="logo-sub">Trading Analytics</div>
+                    </div>
+                </div>
+                <div class="user-avatar">TR</div>
+            </div>
+
+            <div class="search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" class="search-input" placeholder="Rechercher...">
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">DASHBOARDS</div>
+                <a href="index.html" class="nav-item">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="journal.html" class="nav-item">
+                    <i data-lucide="book-open"></i>
+                    <span>Journal</span>
+                </a>
+                <a href="calendar.html" class="nav-item">
+                    <i data-lucide="calendar"></i>
+                    <span>Calendrier</span>
+                </a>
+                <a href="stats.html" class="nav-item">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span>Statistiques</span>
+                </a>
+                <a href="coach.html" class="nav-item">
+                    <i data-lucide="brain"></i>
+                    <span>IA Coach</span>
+                </a>
+                <a href="accounts.html" class="nav-item">
+                    <i data-lucide="wallet"></i>
+                    <span>Comptes</span>
+                </a>
+
+                <div class="nav-section-label">OUTILS</div>
+                <a href="notes.html" class="nav-item">
+                    <i data-lucide="file-text"></i>
+                    <span>Notes & Projets</span>
+                </a>
+                <a href="backtesting.html" class="nav-item">
+                    <i data-lucide="activity"></i>
+                    <span>Backtesting</span>
+                </a>
+                <a href="strategy-builder.html" class="nav-item">
+                    <i data-lucide="layers"></i>
+                    <span>Strategy Builder</span>
+                </a>
+                <a href="copy-trading.html" class="nav-item">
+                    <i data-lucide="copy"></i>
+                    <span>Copy Trading</span>
+                </a>
+
+                <div class="nav-section-label">COMMUNAUTÉ</div>
+                <a href="marketplace.html" class="nav-item active">
+                    <i data-lucide="shopping-bag"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="community.html" class="nav-item">
+                    <i data-lucide="users"></i>
+                    <span>Communauté</span>
+                </a>
+                <a href="podcasts.html" class="nav-item">
+                    <i data-lucide="headphones"></i>
+                    <span>Podcasts</span>
+                </a>
+                <a href="live.html" class="nav-item">
+                    <i data-lucide="radio"></i>
+                    <span>Live Direct</span>
+                </a>
+
+                <div class="nav-section-label">SETTINGS</div>
+                <a href="settings.html" class="nav-item" id="nav-settings">
+                    <i data-lucide="settings"></i>
+                    <span>Paramètres</span>
+                </a>
+                <a href="help.html" class="nav-item" id="nav-help">
+                    <i data-lucide="help-circle"></i>
+                    <span>Aide</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="account-selector">
+                    <label>Compte Actif</label>
+                    <select id="activeAccount" class="select-input">
+                        <option value="">Chargement...</option>
+                    </select>
+                </div>
+                <div class="backend-status">
+                    <span class="status-dot" id="backendStatus"></span>
+                    <span class="status-text" id="backendStatusText">Vérification...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <div class="breadcrumb">Communauté / Marketplace</div>
+                    <h1 class="page-title">Marketplace</h1>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <div class="demo-badge">DÉMO</div>
+
+                <div class="marketplace-header">
+                    <div class="marketplace-search">
+                        <input type="text" placeholder="Rechercher des outils...">
+                    </div>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all">Tous</button>
+                        <button class="filter-btn" data-filter="indicators">Indicateurs</button>
+                        <button class="filter-btn" data-filter="eas">EAs/Robots</button>
+                        <button class="filter-btn" data-filter="ebooks">Ebooks</button>
+                        <button class="filter-btn" data-filter="courses">Formations</button>
+                    </div>
+                </div>
+
+                <div class="products-grid" id="productsGrid">
+                    <!-- Products will be populated by JS -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Titre du produit</h2>
+                <button class="modal-close" id="closeModal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-screenshots">
+                    <div class="screenshot-placeholder">
+                        <i data-lucide="image"></i>
+                    </div>
+                    <div class="screenshot-placeholder">
+                        <i data-lucide="image"></i>
+                    </div>
+                    <div class="screenshot-placeholder">
+                        <i data-lucide="image"></i>
+                    </div>
+                </div>
+                <div class="modal-description" id="modalDescription"></div>
+                <div class="modal-reviews">
+                    <h3>Avis</h3>
+                    <div id="modalReviews"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="modalActionBtn">Télécharger</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        const products = [
+            { id: 1, name: "Smart RSI Indicator", category: "indicators", description: "Indicateur RSI avancé avec signaux de surachat/survente et divergence automatique.", price: 29, rating: 4.5, downloads: 1250, reviews: [{ author: "TraderPro", rating: 5, text: "Excellent indicateur, très précis!" }, { author: "ForexKing", rating: 4, text: "Bon mais un peu cher." }, { author: "Newbie", rating: 5, text: "Parfait pour débuter." }] },
+            { id: 2, name: "Golden EA Robot", category: "eas", description: "Robot de trading automatique pour XAUUSD avec gestion du risque intégrée.", price: 199, rating: 4.2, downloads: 890, reviews: [{ author: "GoldTrader", rating: 4, text: "Bons résultats sur le long terme." }, { author: "RiskManager", rating: 5, text: "Gestion du risque excellente." }, { author: "Skeptical", rating: 3, text: "Nécessite beaucoup d'optimisation." }] },
+            { id: 3, name: "Price Action Mastery", category: "ebooks", description: "Ebook complet sur l'action des prix, 150 pages de stratégies et exemples.", price: 49, rating: 4.8, downloads: 2100, reviews: [{ author: "PAExpert", rating: 5, text: "La bible de l'action des prix!" }, { author: "Learning", rating: 5, text: "Très bien structuré et complet." }, { author: "Advanced", rating: 4, text: "Contenu de qualité." }] },
+            { id: 4, name: "Scalping Course Pro", category: "courses", description: "Formation complète en scalping avec 20 heures de vidéo et mentorat.", price: 299, rating: 4.6, downloads: 560, reviews: [{ author: "ScalperX", rating: 5, text: "Formation incroyable!" }, { author: "FastTrader", rating: 4, text: "Beaucoup de contenu pratique." }, { author: "Student", rating: 5, text: "Mentorat très utile." }] },
+            { id: 5, name: "MACD Divergence", category: "indicators", description: "Indicateur MACD avec détection automatique des divergences haussières/baissières.", price: 0, rating: 4.3, downloads: 3400, reviews: [{ author: "FreeUser", rating: 5, text: "Gratuit et efficace!" }, { author: "ProTrader", rating: 4, text: "Bon pour les divergences." }, { author: "Beginner", rating: 4, text: "Facile à utiliser." }] },
+            { id: 6, name: "Trend Sniper EA", category: "eas", description: "Robot qui détecte les tendances et entre en position automatiquement.", price: 149, rating: 4.1, downloads: 720, reviews: [{ author: "TrendFollower", rating: 4, text: "Bon sur les tendances fortes." }, { author: "RangeTrader", rating: 3, text: "Moins bon en range." }, { author: "AutoUser", rating: 5, text: "Automatisation parfaite." }] },
+            { id: 7, name: "Psychology of Trading", category: "ebooks", description: "Comprendre et maîtriser la psychologie du trading pour améliorer vos performances.", price: 0, rating: 4.7, downloads: 4500, reviews: [{ author: "Mindset", rating: 5, text: "Indispensable pour tout trader!" }, { author: "PsychMaster", rating: 5, text: "Changement de mindset garanti." }, { author: "RealTalk", rating: 4, text: "Contenu très pertinent." }] },
+            { id: 8, name: "Swing Trading Academy", category: "courses", description: "Formation swing trading avec analyse multi-timeframe et gestion de position.", price: 199, rating: 4.5, downloads: 890, reviews: [{ author: "Swinger", rating: 5, text: "Formation complète et pratique." }, { author: "MultiTF", rating: 4, text: "Excellent sur les timeframes." }, { author: "Position", rating: 5, text: "Gestion de position au top." }] },
+            { id: 9, name: "Bollinger Bands Pro", category: "indicators", description: "Bandes de Bollinger avec squeeze detection et signaux de breakout.", price: 19, rating: 4.4, downloads: 1800, reviews: [{ author: "Volatility", rating: 5, text: "Parfait pour la volatilité." }, { author: "Breakout", rating: 4, text: "Signaux de breakout précis." }, { author: "BBFan", rating: 4, text: "Simple et efficace." }] },
+            { id: 10, name: "News Trader EA", category: "eas", description: "Robot spécialisé dans le trading sur news économiques avec filtres de volatilité.", price: 249, rating: 4.0, downloads: 450, reviews: [{ author: "NewsTrader", rating: 4, text: "Excellent sur les news majeures." }, { author: "Calendar", rating: 4, text: "Bien intégré avec le calendrier." }, { author: "Volatile", rating: 4, text: "Gère bien la volatilité." }] },
+            { id: 11, name: "Risk Management Guide", category: "ebooks", description: "Guide complet sur la gestion du risque et le money management en trading.", price: 0, rating: 4.9, downloads: 5200, reviews: [{ author: "RiskAverse", rating: 5, text: "Le meilleur guide sur le risque!" }, { author: "MoneyMgr", rating: 5, text: "Money management expliqué simplement." }, { author: "Survivor", rating: 5, text: "M'a sauvé plusieurs fois." }] },
+            { id: 12, name: "Day Trading Elite", category: "courses", description: "Formation day trading avancée avec ordres de marché et gestion fine.", price: 399, rating: 4.7, downloads: 340, reviews: [{ author: "DayTrader", rating: 5, text: "Formation d'élite!" }, { author: "MarketOrder", rating: 5, text: "Ordres de marché maîtrisés." }, { author: "EliteMember", rating: 4, text: "Contenu très avancé." }] }
+        ];
+
+        function renderProducts(filter = 'all') {
+            const grid = document.getElementById('productsGrid');
+            const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
+
+            grid.innerHTML = filtered.map(product => `
+                <div class="product-card" onclick="openProduct(${product.id})">
+                    <div class="product-category">${product.category}</div>
+                    <div class="product-title">${product.name}</div>
+                    <div class="product-description">${product.description}</div>
+                    <div class="product-meta">
+                        <div class="product-price ${product.price === 0 ? 'free' : ''}">${product.price === 0 ? 'FREE' : '$' + product.price}</div>
+                        <div class="product-rating">
+                            ${renderStars(product.rating)}
+                            <span>(${product.rating})</span>
+                        </div>
+                    </div>
+                    <div class="product-downloads">${product.downloads} téléchargements</div>
+                    <button class="product-btn ${product.price === 0 ? 'secondary' : ''}">${product.price === 0 ? 'Gratuit' : 'Voir'}</button>
+                </div>
+            `).join('');
+        }
+
+        function renderStars(rating) {
+            const full = Math.floor(rating);
+            const half = rating % 1 >= 0.5;
+            let stars = '';
+            for (let i = 0; i < full; i++) {
+                stars += '<i data-lucide="star" fill="currentColor"></i>';
+            }
+            if (half) {
+                stars += '<i data-lucide="star-half" fill="currentColor"></i>';
+            }
+            const empty = 5 - full - (half ? 1 : 0);
+            for (let i = 0; i < empty; i++) {
+                stars += '<i data-lucide="star"></i>';
+            }
+            return stars;
+        }
+
+        function openProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+
+            document.getElementById('modalTitle').textContent = product.name;
+            document.getElementById('modalDescription').textContent = product.description + ' Ce produit est disponible sur la marketplace SmartReview. Il a été testé et validé par notre équipe pour garantir sa qualité et son efficacité.';
+            document.getElementById('modalActionBtn').textContent = product.price === 0 ? 'Télécharger gratuitement' : 'Acheter pour $' + product.price;
+
+            document.getElementById('modalReviews').innerHTML = product.reviews.map(review => `
+                <div class="review-item">
+                    <div class="review-header">
+                        <span class="review-author">${review.author}</span>
+                        <div class="review-rating">
+                            ${renderStars(review.rating)}
+                        </div>
+                    </div>
+                    <div class="review-text">${review.text}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('productModal').classList.add('open');
+            lucide.createIcons();
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').classList.remove('open');
+        }
+
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderProducts(btn.dataset.filter);
+            });
+        });
+
+        document.getElementById('closeModal').addEventListener('click', closeModal);
+        document.getElementById('productModal').addEventListener('click', (e) => {
+            if (e.target.id === 'productModal') closeModal();
+        });
+
+        // Backend status check
+        setInterval(() => {
+            fetch('http://localhost:5000/api/health')
+                .then(res => res.json())
+                .then(online => {
+                    const dot = document.getElementById('backendStatus');
+                    const text = document.getElementById('backendStatusText');
+                    if (online) {
+                        dot.className = 'status-dot online';
+                        text.textContent = 'En ligne';
+                    } else {
+                        dot.className = 'status-dot offline';
+                        text.textContent = 'Hors ligne';
+                    }
+                })
+                .catch(() => {
+                    const dot = document.getElementById('backendStatus');
+                    const text = document.getElementById('backendStatusText');
+                    dot.className = 'status-dot offline';
+                    text.textContent = 'Hors ligne';
+                });
+        }, 5000);
+
+        // Initialize
+        renderProducts();
+        lucide.createIcons();
+    </script>
+</body>
+</html>

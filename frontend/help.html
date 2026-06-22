@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartReview - Aide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        /* Help-specific styles - FullMargin-inspired */
+        .help-container {
+            max-width: 800px;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--accent) 0%, #8B5CF6 100%);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-2xl);
+            margin-bottom: var(--spacing-xl);
+            color: white;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .hero-subtitle {
+            font-size: 15px;
+            opacity: 0.9;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .hero-search {
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .hero-search input {
+            width: 100%;
+            padding: 12px 20px 12px 48px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: var(--radius-md);
+            color: white;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-search input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .hero-search input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .hero-search i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Quick Start */
+        .quick-start-section {
+            background: #141414;
+            border: 1px solid #1E1E1E;
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .section-title i {
+            color: var(--accent);
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .step-card {
+            background: #0F0F0F;
+            border: 1px solid #1E1E1E;
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            position: relative;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -12px;
+            left: -12px;
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: white;
+        }
+
+        .step-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-primary);
+        }
+
+        .step-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* FAQ Accordion */
+        .faq-section {
+            background: #141414;
+            border: 1px solid #1E1E1E;
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .faq-item {
+            border-bottom: 1px solid #1E1E1E;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            width: 100%;
+            padding: var(--spacing-md) 0;
+            background: none;
+            border: none;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: color var(--transition-fast);
+        }
+
+        .faq-question:hover {
+            color: var(--accent);
+        }
+
+        .faq-question.active {
+            border-left: 2px solid var(--accent);
+            padding-left: var(--spacing-md);
+            color: var(--accent);
+        }
+
+        .faq-question i {
+            transition: transform var(--transition-fast);
+        }
+
+        .faq-question.active i {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height var(--transition-normal);
+        }
+
+        .faq-answer.active {
+            max-height: 500px;
+        }
+
+        .faq-answer-content {
+            padding: 0 0 var(--spacing-md) 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .faq-answer-content a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .faq-answer-content a:hover {
+            text-decoration: underline;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            background: #141414;
+            border: 1px solid #1E1E1E;
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .contact-card {
+            background: #0F0F0F;
+            border: 1px solid #1E1E1E;
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            text-align: center;
+            transition: all var(--transition-fast);
+        }
+
+        .contact-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .contact-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto var(--spacing-md);
+            background: var(--accent-dim);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .contact-icon i {
+            color: var(--accent);
+            width: 24px;
+            height: 24px;
+        }
+
+        .contact-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-primary);
+        }
+
+        .contact-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .contact-link {
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--accent);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background var(--transition-fast);
+            text-decoration: none;
+        }
+
+        .contact-link:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 24px;
+            }
+
+            .hero-subtitle {
+                font-size: 14px;
+            }
+
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="10" fill="#E11D48"/>
+                        <polyline points="6,22 12,14 17,18 22,10 26,10"
+                            stroke="white" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <circle cx="26" cy="10" r="2.5" fill="white"/>
+                    </svg>
+                    <div class="logo-text-group">
+                        <div class="logo-name">SmartReview</div>
+                        <div class="logo-sub">Trading Analytics</div>
+                    </div>
+                </div>
+                <div class="user-avatar">TR</div>
+            </div>
+            
+            <div class="search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" class="search-input" placeholder="Rechercher...">
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">DASHBOARDS</div>
+                <a href="index.html" class="nav-item">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="journal.html" class="nav-item">
+                    <i data-lucide="book-open"></i>
+                    <span>Journal</span>
+                </a>
+                <a href="calendar.html" class="nav-item">
+                    <i data-lucide="calendar"></i>
+                    <span>Calendrier</span>
+                </a>
+                <a href="stats.html" class="nav-item">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span>Statistiques</span>
+                </a>
+                <a href="coach.html" class="nav-item">
+                    <i data-lucide="brain"></i>
+                    <span>IA Coach</span>
+                </a>
+                <a href="accounts.html" class="nav-item">
+                    <i data-lucide="wallet"></i>
+                    <span>Comptes</span>
+                </a>
+
+                <div class="nav-section-label">OUTILS</div>
+                <a href="notes.html" class="nav-item">
+                    <i data-lucide="file-text"></i>
+                    <span>Notes & Projets</span>
+                </a>
+                <a href="backtesting.html" class="nav-item">
+                    <i data-lucide="activity"></i>
+                    <span>Backtesting</span>
+                </a>
+                <a href="strategy-builder.html" class="nav-item">
+                    <i data-lucide="layers"></i>
+                    <span>Strategy Builder</span>
+                </a>
+                <a href="copy-trading.html" class="nav-item">
+                    <i data-lucide="copy"></i>
+                    <span>Copy Trading</span>
+                </a>
+
+                <div class="nav-section-label">COMMUNAUTÉ</div>
+                <a href="marketplace.html" class="nav-item">
+                    <i data-lucide="shopping-bag"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="community.html" class="nav-item">
+                    <i data-lucide="users"></i>
+                    <span>Communauté</span>
+                </a>
+                <a href="podcasts.html" class="nav-item">
+                    <i data-lucide="headphones"></i>
+                    <span>Podcasts</span>
+                </a>
+                <a href="live.html" class="nav-item">
+                    <i data-lucide="radio"></i>
+                    <span>Live Direct</span>
+                </a>
+
+                <div class="nav-section-label">SETTINGS</div>
+                <a href="settings.html" class="nav-item" id="nav-settings">
+                    <i data-lucide="settings"></i>
+                    <span>Paramètres</span>
+                </a>
+                <a href="help.html" class="nav-item active" id="nav-help">
+                    <i data-lucide="help-circle"></i>
+                    <span>Aide</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="account-selector">
+                    <label>Compte Actif</label>
+                    <select id="activeAccount" class="select-input">
+                        <option value="">Chargement...</option>
+                    </select>
+                </div>
+                <div class="backend-status">
+                    <span class="status-dot" id="backendStatus"></span>
+                    <span class="status-text" id="backendStatusText">Vérification...</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <div class="breadcrumb">Settings / Aide</div>
+                    <h1 class="page-title">Centre d'aide</h1>
+                </div>
+            </header>
+            
+            <!-- Help Container -->
+            <div class="help-container">
+                <!-- Hero Section -->
+                <div class="hero-section">
+                    <h1 class="hero-title">Comment pouvons-nous vous aider ?</h1>
+                    <p class="hero-subtitle">Trouvez des réponses à vos questions sur SmartReview</p>
+                    <div class="hero-search">
+                        <i data-lucide="search"></i>
+                        <input type="text" placeholder="Rechercher dans l'aide...">
+                    </div>
+                </div>
+                
+                <!-- Quick Start -->
+                <div class="quick-start-section">
+                    <h2 class="section-title"><i data-lucide="rocket"></i> Démarrage rapide</h2>
+                    <div class="steps-grid">
+                        <div class="step-card">
+                            <div class="step-number">1</div>
+                            <h3 class="step-title">Créer un compte</h3>
+                            <p class="step-description">Ajoutez votre premier compte de trading dans la section Comptes pour commencer à suivre vos performances.</p>
+                        </div>
+                        <div class="step-card">
+                            <div class="step-number">2</div>
+                            <h3 class="step-title">Enregistrer vos trades</h3>
+                            <p class="step-description">Utilisez le Journal pour enregistrer chaque trade avec tous les détails techniques et psychologiques.</p>
+                        </div>
+                        <div class="step-card">
+                            <div class="step-number">3</div>
+                            <h3 class="step-title">Analyser vos performances</h3>
+                            <p class="step-description">Consultez le Dashboard et les Statistiques pour identifier vos forces et faiblesses.</p>
+                        </div>
+                        <div class="step-card">
+                            <div class="step-number">4</div>
+                            <h3 class="step-title">Utiliser l'IA Coach</h3>
+                            <p class="step-description">Laissez l'IA analyser vos trades et vous fournir des recommandations personnalisées.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- FAQ -->
+                <div class="faq-section">
+                    <h2 class="section-title"><i data-lucide="help-circle"></i> Questions fréquentes</h2>
+                    
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            Comment ajouter un nouveau compte de trading ?
+                            <i data-lucide="chevron-down"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-content">
+                                Allez dans la section <strong>Comptes</strong> et cliquez sur le bouton "Nouveau Compte". Remplissez les informations requises (nom, type de compte, solde initial, etc.) et sauvegardez. Vous pouvez ajouter plusieurs comptes personnels et/ou de prop firms.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            Qu'est-ce que le Trading Score™ ?
+                            <i data-lucide="chevron-down"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-content">
+                                Le Trading Score™ est une métrique exclusive de SmartReview qui évalue la qualité globale de votre trading sur une échelle de 0 à 100. Il prend en compte plusieurs facteurs : le win rate, le risk-reward moyen, la gestion du risque, la cohérence psychologique et la discipline de suivi de journal.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            Comment fonctionne l'IA Coach ?
+                            <i data-lucide="chevron-down"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-content">
+                                L'IA Coach utilise Claude d'Anthropic pour analyser vos trades et vous fournir des insights personnalisés. Il peut détecter vos edges (combinaisons gagnantes), analyser votre psychologie de trading, générer des rapports quotidiens et hebdomadaires, et vous donner des recommandations d'amélioration. Pour l'utiliser, vous devez configurer votre clé API Anthropic dans les Paramètres.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            Puis-je importer mes trades depuis un autre logiciel ?
+                            <i data-lucide="chevron-down"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-content">
+                                Actuellement, l'import automatique n'est pas disponible. Vous devez entrer vos trades manuellement via le Journal. Nous travaillons sur des intégrations avec les principaux brokers pour permettre l'import automatique dans le futur.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            Mes données sont-elles sécurisées ?
+                            <i data-lucide="chevron-down"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-content">
+                                Oui, toutes vos données sont stockées localement dans une base de données SQLite sur votre machine. Aucune donnée n'est envoyée à des serveurs externes, sauf pour l'analyse par l'IA Coach (avec votre consentement via la clé API). Vous avez un contrôle total sur vos données.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            Comment configurer les notifications de risque ?
+                            <i data-lucide="chevron-down"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-content">
+                                Allez dans les <strong>Paramètres</strong> > <strong>Notifications</strong>. Vous pouvez activer les alertes de risque qui vous avertiront quand vous approchez ou dépassez votre limite de risque quotidien. Vous pouvez également configurer des rappels pour compléter votre journal de trading.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            Qu'est-ce que le Calendrier de Performance ?
+                            <i data-lucide="chevron-down"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-content">
+                                Le Calendrier de Performance vous permet de visualiser vos résultats jour par jour sous forme de calendrier. Chaque jour affiche votre P&L, votre nombre de trades et votre win rate. Vous pouvez également voir une heatmap horaire pour identifier vos meilleures heures de trading, ainsi que vos meilleures et pires journées.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            Puis-je exporter mes données ?
+                            <i data-lucide="chevron-down"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-content">
+                                Oui, vous pouvez exporter vos statistiques en format CSV depuis la page Statistiques en cliquant sur le bouton "Exporter". Cela vous permet d'analyser vos données dans Excel ou d'autres outils.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contact -->
+                <div class="contact-section">
+                    <h2 class="section-title"><i data-lucide="message-circle"></i> Contactez-nous</h2>
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i data-lucide="mail"></i>
+                        </div>
+                        <h3 class="contact-title">Email</h3>
+                        <p class="contact-description">Envoyez-nous un email pour toute question ou suggestion</p>
+                        <a href="mailto:support@smartreview.io" class="contact-link">Nous contacter</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // FAQ Accordion functionality
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const answer = button.nextElementSibling;
+                const isActive = button.classList.contains('active');
+                
+                // Close all other FAQs
+                document.querySelectorAll('.faq-question').forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.nextElementSibling.classList.remove('active');
+                });
+                
+                // Toggle current FAQ
+                if (!isActive) {
+                    button.classList.add('active');
+                    answer.classList.add('active');
+                }
+            });
+        });
+        
+        // Load active account
+        API.getAccounts().then(accounts => {
+            const select = document.getElementById('activeAccount');
+            if (accounts && accounts.length > 0) {
+                select.innerHTML = accounts.map(acc => 
+                    `<option value="${acc.id}">${acc.name}</option>`
+                ).join('');
+            } else {
+                select.innerHTML = '<option value="">Aucun compte</option>';
+            }
+        }).catch(err => {
+            console.error('Error loading accounts:', err);
+        });
+        
+        // Backend status check
+        setInterval(() => {
+            fetch('http://localhost:8001/health')
+                .then(res => res.ok)
+                .then(online => {
+                    const dot = document.getElementById('backendStatus');
+                    const text = document.getElementById('backendStatusText');
+                    if (online) {
+                        dot.className = 'status-dot online';
+                        text.textContent = 'En ligne';
+                    } else {
+                        dot.className = 'status-dot offline';
+                        text.textContent = 'Hors ligne';
+                    }
+                })
+                .catch(() => {
+                    const dot = document.getElementById('backendStatus');
+                    const text = document.getElementById('backendStatusText');
+                    dot.className = 'status-dot offline';
+                    text.textContent = 'Hors ligne';
+                });
+        }, 5000);
+    </script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

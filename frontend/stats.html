@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartReview - Statistiques</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        /* Stats-specific styles */
+        .filters-section {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-md);
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        /* Charts layout */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .chart-full-width {
+            grid-column: 1 / -1;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+        }
+
+        .chart-card h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+        }
+
+        .chart-card .apexcharts-canvas {
+            min-height: 300px;
+        }
+
+        /* Heatmap */
+        .heatmap-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: 50px repeat(24, 1fr);
+            gap: 2px;
+            margin-top: var(--spacing-md);
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: transform var(--transition-fast);
+            position: relative;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.2);
+            z-index: 10;
+        }
+
+        .heatmap-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        /* Stats table */
+        .stats-table-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .stats-table th,
+        .stats-table td {
+            padding: var(--spacing-sm);
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stats-table th {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .stats-table td {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .stats-table .positive {
+            color: var(--green);
+        }
+
+        .stats-table .negative {
+            color: var(--red);
+        }
+
+        /* Comparison mode */
+        .comparison-mode {
+            display: flex;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .comparison-panel {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+        }
+
+        .comparison-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            .heatmap-grid {
+                grid-template-columns: 40px repeat(24, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="10" fill="#E11D48"/>
+                        <polyline points="6,22 12,14 17,18 22,10 26,10"
+                            stroke="white" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <circle cx="26" cy="10" r="2.5" fill="white"/>
+                    </svg>
+                    <div class="logo-text-group">
+                        <div class="logo-name">SmartReview</div>
+                        <div class="logo-sub">Trading Analytics</div>
+                    </div>
+                </div>
+                <div class="user-avatar">TR</div>
+            </div>
+            
+            <div class="search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" class="search-input" placeholder="Rechercher...">
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">DASHBOARDS</div>
+                <a href="index.html" class="nav-item">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="journal.html" class="nav-item">
+                    <i data-lucide="book-open"></i>
+                    <span>Journal</span>
+                </a>
+                <a href="calendar.html" class="nav-item">
+                    <i data-lucide="calendar"></i>
+                    <span>Calendrier</span>
+                </a>
+                <a href="stats.html" class="nav-item active">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span>Statistiques</span>
+                </a>
+                <a href="coach.html" class="nav-item">
+                    <i data-lucide="brain"></i>
+                    <span>IA Coach</span>
+                </a>
+                <a href="accounts.html" class="nav-item">
+                    <i data-lucide="wallet"></i>
+                    <span>Comptes</span>
+                </a>
+
+                <div class="nav-section-label">OUTILS</div>
+                <a href="notes.html" class="nav-item">
+                    <i data-lucide="file-text"></i>
+                    <span>Notes & Projets</span>
+                </a>
+                <a href="backtesting.html" class="nav-item">
+                    <i data-lucide="activity"></i>
+                    <span>Backtesting</span>
+                </a>
+                <a href="strategy-builder.html" class="nav-item">
+                    <i data-lucide="layers"></i>
+                    <span>Strategy Builder</span>
+                </a>
+                <a href="copy-trading.html" class="nav-item">
+                    <i data-lucide="copy"></i>
+                    <span>Copy Trading</span>
+                </a>
+
+                <div class="nav-section-label">COMMUNAUTÉ</div>
+                <a href="marketplace.html" class="nav-item">
+                    <i data-lucide="shopping-bag"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="community.html" class="nav-item">
+                    <i data-lucide="users"></i>
+                    <span>Communauté</span>
+                </a>
+                <a href="podcasts.html" class="nav-item">
+                    <i data-lucide="headphones"></i>
+                    <span>Podcasts</span>
+                </a>
+                <a href="live.html" class="nav-item">
+                    <i data-lucide="radio"></i>
+                    <span>Live Direct</span>
+                </a>
+
+                <div class="nav-section-label">SETTINGS</div>
+                <a href="settings.html" class="nav-item" id="nav-settings">
+                    <i data-lucide="settings"></i>
+                    <span>Paramètres</span>
+                </a>
+                <a href="help.html" class="nav-item" id="nav-help">
+                    <i data-lucide="help-circle"></i>
+                    <span>Aide</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="account-selector">
+                    <label>Compte Actif</label>
+                    <select id="activeAccount" class="select-input">
+                        <option value="">Chargement...</option>
+                    </select>
+                </div>
+                <div class="backend-status">
+                    <span class="status-dot" id="backendStatus"></span>
+                    <span class="status-text" id="backendStatusText">Vérification...</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1 class="page-title">Statistiques Avancées</h1>
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-secondary" id="exportStatsBtn">
+                        <i data-lucide="download"></i>
+                        Exporter
+                    </button>
+                    <button class="btn btn-secondary" id="comparisonModeBtn">
+                        <i data-lucide="columns"></i>
+                        Comparaison
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Filters Section -->
+            <section class="filters-section">
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label>Période</label>
+                        <select class="select-input" id="periodFilter">
+                            <option value="7d">7 jours</option>
+                            <option value="30d" selected>30 jours</option>
+                            <option value="90d">3 mois</option>
+                            <option value="180d">6 mois</option>
+                            <option value="1y">1 an</option>
+                            <option value="all">Tout</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Compte</label>
+                        <select class="select-input" id="accountFilter">
+                            <option value="">Tous</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Actif</label>
+                        <select class="select-input" id="assetFilter">
+                            <option value="">Tous</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Setup</label>
+                        <select class="select-input" id="setupFilter">
+                            <option value="">Tous</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Session</label>
+                        <select class="select-input" id="sessionFilter">
+                            <option value="">Toutes</option>
+                            <option value="ASIA">ASIA</option>
+                            <option value="LONDON">LONDON</option>
+                            <option value="NEW_YORK">NEW_YORK</option>
+                        </select>
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn btn-secondary" id="resetFiltersBtn">
+                            <i data-lucide="refresh-cw"></i>
+                            Réinitialiser
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Comparison Mode (hidden by default) -->
+            <div class="comparison-mode" id="comparisonMode" style="display: none;">
+                <div class="comparison-panel">
+                    <div class="comparison-header">
+                        <h3>Période 1</h3>
+                        <select class="select-input" id="comparisonPeriod1">
+                            <option value="7d">7 jours</option>
+                            <option value="30d" selected>30 jours</option>
+                            <option value="90d">3 mois</option>
+                        </select>
+                    </div>
+                    <div id="comparisonChart1"></div>
+                </div>
+                <div class="comparison-panel">
+                    <div class="comparison-header">
+                        <h3>Période 2</h3>
+                        <select class="select-input" id="comparisonPeriod2">
+                            <option value="7d">7 jours</option>
+                            <option value="30d">30 jours</option>
+                            <option value="90d" selected>3 mois</option>
+                        </select>
+                    </div>
+                    <div id="comparisonChart2"></div>
+                </div>
+            </div>
+            
+            <!-- Charts Container -->
+            <div class="charts-container">
+                <!-- Equity Curve -->
+                <div class="chart-card chart-full-width">
+                    <h3>Courbe d'Équité Avancée</h3>
+                    <div id="equityCurveChart"></div>
+                </div>
+                
+                <!-- P&L by Day -->
+                <div class="chart-card chart-full-width">
+                    <h3>P&L par Jour</h3>
+                    <div id="pnlDayChart"></div>
+                </div>
+                
+                <!-- Buy/Sell Distribution -->
+                <div class="chart-card">
+                    <h3>Répartition Buy / Sell</h3>
+                    <div id="buySellChart"></div>
+                </div>
+                
+                <!-- Performance by Setup -->
+                <div class="chart-card">
+                    <h3>Performance par Setup</h3>
+                    <div id="setupPerformanceChart"></div>
+                </div>
+                
+                <!-- Performance by Session -->
+                <div class="chart-card">
+                    <h3>Performance par Session</h3>
+                    <div id="sessionPerformanceChart"></div>
+                </div>
+                
+                <!-- Performance by Asset -->
+                <div class="chart-card">
+                    <h3>Performance par Actif</h3>
+                    <div id="assetPerformanceChart"></div>
+                </div>
+                
+                <!-- Trading Score Evolution -->
+                <div class="chart-card chart-full-width">
+                    <h3>Évolution du Trading Score™️</h3>
+                    <div id="tradingScoreChart"></div>
+                </div>
+                
+                <!-- RR Distribution -->
+                <div class="chart-card">
+                    <h3>Distribution des RR</h3>
+                    <div id="rrDistributionChart"></div>
+                </div>
+                
+                <!-- Confidence/Performance Correlation -->
+                <div class="chart-card">
+                    <h3>Corrélation Confiance/Performance</h3>
+                    <div id="confidenceCorrelationChart"></div>
+                </div>
+            </div>
+
+            <!-- Heatmap Section -->
+            <div class="heatmap-section">
+                <h3>Heatmap Horaire</h3>
+                <div class="heatmap-grid" id="heatmapGrid">
+                    <!-- Heatmap will be populated by JS -->
+                </div>
+            </div>
+
+            <!-- Detailed Stats Table -->
+            <div class="stats-table-section">
+                <h3>Statistiques Détaillées</h3>
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th>Métrique</th>
+                            <th>Global</th>
+                            <th>BUY</th>
+                            <th>SELL</th>
+                            <th>ASIA</th>
+                            <th>LONDON</th>
+                            <th>NY</th>
+                        </tr>
+                    </thead>
+                    <tbody id="statsTableBody">
+                        <!-- Stats will be populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+    
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/stats.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

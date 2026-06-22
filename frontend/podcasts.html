@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartReview - Podcasts</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .demo-badge {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: rgba(225, 29, 72, 0.1);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            z-index: 100;
+        }
+
+        .player-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+
+        .player-header {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .player-cover {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--accent), #8B5CF6);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .player-cover i {
+            width: 48px;
+            height: 48px;
+            color: white;
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .player-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .player-duration {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .player-btn {
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background var(--transition-fast);
+        }
+
+        .player-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .player-btn.secondary {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .player-btn.secondary:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .player-btn i {
+            width: 20px;
+            height: 20px;
+        }
+
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .progress-time {
+            font-size: 12px;
+            color: var(--text-muted);
+            min-width: 40px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--bg-primary);
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 3px;
+            width: 35%;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            background: var(--bg-primary);
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .volume-fill {
+            height: 100%;
+            background: var(--text-secondary);
+            border-radius: 2px;
+            width: 70%;
+        }
+
+        .episodes-section h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+
+        .episodes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .episode-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
+        }
+
+        .episode-card:hover {
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
+
+        .episode-card.active {
+            border-color: var(--accent);
+            background: rgba(225, 29, 72, 0.05);
+        }
+
+        .episode-number {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .episode-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .episode-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .episode-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-top: 12px;
+        }
+
+        .new-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="10" fill="#E11D48"/>
+                        <polyline points="6,22 12,14 17,18 22,10 26,10"
+                            stroke="white" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <circle cx="26" cy="10" r="2.5" fill="white"/>
+                    </svg>
+                    <div class="logo-text-group">
+                        <div class="logo-name">SmartReview</div>
+                        <div class="logo-sub">Trading Analytics</div>
+                    </div>
+                </div>
+                <div class="user-avatar">TR</div>
+            </div>
+
+            <div class="search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" class="search-input" placeholder="Rechercher...">
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">DASHBOARDS</div>
+                <a href="index.html" class="nav-item">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="journal.html" class="nav-item">
+                    <i data-lucide="book-open"></i>
+                    <span>Journal</span>
+                </a>
+                <a href="calendar.html" class="nav-item">
+                    <i data-lucide="calendar"></i>
+                    <span>Calendrier</span>
+                </a>
+                <a href="stats.html" class="nav-item">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span>Statistiques</span>
+                </a>
+                <a href="coach.html" class="nav-item">
+                    <i data-lucide="brain"></i>
+                    <span>IA Coach</span>
+                </a>
+                <a href="accounts.html" class="nav-item">
+                    <i data-lucide="wallet"></i>
+                    <span>Comptes</span>
+                </a>
+
+                <div class="nav-section-label">OUTILS</div>
+                <a href="notes.html" class="nav-item">
+                    <i data-lucide="file-text"></i>
+                    <span>Notes & Projets</span>
+                </a>
+                <a href="backtesting.html" class="nav-item">
+                    <i data-lucide="activity"></i>
+                    <span>Backtesting</span>
+                </a>
+                <a href="strategy-builder.html" class="nav-item">
+                    <i data-lucide="layers"></i>
+                    <span>Strategy Builder</span>
+                </a>
+                <a href="copy-trading.html" class="nav-item">
+                    <i data-lucide="copy"></i>
+                    <span>Copy Trading</span>
+                </a>
+
+                <div class="nav-section-label">COMMUNAUTÉ</div>
+                <a href="marketplace.html" class="nav-item">
+                    <i data-lucide="shopping-bag"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="community.html" class="nav-item">
+                    <i data-lucide="users"></i>
+                    <span>Communauté</span>
+                </a>
+                <a href="podcasts.html" class="nav-item active">
+                    <i data-lucide="headphones"></i>
+                    <span>Podcasts</span>
+                </a>
+                <a href="live.html" class="nav-item">
+                    <i data-lucide="radio"></i>
+                    <span>Live Direct</span>
+                </a>
+
+                <div class="nav-section-label">SETTINGS</div>
+                <a href="settings.html" class="nav-item" id="nav-settings">
+                    <i data-lucide="settings"></i>
+                    <span>Paramètres</span>
+                </a>
+                <a href="help.html" class="nav-item" id="nav-help">
+                    <i data-lucide="help-circle"></i>
+                    <span>Aide</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="account-selector">
+                    <label>Compte Actif</label>
+                    <select id="activeAccount" class="select-input">
+                        <option value="">Chargement...</option>
+                    </select>
+                </div>
+                <div class="backend-status">
+                    <span class="status-dot" id="backendStatus"></span>
+                    <span class="status-text" id="backendStatusText">Vérification...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <div class="breadcrumb">Communauté / Podcasts</div>
+                    <h1 class="page-title">Podcasts</h1>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <div class="demo-badge">DÉMO</div>
+
+                <!-- Player -->
+                <div class="player-card">
+                    <div class="player-header">
+                        <div class="player-cover">
+                            <i data-lucide="mic"></i>
+                        </div>
+                        <div class="player-info">
+                            <div class="player-title" id="currentTitle">Maîtriser la Psychologie du Trading</div>
+                            <div class="player-description" id="currentDescription">Dans cet épisode, nous explorons les aspects psychologiques du trading et comment développer un mindset gagnant pour améliorer vos performances.</div>
+                            <div class="player-duration" id="currentDuration">Durée: 45:30</div>
+                        </div>
+                    </div>
+                    <div class="player-controls">
+                        <button class="player-btn secondary">
+                            <i data-lucide="skip-back"></i>
+                        </button>
+                        <button class="player-btn" id="playPauseBtn">
+                            <i data-lucide="play"></i>
+                        </button>
+                        <button class="player-btn secondary">
+                            <i data-lucide="skip-forward"></i>
+                        </button>
+                        <div class="progress-container" style="flex: 1;">
+                            <span class="progress-time">15:45</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <span class="progress-time">45:30</span>
+                        </div>
+                        <div class="volume-control">
+                            <i data-lucide="volume-2" style="width: 18px; height: 18px; color: var(--text-secondary);"></i>
+                            <div class="volume-slider">
+                                <div class="volume-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Episodes List -->
+                <div class="episodes-section">
+                    <h2>Épisodes</h2>
+                    <div class="episodes-list" id="episodesList">
+                        <!-- Episodes will be populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        const episodes = [
+            { number: 8, title: "Analyse Multi-Timeframe Avancée", duration: "52:15", date: "15 Jan 2026", description: "Apprenez à combiner plusieurs timeframes pour identifier les meilleurs points d'entrée et sortir avec profit.", isNew: true },
+            { number: 7, title: "Gestion du Risque Professionnelle", duration: "48:30", date: "10 Jan 2026", description: "Techniques avancées de gestion du risque utilisées par les traders institutionnels pour protéger leur capital.", isNew: true },
+            { number: 6, title: "Stratégies de Scalping sur Indices", duration: "55:00", date: "5 Jan 2026", description: "Découvrez les meilleures stratégies de scalping pour trader les indices US30 et NAS100 avec précision." },
+            { number: 5, title: "Trading sur News Économiques", duration: "42:45", date: "28 Dec 2025", description: "Comment trader efficacement les annonces économiques majeures et profiter de la volatilité." },
+            { number: 4, title: "Price Action: Les Fondamentaux", duration: "58:20", date: "20 Dec 2025", description: "Les bases de l'action des prix: comprendre les structures de marché et les niveaux clés." },
+            { number: 3, title: "Développer un Plan de Trading", duration: "45:10", date: "12 Dec 2025", description: "Créez un plan de trading complet et discipliné pour améliorer votre constance et vos résultats." },
+            { number: 2, title: "Les Erreurs à Éviter en Trading", duration: "50:30", date: "5 Dec 2025", description: "Les erreurs les plus courantes des traders débutants et comment les éviter pour réussir." },
+            { number: 1, title: "Introduction au Trading Forex", duration: "47:00", date: "28 Nov 2025", description: "Premier épisode: introduction complète au marché du Forex et aux bases du trading de devises." }
+        ];
+
+        let currentEpisode = episodes[0];
+        let isPlaying = false;
+
+        function renderEpisodes() {
+            const list = document.getElementById('episodesList');
+            list.innerHTML = episodes.map(ep => `
+                <div class="episode-card ${ep.number === currentEpisode.number ? 'active' : ''}" onclick="loadEpisode(${ep.number})">
+                    ${ep.isNew ? '<span class="new-badge">NOUVEAU</span>' : ''}
+                    <div class="episode-number">Épisode ${ep.number}</div>
+                    <div class="episode-title">${ep.title}</div>
+                    <div class="episode-meta">
+                        <span>${ep.duration}</span>
+                        <span>${ep.date}</span>
+                    </div>
+                    <div class="episode-description">${ep.description}</div>
+                </div>
+            `).join('');
+        }
+
+        function loadEpisode(number) {
+            currentEpisode = episodes.find(ep => ep.number === number);
+            document.getElementById('currentTitle').textContent = currentEpisode.title;
+            document.getElementById('currentDescription').textContent = currentEpisode.description;
+            document.getElementById('currentDuration').textContent = `Durée: ${currentEpisode.duration}`;
+            renderEpisodes();
+        }
+
+        document.getElementById('playPauseBtn').addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            const btn = document.getElementById('playPauseBtn');
+            btn.innerHTML = isPlaying ? '<i data-lucide="pause"></i>' : '<i data-lucide="play"></i>';
+            lucide.createIcons();
+        });
+
+        // Backend status check
+        setInterval(() => {
+            fetch('http://localhost:5000/api/health')
+                .then(res => res.json())
+                .then(online => {
+                    const dot = document.getElementById('backendStatus');
+                    const text = document.getElementById('backendStatusText');
+                    if (online) {
+                        dot.className = 'status-dot online';
+                        text.textContent = 'En ligne';
+                    } else {
+                        dot.className = 'status-dot offline';
+                        text.textContent = 'Hors ligne';
+                    }
+                })
+                .catch(() => {
+                    const dot = document.getElementById('backendStatus');
+                    const text = document.getElementById('backendStatusText');
+                    dot.className = 'status-dot offline';
+                    text.textContent = 'Hors ligne';
+                });
+        }, 5000);
+
+        // Initialize
+        renderEpisodes();
+        lucide.createIcons();
+    </script>
+</body>
+</html>

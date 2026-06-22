@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartReview - Live Direct</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .demo-badge {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: rgba(225, 29, 72, 0.1);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            z-index: 100;
+        }
+
+        .live-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 24px;
+        }
+
+        .video-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .video-placeholder {
+            aspect-ratio: 16/9;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .video-placeholder i {
+            width: 64px;
+            height: 64px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .video-placeholder-text {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .live-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: #EF4444;
+            color: white;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            animation: pulse 2s infinite;
+        }
+
+        .offline-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: var(--text-muted);
+            color: white;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .video-info {
+            padding: 20px;
+        }
+
+        .video-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .video-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .chat-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+
+        .chat-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .viewer-count {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .viewer-count i {
+            width: 14px;
+            height: 14px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 11px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .chat-content {
+            flex: 1;
+        }
+
+        .chat-author {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .chat-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .chat-input {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .chat-input input {
+            width: 100%;
+            padding: 10px 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+
+        .chat-input input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .upcoming-section {
+            margin-top: 24px;
+        }
+
+        .upcoming-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .upcoming-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .upcoming-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .upcoming-info {
+            flex: 1;
+        }
+
+        .upcoming-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .upcoming-date {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .upcoming-time {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="10" fill="#E11D48"/>
+                        <polyline points="6,22 12,14 17,18 22,10 26,10"
+                            stroke="white" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <circle cx="26" cy="10" r="2.5" fill="white"/>
+                    </svg>
+                    <div class="logo-text-group">
+                        <div class="logo-name">SmartReview</div>
+                        <div class="logo-sub">Trading Analytics</div>
+                    </div>
+                </div>
+                <div class="user-avatar">TR</div>
+            </div>
+
+            <div class="search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" class="search-input" placeholder="Rechercher...">
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">DASHBOARDS</div>
+                <a href="index.html" class="nav-item">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="journal.html" class="nav-item">
+                    <i data-lucide="book-open"></i>
+                    <span>Journal</span>
+                </a>
+                <a href="calendar.html" class="nav-item">
+                    <i data-lucide="calendar"></i>
+                    <span>Calendrier</span>
+                </a>
+                <a href="stats.html" class="nav-item">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span>Statistiques</span>
+                </a>
+                <a href="coach.html" class="nav-item">
+                    <i data-lucide="brain"></i>
+                    <span>IA Coach</span>
+                </a>
+                <a href="accounts.html" class="nav-item">
+                    <i data-lucide="wallet"></i>
+                    <span>Comptes</span>
+                </a>
+
+                <div class="nav-section-label">OUTILS</div>
+                <a href="notes.html" class="nav-item">
+                    <i data-lucide="file-text"></i>
+                    <span>Notes & Projets</span>
+                </a>
+                <a href="backtesting.html" class="nav-item">
+                    <i data-lucide="activity"></i>
+                    <span>Backtesting</span>
+                </a>
+                <a href="strategy-builder.html" class="nav-item">
+                    <i data-lucide="layers"></i>
+                    <span>Strategy Builder</span>
+                </a>
+                <a href="copy-trading.html" class="nav-item">
+                    <i data-lucide="copy"></i>
+                    <span>Copy Trading</span>
+                </a>
+
+                <div class="nav-section-label">COMMUNAUTÉ</div>
+                <a href="marketplace.html" class="nav-item">
+                    <i data-lucide="shopping-bag"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="community.html" class="nav-item">
+                    <i data-lucide="users"></i>
+                    <span>Communauté</span>
+                </a>
+                <a href="podcasts.html" class="nav-item">
+                    <i data-lucide="headphones"></i>
+                    <span>Podcasts</span>
+                </a>
+                <a href="live.html" class="nav-item active">
+                    <i data-lucide="radio"></i>
+                    <span>Live Direct</span>
+                </a>
+
+                <div class="nav-section-label">SETTINGS</div>
+                <a href="settings.html" class="nav-item" id="nav-settings">
+                    <i data-lucide="settings"></i>
+                    <span>Paramètres</span>
+                </a>
+                <a href="help.html" class="nav-item" id="nav-help">
+                    <i data-lucide="help-circle"></i>
+                    <span>Aide</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="account-selector">
+                    <label>Compte Actif</label>
+                    <select id="activeAccount" class="select-input">
+                        <option value="">Chargement...</option>
+                    </select>
+                </div>
+                <div class="backend-status">
+                    <span class="status-dot" id="backendStatus"></span>
+                    <span class="status-text" id="backendStatusText">Vérification...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <div class="breadcrumb">Communauté / Live Direct</div>
+                    <h1 class="page-title">Live Direct</h1>
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-primary">
+                        <i data-lucide="video"></i>
+                        Démarrer un Live
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <div class="demo-badge">DÉMO</div>
+
+                <div class="live-layout">
+                    <!-- Video Section -->
+                    <div class="video-section">
+                        <div class="video-placeholder">
+                            <i data-lucide="video-off"></i>
+                            <span class="video-placeholder-text">Aucun live en cours</span>
+                            <div class="offline-badge">HORS LIGNE</div>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">Session de Trading Live</div>
+                            <div class="video-description">Rejoignez nos sessions de trading en direct pour apprendre et échanger avec notre communauté de traders.</div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Section -->
+                    <div class="chat-section">
+                        <div class="chat-header">
+                            <span class="chat-title">Chat en direct</span>
+                            <span class="viewer-count">
+                                <i data-lucide="users"></i>
+                                247 viewers
+                            </span>
+                        </div>
+                        <div class="chat-messages" id="chatMessages">
+                            <!-- Messages will be populated by JS -->
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" placeholder="Envoyer un message...">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Lives -->
+                <div class="upcoming-section">
+                    <h3>Prochains Lives Planifiés</h3>
+                    <div class="upcoming-list">
+                        <div class="upcoming-item">
+                            <div class="upcoming-info">
+                                <div class="upcoming-title">Analyse EURUSD & GBPUSD</div>
+                                <div class="upcoming-date">Lundi 20 Jan 2026</div>
+                            </div>
+                            <span class="upcoming-time">14:00</span>
+                        </div>
+                        <div class="upcoming-item">
+                            <div class="upcoming-info">
+                                <div class="upcoming-title">Stratégie Scalping sur Indices</div>
+                                <div class="upcoming-date">Mercredi 22 Jan 2026</div>
+                            </div>
+                            <span class="upcoming-time">09:00</span>
+                        </div>
+                        <div class="upcoming-item">
+                            <div class="upcoming-info">
+                                <div class="upcoming-title">Q&A avec nos Experts</div>
+                                <div class="upcoming-date">Vendredi 24 Jan 2026</div>
+                            </div>
+                            <span class="upcoming-time">16:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        const chatMessages = [
+            { author: "Jean Pierre", avatar: "JP", avatarColor: "#E11D48", text: "Super session aujourd'hui! Merci pour l'analyse." },
+            { author: "Marie Curie", avatar: "MC", avatarColor: "#3B82F6", text: "Quand est-ce que vous tradez XAUUSD?" },
+            { author: "Paul Dupont", avatar: "PD", avatarColor: "#10B981", text: "J'attends le breakout sur EURUSD, ça va arriver bientôt." },
+            { author: "Sophie Laurent", avatar: "SL", avatarColor: "#F59E0B", text: "Excellente gestion du risque sur ce trade!" },
+            { author: "Antoine Martin", avatar: "AM", avatarColor: "#8B5CF6", text: "Pouvez-vous expliquer votre setup sur NAS100?" }
+        ];
+
+        function renderChat() {
+            const container = document.getElementById('chatMessages');
+            container.innerHTML = chatMessages.map(msg => `
+                <div class="chat-message">
+                    <div class="chat-avatar" style="background: ${msg.avatarColor};">${msg.avatar}</div>
+                    <div class="chat-content">
+                        <div class="chat-author">${msg.author}</div>
+                        <div class="chat-text">${msg.text}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Backend status check
+        setInterval(() => {
+            fetch('http://localhost:5000/api/health')
+                .then(res => res.json())
+                .then(online => {
+                    const dot = document.getElementById('backendStatus');
+                    const text = document.getElementById('backendStatusText');
+                    if (online) {
+                        dot.className = 'status-dot online';
+                        text.textContent = 'En ligne';
+                    } else {
+                        dot.className = 'status-dot offline';
+                        text.textContent = 'Hors ligne';
+                    }
+                })
+                .catch(() => {
+                    const dot = document.getElementById('backendStatus');
+                    const text = document.getElementById('backendStatusText');
+                    dot.className = 'status-dot offline';
+                    text.textContent = 'Hors ligne';
+                });
+        }, 5000);
+
+        // Initialize
+        renderChat();
+        lucide.createIcons();
+    </script>
+</body>
+</html>
