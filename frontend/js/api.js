@@ -1,155 +1,67 @@
-/**
- * API client for SmartReview backend
- * Handles all HTTP requests to the FastAPI server
- */
+const BASE_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:8001'
+  : 'https://smartreview-production-951d.up.railway.app';
 
 class API {
-    constructor() {
-        this.BASE_URL = window.location.hostname === 'localhost'
-            ? 'http://localhost:8001'
-            : 'https://smartreview-production-951d.up.railway.app';
+  static async request(method, endpoint, data = null) {
+    try {
+      const options = {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+      };
+      if (data) options.body = JSON.stringify(data);
+      const response = await fetch(`${BASE_URL}${endpoint}`, options);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error(`API Error ${method} ${endpoint}:`, error);
+      throw error;
     }
+  }
 
-    /**
-     * Generic request method with error handling
-     */
-    async request(endpoint, options = {}) {
-        try {
-            const url = `${this.BASE_URL}${endpoint}`;
-            const response = await fetch(url, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...options.headers
-                },
-                ...options
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            return await response.json();
-        } catch (error) {
-            console.error(`API Error (${endpoint}):`, error);
-            throw error;
-        }
+  static async getAccounts() {
+    return await this.request('GET', '/api/accounts');
+  }
+  static async createAccount(data) {
+    return await this.request('POST', '/api/accounts', data);
+  }
+  static async updateAccount(id, data) {
+    return await this.request('PUT', `/api/accounts/${id}`, data);
+  }
+  static async deleteAccount(id) {
+    return await this.request('DELETE', `/api/accounts/${id}`);
+  }
+  static async getTrades(accountId = null, period = null) {
+    let url = '/api/trades';
+    const params = [];
+    if (accountId) params.push(`account_id=${accountId}`);
+    if (period) params.push(`period=${period}`);
+    if (params.length) url += '?' + params.join('&');
+    return await this.request('GET', url);
+  }
+  static async createTrade(data) {
+    return await this.request('POST', '/api/trades', data);
+  }
+  static async updateTrade(id, data) {
+    return await this.request('PUT', `/api/trades/${id}`, data);
+  }
+  static async deleteTrade(id) {
+    return await this.request('DELETE', `/api/trades/${id}`);
+  }
+  static async getStats(accountId = null, period = null) {
+    let url = '/api/stats';
+    const params = [];
+    if (accountId) params.push(`account_id=${accountId}`);
+    if (period) params.push(`period=${period}`);
+    if (params.length) url += '?' + params.join('&');
+    return await this.request('GET', url);
+  }
+  static async checkHealth() {
+    try {
+      const response = await fetch(`${BASE_URL}/`);
+      return response.ok;
+    } catch {
+      return false;
     }
-
-    /**
-     * Trade operations
-     */
-    async getTrades(accountId = null, skip = 0, limit = 100) {
-        let endpoint = `/api/trades/?skip=${skip}&limit=${limit}`;
-        if (accountId) {
-            endpoint += `&account_id=${accountId}`;
-        }
-        return this.request(endpoint);
-    }
-
-    async getTrade(tradeId) {
-        return this.request(`/api/trades/${tradeId}`);
-    }
-
-    async createTrade(tradeData) {
-        return this.request('/api/trades/', {
-            method: 'POST',
-            body: JSON.stringify(tradeData)
-        });
-    }
-
-    async updateTrade(tradeId, tradeData) {
-        return this.request(`/api/trades/${tradeId}`, {
-            method: 'PUT',
-            body: JSON.stringify(tradeData)
-        });
-    }
-
-    async deleteTrade(tradeId) {
-        return this.request(`/api/trades/${tradeId}`, {
-            method: 'DELETE'
-        });
-    }
-
-    /**
-     * Statistics operations
-     */
-    async getStats(accountId, period = 'all') {
-        return this.request(`/api/stats/account/${accountId}?period=${period}`);
-    }
-
-    async getEquityCurve(accountId, period = 'all') {
-        return this.request(`/api/stats/equity/${accountId}?period=${period}`);
-    }
-
-    async getPerformanceMetrics(accountId) {
-        return this.request(`/api/stats/performance/${accountId}`);
-    }
-
-    /**
-     * Account operations
-     */
-    async getAccounts(skip = 0, limit = 100) {
-        return this.request(`/api/accounts/?skip=${skip}&limit=${limit}`);
-    }
-
-    async getActiveAccounts() {
-        return this.request('/api/accounts/active');
-    }
-
-    async getAccount(accountId) {
-        return this.request(`/api/accounts/${accountId}`);
-    }
-
-    async createAccount(accountData) {
-        return this.request('/api/accounts/', {
-            method: 'POST',
-            body: JSON.stringify(accountData)
-        });
-    }
-
-    async updateAccount(accountId, accountData) {
-        return this.request(`/api/accounts/${accountId}`, {
-            method: 'PUT',
-            body: JSON.stringify(accountData)
-        });
-    }
-
-    async deleteAccount(accountId) {
-        return this.request(`/api/accounts/${accountId}`, {
-            method: 'DELETE'
-        });
-    }
-
-    /**
-     * AI Coach operations
-     */
-    async getAIAnalysis(accountId, period = '30d') {
-        return this.request('/api/ai/analyze', {
-            method: 'POST',
-            body: JSON.stringify({
-                account_id: accountId,
-                period: period
-            })
-        });
-    }
-
-    async getEdgeTracker(accountId) {
-        return this.request(`/api/ai/edge/${accountId}`);
-    }
-
-    /**
-     * Health check
-     */
-    async healthCheck() {
-        try {
-            return await this.request('/');
-        } catch (error) {
-            return null;
-        }
-    }
-}
-
-// Export for use in other files
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = API;
+  }
 }
