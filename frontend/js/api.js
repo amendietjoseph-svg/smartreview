@@ -1,6 +1,6 @@
 const BASE_URL = window.location.hostname === 'localhost'
   ? 'http://localhost:8001'
-  : 'https://smartreview-production-951d.up.railway.app';
+  : 'https://smartreview-y4sq.onrender.com';
 
 class API {
   static async request(method, endpoint, data = null) {
