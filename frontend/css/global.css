@@ -408,7 +408,7 @@ aside.sidebar.collapsed .backend-status .status-text { display: none; }
 }
 
 /* MAIN WRAPPER */
-.app-wrapper {
+.app-wrapper { padding-top: 60px !important; padding-left: 240px !important;
   padding-top: var(--navbar-height);
   padding-left: 240px;
   min-height: 100vh;
