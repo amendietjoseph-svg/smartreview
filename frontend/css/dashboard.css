@@ -79,13 +79,13 @@
     gap: 4px;
     background: #0F0F0F;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 3px;
 }
 
 .period-btn {
     padding: 5px 12px;
-    border-radius: 6px;
+    border-radius: 10px;
     font-size: 12px;
     font-weight: 500;
     color: var(--text-secondary);
@@ -108,7 +108,7 @@
 .btn-icon {
     width: 36px;
     height: 36px;
-    border-radius: 8px;
+    border-radius: 12px;
     background: #141414;
     border: 1px solid var(--border);
     color: var(--text-secondary);
@@ -137,7 +137,7 @@
     background: var(--accent);
     color: #fff;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
@@ -249,7 +249,7 @@
 .kpi-card {
     background: #141414;
     border: 1px solid #1E1E1E;
-    border-radius: 12px;
+    border-radius: 20px;
     padding: 20px 22px;
     transition: border-color 0.2s, transform 0.2s;
     cursor: default;
@@ -388,7 +388,7 @@
 .trading-score-card {
     background: #141414;
     border: 1px solid #1E1E1E;
-    border-radius: 12px;
+    border-radius: 20px;
     padding: 24px 20px;
     text-align: center;
 }

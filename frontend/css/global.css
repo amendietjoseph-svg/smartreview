@@ -502,7 +502,7 @@ aside.sidebar.collapsed .backend-status .status-text { display: none; }
 }
 .period-btn {
   padding: 5px 12px;
-  border-radius: 10px;
+  border-radius: 16px;
   font-size: 12px;
   font-weight: 500;
   color: var(--text-secondary);
@@ -940,4 +940,4 @@ input[type="range"]::-webkit-slider-thumb {
 .kpi-card { border-radius: 20px !important; }
 .card { border-radius: 20px !important; }
 .navbar { backdrop-filter: blur(20px); }
-.new-trade-btn { border-radius: 14px !important; box-shadow: 0 4px 20px rgba(34,197,94,0.3); }
+.new-trade-btn { border-radius: 20px !important; box-shadow: 0 4px 20px rgba(34,197,94,0.3); }
