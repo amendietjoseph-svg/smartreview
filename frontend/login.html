@@ -281,21 +281,20 @@
         );
 
         function handleGoogleLogin(response) {
-            fetch(BASE_URL + '/api/auth/google', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({token: response.credential})
-            })
-            .then(r => r.json())
-            .then(data => {
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
+            try {
+                const payload = JSON.parse(atob(response.credential.split('.')[1]));
+                const user = {
+                    email: payload.email,
+                    name: payload.name,
+                    picture: payload.picture,
+                    sub: payload.sub
+                };
+                localStorage.setItem('token', response.credential);
+                localStorage.setItem('user', JSON.stringify(user));
                 window.location.href = '/index.html';
-            })
-            .catch(error => {
+            } catch(e) {
                 showError('Erreur lors de la connexion Google');
-                console.error('Google auth error:', error);
-            });
+            }
         }
 
         // Email/Password login
