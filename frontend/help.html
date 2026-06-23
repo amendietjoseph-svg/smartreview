@@ -303,6 +303,20 @@
             }
         }
     </style>
+
+<style>
+*:not(input[type=range]):not(.status-dot):not(.avatar):not(img) {
+  border-radius: inherit;
+}
+div, section, article, aside, nav, header, footer,
+button, input, select, textarea, a {
+  border-radius: 14px;
+}
+.navbar, .sidebar, body, html { border-radius: 0 !important; }
+input[type=checkbox], input[type=radio] { border-radius: 4px !important; }
+.avatar, .status-dot { border-radius: 50% !important; }
+input[type=range] { border-radius: 2px !important; }
+</style>
 </head>
 <body>
     <!-- Main Content -->
