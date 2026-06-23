@@ -308,124 +308,9 @@
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                        <rect width="32" height="32" rx="10" fill="#E11D48"/>
-                        <polyline points="6,22 12,14 17,18 22,10 26,10"
-                            stroke="white" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                        <circle cx="26" cy="10" r="2.5" fill="white"/>
-                    </svg>
-                    <div class="logo-text-group">
-                        <div class="logo-name">SmartReview</div>
-                        <div class="logo-sub">Trading Analytics</div>
-                    </div>
-                </div>
-                <div class="user-avatar">TR</div>
-            </div>
-
-            <div class="search-box">
-                <i data-lucide="search" class="search-icon"></i>
-                <input type="text" class="search-input" placeholder="Rechercher...">
-            </div>
-
-            <nav class="sidebar-nav">
-                <div class="nav-section-label">DASHBOARDS</div>
-                <a href="index.html" class="nav-item">
-                    <i data-lucide="layout-dashboard"></i>
-                    <span>Overview</span>
-                </a>
-                <a href="journal.html" class="nav-item">
-                    <i data-lucide="book-open"></i>
-                    <span>Journal</span>
-                </a>
-                <a href="calendar.html" class="nav-item">
-                    <i data-lucide="calendar"></i>
-                    <span>Calendrier</span>
-                </a>
-                <a href="stats.html" class="nav-item">
-                    <i data-lucide="bar-chart-2"></i>
-                    <span>Statistiques</span>
-                </a>
-                <a href="coach.html" class="nav-item">
-                    <i data-lucide="brain"></i>
-                    <span>IA Coach</span>
-                </a>
-                <a href="accounts.html" class="nav-item">
-                    <i data-lucide="wallet"></i>
-                    <span>Comptes</span>
-                </a>
-
-                <div class="nav-section-label">OUTILS</div>
-                <a href="notes.html" class="nav-item active">
-                    <i data-lucide="file-text"></i>
-                    <span>Notes & Projets</span>
-                </a>
-                <a href="backtesting.html" class="nav-item">
-                    <i data-lucide="activity"></i>
-                    <span>Backtesting</span>
-                </a>
-                <a href="strategy-builder.html" class="nav-item">
-                    <i data-lucide="layers"></i>
-                    <span>Strategy Builder</span>
-                </a>
-                <a href="copy-trading.html" class="nav-item">
-                    <i data-lucide="copy"></i>
-                    <span>Copy Trading</span>
-                </a>
-
-                <div class="nav-section-label">COMMUNAUTÉ</div>
-                <a href="marketplace.html" class="nav-item">
-                    <i data-lucide="shopping-bag"></i>
-                    <span>Marketplace</span>
-                </a>
-                <a href="community.html" class="nav-item">
-                    <i data-lucide="users"></i>
-                    <span>Communauté</span>
-                </a>
-                <a href="podcasts.html" class="nav-item">
-                    <i data-lucide="headphones"></i>
-                    <span>Podcasts</span>
-                </a>
-                <a href="live.html" class="nav-item">
-                    <i data-lucide="radio"></i>
-                    <span>Live Direct</span>
-                </a>
-
-                <div class="nav-section-label">SETTINGS</div>
-                <a href="settings.html" class="nav-item" id="nav-settings">
-                    <i data-lucide="settings"></i>
-                    <span>Paramètres</span>
-                </a>
-                <a href="help.html" class="nav-item" id="nav-help">
-                    <i data-lucide="help-circle"></i>
-                    <span>Aide</span>
-                </a>
-            </nav>
-
-            <div class="sidebar-footer">
-                <div class="account-selector">
-                    <label>Compte Actif</label>
-                    <select id="activeAccount" class="select-input">
-                        <option value="">Chargement...</option>
-                    </select>
-                </div>
-                <div class="backend-status">
-                    <span class="status-dot" id="backendStatus"></span>
-                    <span class="status-text" id="backendStatusText">Vérification...</span>
-                </div>
-                <button class="logout-btn" id="logoutBtn">
-                    <i data-lucide="log-out"></i>
-                    <span>Déconnexion</span>
-                </button>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
+    <!-- Main Content -->
+        <div id="app-layout-root"></div>
+    <div class="app-wrapper" id="appWrapper">
         <main class="main-content">
             <header class="header">
                 <div class="header-left">
@@ -491,6 +376,7 @@
                 </div>
             </div>
         </main>
+    </div>
     </div>
 
     <!-- Note Slide Panel -->
@@ -731,5 +617,6 @@
         renderProjects();
         lucide.createIcons();
     </script>
+    <script src="/js/layout.js"></script>
 </body>
 </html>

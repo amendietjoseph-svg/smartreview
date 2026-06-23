@@ -451,7 +451,7 @@ function showEmptyStates() {
                 <i data-lucide="trending-up"></i>
                 <h3>Aucun trade enregistré</h3>
                 <p>Commencez à trader pour voir votre courbe d'équité</p>
-                <button class="btn-primary" onclick="document.getElementById('newTradeBtn').click()">Ajouter un trade</button>
+                <button class="btn-primary" onclick="document.getElementById('sidebarNewTradeBtn').click()">Ajouter un trade</button>
             </div>
         `;
     }
@@ -585,14 +585,10 @@ function initializeDashboard() {
         });
     });
 
-    // New trade modal
+    // New trade modal (open handled by layout.js sidebar button)
     const modal = document.getElementById('tradeModal');
     const form = document.getElementById('tradeForm');
-    
-    document.getElementById('newTradeBtn').addEventListener('click', () => {
-        form.reset();
-        modal.classList.add('active');
-    });
+    if (!modal || !form) return;
     
     document.getElementById('closeModal').addEventListener('click', () => {
         modal.classList.remove('active');
@@ -657,8 +653,11 @@ function initializeDashboard() {
     refreshInterval = setInterval(loadDashboard, 30000);
 }
 
-// Initialize when DOM is ready
+// Initialize when layout and DOM are ready
+document.addEventListener('layout-ready', initializeDashboard);
 document.addEventListener('DOMContentLoaded', () => {
-    initializeCommon();
-    initializeDashboard();
+    if (!document.getElementById('app-layout-root')) {
+        initializeCommon();
+        initializeDashboard();
+    }
 });

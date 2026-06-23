@@ -1031,8 +1031,11 @@ function onAccountChange(accountId) {
     });
 }
 
-// Initialize when DOM is ready
+// Initialize when layout is ready
+document.addEventListener('layout-ready', initializeStats);
 document.addEventListener('DOMContentLoaded', () => {
-    initializeCommon();
-    initializeStats();
+    if (!document.getElementById('app-layout-root')) {
+        initializeCommon();
+        initializeStats();
+    }
 });

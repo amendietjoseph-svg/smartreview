@@ -551,8 +551,11 @@ function onAccountChange(accountId) {
     loadTrades();
 }
 
-// Initialize when DOM is ready
+// Initialize when layout is ready
+document.addEventListener('layout-ready', initializeCoach);
 document.addEventListener('DOMContentLoaded', () => {
-    initializeCommon();
-    initializeCoach();
+    if (!document.getElementById('app-layout-root')) {
+        initializeCommon();
+        initializeCoach();
+    }
 });

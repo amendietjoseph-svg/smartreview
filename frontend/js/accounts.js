@@ -556,8 +556,11 @@ function onAccountChange(accountId) {
     }
 }
 
-// Initialize when DOM is ready
+// Initialize when layout is ready
+document.addEventListener('layout-ready', initializeAccounts);
 document.addEventListener('DOMContentLoaded', () => {
-    initializeCommon();
-    initializeAccounts();
+    if (!document.getElementById('app-layout-root')) {
+        initializeCommon();
+        initializeAccounts();
+    }
 });

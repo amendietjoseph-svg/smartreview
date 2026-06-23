@@ -820,8 +820,11 @@ function onAccountChange(accountId) {
     loadTrades().then(() => renderCurrentView());
 }
 
-// Initialize when DOM is ready
+// Initialize when layout is ready
+document.addEventListener('layout-ready', initializeCalendar);
 document.addEventListener('DOMContentLoaded', () => {
-    initializeCommon();
-    initializeCalendar();
+    if (!document.getElementById('app-layout-root')) {
+        initializeCommon();
+        initializeCalendar();
+    }
 });

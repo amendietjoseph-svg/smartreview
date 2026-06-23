@@ -1027,8 +1027,11 @@ function handleFileUpload(file, previewContainer) {
     reader.readAsDataURL(file);
 }
 
-// Initialize when DOM is ready
+// Initialize when layout is ready
+document.addEventListener('layout-ready', initializeJournal);
 document.addEventListener('DOMContentLoaded', () => {
-    initializeCommon();
-    initializeJournal();
+    if (!document.getElementById('app-layout-root')) {
+        initializeCommon();
+        initializeJournal();
+    }
 });
