@@ -25,7 +25,7 @@
   --purple: #8B5CF6;
   --sidebar-width: 240px;
   --navbar-height: 60px;
-  --radius: 12px;
+  --radius: 16px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -88,7 +88,7 @@ body {
 
 .navbar-link {
   padding: 7px 14px;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 13px;
   font-weight: 500;
   color: #6B7280;
@@ -114,7 +114,7 @@ body {
 .balance-pill {
   background: #141414;
   border: 1px solid #1E1E1E;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 6px 12px;
   font-size: 13px;
   font-weight: 600;
@@ -133,7 +133,7 @@ body {
   gap: 8px;
   background: #141414;
   border: 1px solid #1E1E1E;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 6px 12px;
   min-width: 180px;
 }
@@ -218,7 +218,7 @@ body {
   font-weight: 500;
   color: #FFFFFF;
   text-decoration: none;
-  border-radius: 8px;
+  border-radius: 12px;
   border: none;
   background: transparent;
   width: 100%;
@@ -367,7 +367,7 @@ aside.sidebar.collapsed .backend-status .status-text { display: none; }
   gap: 10px;
   padding: 9px 12px;
   margin: 1px 8px;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 13px;
   font-weight: 500;
   color: var(--text-secondary);
@@ -429,7 +429,7 @@ aside.sidebar.collapsed .backend-status .status-text { display: none; }
   width: 100%;
   background: #0F0F0F;
   border: 1px solid #1A1A1A;
-  border-radius: 8px;
+  border-radius: 12px;
   color: var(--text-primary);
   font-size: 12px;
   padding: 8px 10px;
@@ -497,7 +497,7 @@ aside.sidebar.collapsed .backend-status .status-text { display: none; }
   gap: 3px;
   background: #0F0F0F;
   border: 1px solid #1A1A1A;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 3px;
 }
 .period-btn {
@@ -517,7 +517,7 @@ aside.sidebar.collapsed .backend-status .status-text { display: none; }
 
 .btn-icon {
   width: 36px; height: 36px;
-  border-radius: 8px;
+  border-radius: 12px;
   background: #141414;
   border: 1px solid #1A1A1A;
   color: var(--text-secondary);
@@ -538,7 +538,7 @@ aside.sidebar.collapsed .backend-status .status-text { display: none; }
   background: var(--accent);
   color: #000;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -657,7 +657,7 @@ aside.sidebar.collapsed .backend-status .status-text { display: none; }
 .card {
   background: #141414;
   border: 1px solid #1E1E1E;
-  border-radius: var(--radius);
+  border-radius: 16px;
   overflow: hidden;
 }
 
@@ -749,7 +749,7 @@ input[type="text"], input[type="number"], input[type="email"],
 input[type="password"], input[type="date"], textarea, select {
   background: #0F0F0F;
   border: 1px solid #1E1E1E;
-  border-radius: 8px;
+  border-radius: 12px;
   color: var(--text-primary);
   font-family: 'Inter', sans-serif;
   font-size: 13px;
@@ -837,7 +837,7 @@ input[type="range"]::-webkit-slider-thumb {
   gap: 8px;
   padding: 9px 12px;
   margin: 4px 8px;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 13px;
   font-weight: 500;
   color: #EF4444;
