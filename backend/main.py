@@ -6,7 +6,7 @@ import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from database import init_db
-from routers import trades, stats, accounts, ai_coach
+from routers import trades, stats, accounts, ai_coach, auth
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -37,6 +37,7 @@ app.include_router(trades.router, prefix="/api/trades", tags=["trades"])
 app.include_router(stats.router, prefix="/api/stats", tags=["stats"])
 app.include_router(accounts.router, prefix="/api/accounts", tags=["accounts"])
 app.include_router(ai_coach.router, prefix="/api/ai", tags=["ai-coach"])
+app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 
 
 # Global exception handler

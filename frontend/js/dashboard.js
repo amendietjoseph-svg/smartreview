@@ -597,6 +597,12 @@ function initializeDashboard() {
     document.getElementById('closeModal').addEventListener('click', () => {
         modal.classList.remove('active');
     });
+
+    // Logout button
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
+    }
     
     document.getElementById('cancelModal').addEventListener('click', () => {
         modal.classList.remove('active');

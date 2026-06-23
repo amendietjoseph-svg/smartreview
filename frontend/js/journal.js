@@ -801,6 +801,12 @@ function initializeJournal() {
     setupUploadZone('uploadBefore', 'fileBefore', 'previewBefore');
     setupUploadZone('uploadAfter', 'fileAfter', 'previewAfter');
 
+    // Logout button
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
+    }
+
     // New trade modal
     const modal = document.getElementById('tradeModal');
     const form = document.getElementById('tradeForm');

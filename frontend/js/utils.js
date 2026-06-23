@@ -2,6 +2,22 @@
  * Utility functions for SmartReview
  */
 
+// Check authentication
+function checkAuth() {
+    const token = localStorage.getItem('token');
+    if (!token && !window.location.pathname.includes('login.html')) {
+        window.location.href = '/login.html';
+    }
+}
+checkAuth();
+
+// Logout function
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/login.html';
+}
+
 // Format currency
 function formatCurrency(value) {
     if (value === null || value === undefined || isNaN(value)) {

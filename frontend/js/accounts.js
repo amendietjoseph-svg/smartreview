@@ -481,6 +481,12 @@ function renderComparisonChart() {
     comparisonChart.render();
 }
 
+// Logout button
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', logout);
+}
+
 /**
  * Render comparison table
  */
