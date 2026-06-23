@@ -143,6 +143,8 @@ async function checkBackendStatus() {
     const statusDot = document.getElementById('backendStatus');
     const statusText = document.getElementById('backendStatusText');
     
+    if (!statusDot || !statusText) return;
+    
     try {
         const response = await fetch('http://localhost:8001/');
         if (response.ok) {
@@ -163,8 +165,7 @@ async function loadAccountsIntoSelector() {
     if (!selector) return;
     
     try {
-        const api = new API();
-        const accounts = await api.getAccounts();
+        const accounts = await API.getAccounts();
         
         selector.innerHTML = accounts.map(a => 
             `<option value="${a.id}">${a.name}</option>`

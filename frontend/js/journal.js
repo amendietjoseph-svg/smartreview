@@ -24,8 +24,7 @@ async function loadTrades() {
             return;
         }
 
-        const api = new API();
-        allTrades = await api.getTrades(accountId);
+        allTrades = await API.getTrades(accountId);
         applyFilters();
         renderTrades();
         updatePagination();
@@ -184,8 +183,7 @@ function showEmptyTrades() {
  */
 async function viewTradeDetails(tradeId) {
     try {
-        const api = new API();
-        const trade = await api.getTrade(tradeId);
+        const trade = await API.getTrade(tradeId);
         renderTradeDetailPanel(trade);
         document.getElementById('tradeDetailPanel').classList.add('active');
     } catch (error) {
@@ -378,8 +376,7 @@ async function editTrade(tradeId) {
     editingTradeId = tradeId;
     
     try {
-        const api = new API();
-        const trade = await api.getTrade(tradeId);
+        const trade = await API.getTrade(tradeId);
         
         // Populate form
         const form = document.getElementById('tradeForm');
@@ -433,8 +430,7 @@ async function duplicateTrade(tradeId) {
     editingTradeId = null;
     
     try {
-        const api = new API();
-        const trade = await api.getTrade(tradeId);
+        const trade = await API.getTrade(tradeId);
         
         // Populate form with trade data but clear result/exit
         const form = document.getElementById('tradeForm');
@@ -548,8 +544,7 @@ function confirmDelete(tradeId) {
  */
 async function deleteTrade(tradeId) {
     try {
-        const api = new API();
-        await api.deleteTrade(tradeId);
+        await API.deleteTrade(tradeId);
         showToast('Trade supprimé avec succès', 'success');
         document.getElementById('deleteModal').classList.remove('active');
         loadTrades();

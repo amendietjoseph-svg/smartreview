@@ -29,8 +29,7 @@ async function loadTrades() {
             return;
         }
 
-        const api = new API();
-        allTrades = await api.getTrades(accountId);
+        allTrades = await API.getTrades(accountId);
         filteredTrades = [...allTrades];
         
     } catch (error) {

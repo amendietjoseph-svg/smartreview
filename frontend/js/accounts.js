@@ -20,8 +20,7 @@ async function initializeAccounts() {
  */
 async function loadAccounts() {
     try {
-        const api = new API();
-        accounts = await api.getAccounts();
+        accounts = await API.getAccounts();
         renderAccounts();
         updateAccountSelector();
         
@@ -370,13 +369,12 @@ async function handleAccountSubmit(e) {
     };
     
     try {
-        const api = new API();
         
         if (editId) {
-            await api.updateAccount(parseInt(editId), accountData);
+            await API.updateAccount(parseInt(editId), accountData);
             showToast('Compte mis à jour avec succès', 'success');
         } else {
-            await api.createAccount(accountData);
+            await API.createAccount(accountData);
             showToast('Compte créé avec succès', 'success');
         }
         
@@ -408,8 +406,7 @@ async function deleteAccount(accountId) {
     }
     
     try {
-        const api = new API();
-        await api.deleteAccount(accountId);
+        await API.deleteAccount(accountId);
         showToast('Compte supprimé avec succès', 'success');
         loadAccounts();
     } catch (error) {

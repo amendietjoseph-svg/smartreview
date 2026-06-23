@@ -13,13 +13,12 @@ let isBackendOnline = false;
  * Check backend status
  */
 async function checkBackendStatus() {
-    const api = new API();
     const statusDot = document.getElementById('backendStatus');
     const statusText = document.getElementById('backendStatusText');
     const backendBanner = document.getElementById('backendBanner');
     
     try {
-        const result = await api.healthCheck();
+        const result = await API.checkHealth();
         isBackendOnline = result !== null;
         
         if (isBackendOnline) {
@@ -57,22 +56,20 @@ async function loadDashboard() {
             return;
         }
 
-        const api = new API();
-        
         // Load stats
-        const stats = await api.getStats(accountId, currentPeriod);
+        const stats = await API.getStats(accountId, currentPeriod);
         updateKPIs(stats);
         
         // Load equity curve
-        const equityData = await api.getEquityCurve(accountId, currentPeriod);
+        const equityData = await API.getEquityCurve(accountId, currentPeriod);
         renderEquityChart(equityData.equity_curve);
         
         // Load recent trades
-        const trades = await api.getTrades(accountId, 0, 10);
+        const trades = await API.getTrades(accountId, 0, 10);
         renderRecentTrades(trades);
         
         // Load accounts for right panel
-        const accounts = await api.getAccounts();
+        const accounts = await API.getAccounts();
         renderAccountsPanel(accounts);
         
         // Render trading score
@@ -447,63 +444,92 @@ function showEmptyStates() {
     });
     
     // Equity chart
-    document.getElementById('equityChart').innerHTML = `
-        <div class="empty-state">
-            <i data-lucide="trending-up"></i>
-            <h3>Aucun trade enregistré</h3>
-            <p>Commencez à trader pour voir votre courbe d'équité</p>
-            <button class="btn-primary" onclick="document.getElementById('newTradeBtn').click()">Ajouter un trade</button>
-        </div>
-    `;
-    document.getElementById('equityTotal').textContent = '--';
-    document.getElementById('equityPeriod').textContent = '0';
+    const equityChart = document.getElementById('equityChart');
+    if (equityChart) {
+        equityChart.innerHTML = `
+            <div class="empty-state">
+                <i data-lucide="trending-up"></i>
+                <h3>Aucun trade enregistré</h3>
+                <p>Commencez à trader pour voir votre courbe d'équité</p>
+                <button class="btn-primary" onclick="document.getElementById('newTradeBtn').click()">Ajouter un trade</button>
+            </div>
+        `;
+    }
+    const equityTotal = document.getElementById('equityTotal');
+    if (equityTotal) equityTotal.textContent = '--';
+    const equityPeriod = document.getElementById('equityPeriod');
+    if (equityPeriod) equityPeriod.textContent = '0';
     
     // Recent trades
-    document.getElementById('recentTradesBody').innerHTML = `
-        <tr>
-            <td colspan="6">
-                <div class="empty-state">
-                    <i data-lucide="book"></i>
-                    <h3>Aucun trade récent</h3>
-                    <p>Vos trades apparaîtront ici</p>
-                </div>
-            </td>
-        </tr>
-    `;
+    const recentTradesBody = document.getElementById('recentTradesBody');
+    if (recentTradesBody) {
+        recentTradesBody.innerHTML = `
+            <tr>
+                <td colspan="6">
+                    <div class="empty-state">
+                        <i data-lucide="book"></i>
+                        <h3>Aucun trade récent</h3>
+                        <p>Vos trades apparaîtront ici</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
     
     // Trading score
-    document.getElementById('tradingScoreValue').textContent = '--';
-    document.getElementById('tradingScoreValue').classList.add('empty');
-    document.getElementById('scoreProgress').style.strokeDasharray = '0, 100';
+    const tradingScoreValue = document.getElementById('tradingScoreValue');
+    if (tradingScoreValue) {
+        tradingScoreValue.textContent = '--';
+        tradingScoreValue.classList.add('empty');
+    }
+    const scoreProgress = document.getElementById('scoreProgress');
+    if (scoreProgress) scoreProgress.style.strokeDasharray = '0, 100';
     ['disciplineFill', 'riskFill', 'executionFill', 'coherenceFill'].forEach(id => {
-        document.getElementById(id).style.width = '0%';
+        const el = document.getElementById(id);
+        if (el) el.style.width = '0%';
     });
     
     // Buy/Sell chart
-    document.getElementById('buySellChart').innerHTML = `
-        <div class="empty-state">
-            <i data-lucide="pie-chart"></i>
-            <h3>Aucune donnée</h3>
-        </div>
-    `;
-    document.getElementById('buySellLegend').innerHTML = '';
+    const buySellChart = document.getElementById('buySellChart');
+    if (buySellChart) {
+        buySellChart.innerHTML = `
+            <div class="empty-state">
+                <i data-lucide="pie-chart"></i>
+                <h3>Aucune donnée</h3>
+            </div>
+        `;
+    }
+    const buySellLegend = document.getElementById('buySellLegend');
+    if (buySellLegend) buySellLegend.innerHTML = '';
     
     // Session performance
-    document.getElementById('asiaFill').style.width = '0%';
-    document.getElementById('asiaFill').textContent = '--';
-    document.getElementById('londonFill').style.width = '0%';
-    document.getElementById('londonFill').textContent = '--';
-    document.getElementById('nyFill').style.width = '0%';
-    document.getElementById('nyFill').textContent = '--';
+    const asiaFill = document.getElementById('asiaFill');
+    if (asiaFill) {
+        asiaFill.style.width = '0%';
+        asiaFill.textContent = '--';
+    }
+    const londonFill = document.getElementById('londonFill');
+    if (londonFill) {
+        londonFill.style.width = '0%';
+        londonFill.textContent = '--';
+    }
+    const nyFill = document.getElementById('nyFill');
+    if (nyFill) {
+        nyFill.style.width = '0%';
+        nyFill.textContent = '--';
+    }
     
     // Accounts
-    document.getElementById('accountsList').innerHTML = `
-        <div class="empty-state">
-            <i data-lucide="wallet"></i>
-            <h3>Aucun compte</h3>
-            <p>Ajoutez votre premier compte pour commencer</p>
-        </div>
-    `;
+    const accountsList = document.getElementById('accountsList');
+    if (accountsList) {
+        accountsList.innerHTML = `
+            <div class="empty-state">
+                <i data-lucide="wallet"></i>
+                <h3>Aucun compte</h3>
+                <p>Ajoutez votre premier compte pour commencer</p>
+            </div>
+        `;
+    }
     
     lucide.createIcons();
 }
@@ -604,8 +630,7 @@ function initializeDashboard() {
         };
 
         try {
-            const api = new API();
-            await api.createTrade(tradeData);
+            await API.createTrade(tradeData);
             modal.classList.remove('active');
             showToast('Trade créé avec succès', 'success');
             loadDashboard();
