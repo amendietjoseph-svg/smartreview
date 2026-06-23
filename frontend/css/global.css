@@ -9,11 +9,11 @@
     --bg-sidebar: #080808;
 
     /* Accent Red */
-    --accent: #E11D48;
-    --accent-dim: rgba(225, 29, 72, 0.08);
-    --accent-border: rgba(225, 29, 72, 0.25);
-    --accent-hover: #F43F5E;
-    --accent-glow: rgba(225, 29, 72, 0.15);
+    --accent: #22C55E;
+    --accent-dim: rgba(34, 197, 94, 0.08);
+    --accent-border: rgba(34, 197, 94, 0.25);
+    --accent-hover: #16A34A;
+    --accent-glow: rgba(34, 197, 94, 0.15);
 
     /* Text */
     --text-primary: #FFFFFF;
