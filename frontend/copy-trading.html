@@ -260,30 +260,55 @@ input, select, textarea { border-radius: 10px !important; }
   border-color: rgba(239,68,68,0.2) !important;
 }
 </style>
-<style id="bg-v2">
-html, body {
-  min-height: 100vh !important;
-  background: radial-gradient(ellipse at 20% 20%, #051a0f 0%, #0a0a1a 40%, #1a0812 100%) !important;
-  background-attachment: fixed !important;
+<style id="bg-v3">
+html {
+  height: 100%;
 }
-* {
-  background-color: transparent;
+body {
+  min-height: 100vh;
+  position: relative;
+  background: #060810 !important;
 }
-.sidebar { background: rgba(5,8,6,0.97) !important; }
-.navbar { background: rgba(5,8,12,0.97) !important; backdrop-filter: blur(20px) !important; }
-.kpi-card { background: rgba(15,18,22,0.9) !important; }
-.card, .chart-card, .session-card { background: rgba(15,18,22,0.9) !important; }
-.trade-panel, .right-panel { background: rgba(8,10,10,0.97) !important; }
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse at 10% 10%, rgba(5,60,30,0.8) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 90%, rgba(60,5,40,0.7) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(10,10,35,0.9) 0%, transparent 70%),
+    #060810;
+}
+.sidebar {
+  background: rgba(4,7,5,0.98) !important;
+  border-right: 1px solid rgba(34,197,94,0.1) !important;
+}
+.navbar {
+  background: rgba(4,6,10,0.98) !important;
+  backdrop-filter: blur(20px) !important;
+}
+.app-wrapper, .main-content, .content-area,
+#sessionsView, #analyticsView,
+.backtest-sessions {
+  background: transparent !important;
+}
+.kpi-card, .card, .session-card, .chart-card,
+.settings-card, .modal-box {
+  background: rgba(12,15,20,0.88) !important;
+  backdrop-filter: blur(8px) !important;
+}
+.chart-area { background: rgba(5,7,6,0.98) !important; }
+.chart-topbar { background: rgba(4,6,5,0.98) !important; }
+.balance-bar { background: rgba(4,6,5,0.95) !important; }
+.trade-panel { background: rgba(5,7,6,0.98) !important; }
 .panel-block { background: transparent !important; }
-.chart-topbar, .balance-bar { background: rgba(6,8,8,0.97) !important; }
-#chart-container { background: rgba(8,10,8,0.97) !important; }
-.chart-area { background: rgba(6,8,8,0.97) !important; }
-.quit-bar { background: rgba(6,8,8,0.97) !important; }
-.modal-box, .login-card { background: rgba(15,18,22,0.95) !important; backdrop-filter: blur(20px) !important; }
-.settings-card { background: rgba(15,18,22,0.9) !important; }
-input, select, textarea { background: rgba(10,12,15,0.8) !important; }
-table, tr, td, th { background: transparent !important; }
-.trades-table tr:hover td { background: rgba(255,255,255,0.03) !important; }
+.quit-bar { background: rgba(4,6,5,0.98) !important; }
+#chart-container { background: rgba(5,7,5,0.98) !important; }
+input, select, textarea {
+  background: rgba(8,10,14,0.9) !important;
+}
 </style></head>
 <body>
     <!-- Main Content -->
