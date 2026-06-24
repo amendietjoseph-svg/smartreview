@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+content = '''<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -318,12 +318,12 @@
                 <div class="chart-topbar">
                     <div class="pair-badge" id="currentPairBadge">EURUSD</div>
                     <div class="tf-pills">
-                        <button class="tf-pill" onclick="changeTF(this,'1')">M1</button>
-                        <button class="tf-pill" onclick="changeTF(this,'5')">M5</button>
-                        <button class="tf-pill active" onclick="changeTF(this,'15')">M15</button>
-                        <button class="tf-pill" onclick="changeTF(this,'60')">H1</button>
-                        <button class="tf-pill" onclick="changeTF(this,'240')">H4</button>
-                        <button class="tf-pill" onclick="changeTF(this,'D')">D1</button>
+                        <button class="tf-pill" onclick="changeTF(this,\'1\')">M1</button>
+                        <button class="tf-pill" onclick="changeTF(this,\'5\')">M5</button>
+                        <button class="tf-pill active" onclick="changeTF(this,\'15\')">M15</button>
+                        <button class="tf-pill" onclick="changeTF(this,\'60\')">H1</button>
+                        <button class="tf-pill" onclick="changeTF(this,\'240\')">H4</button>
+                        <button class="tf-pill" onclick="changeTF(this,\'D\')">D1</button>
                     </div>
                     <div class="replay-controls">
                         <button class="replay-btn" onclick="rewindChart()" title="Rewind">
@@ -378,8 +378,8 @@
                 <div class="panel-block">
                     <div class="panel-block-title">Entrer un Trade</div>
                     <div class="buy-sell-grid">
-                        <button class="btn-buy-big" onclick="enterTrade('BUY')">▲ BUY</button>
-                        <button class="btn-sell-big" onclick="enterTrade('SELL')">▼ SELL</button>
+                        <button class="btn-buy-big" onclick="enterTrade(\'BUY\')">▲ BUY</button>
+                        <button class="btn-sell-big" onclick="enterTrade(\'SELL\')">▼ SELL</button>
                     </div>
                     <div class="field-row">
                         <div class="field-group">
@@ -446,9 +446,9 @@
             </div>
 
             <div class="analytics-tabs">
-                <button class="atab active" onclick="switchTab(this,'overview')">Aperçu</button>
-                <button class="atab" onclick="switchTab(this,'time')">Analyse Temporelle</button>
-                <button class="atab" onclick="switchTab(this,'montecarlo')">Monte Carlo</button>
+                <button class="atab active" onclick="switchTab(this,\'overview\')">Aperçu</button>
+                <button class="atab" onclick="switchTab(this,\'time\')">Analyse Temporelle</button>
+                <button class="atab" onclick="switchTab(this,\'montecarlo\')">Monte Carlo</button>
             </div>
 
             <!-- OVERVIEW TAB -->
@@ -456,7 +456,7 @@
                 <div class="analytics-grid-4" id="summaryCards"></div>
                 <div class="analytics-grid">
                     <div class="chart-card">
-                        <div class="chart-card-title">Courbe d'Équité</div>
+                        <div class="chart-card-title">Courbe d\'Équité</div>
                         <div id="equityAnalChart"></div>
                     </div>
                     <div class="chart-card">
@@ -513,7 +513,7 @@
     <script src="/js/layout.js"></script>
     <script>
     // ===== STATE =====
-    let sessions = JSON.parse(localStorage.getItem('bt_sessions') || '[]');
+    let sessions = JSON.parse(localStorage.getItem(\'bt_sessions\') || \'[]\');
     let currentSession = null;
     let tvWidget = null;
     let trades = [];
@@ -522,7 +522,7 @@
 
     // ===== SESSIONS =====
     function renderSessions() {
-        const grid = document.getElementById('sessionsGrid');
+        const grid = document.getElementById(\'sessionsGrid\');
         if(sessions.length === 0) {
             grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:#374151;">
                 <div style="font-size:48px;margin-bottom:16px;">📊</div>
@@ -534,36 +534,36 @@
         grid.innerHTML = sessions.map((s,i) => `
             <div class="session-card" onclick="openSession(${i})">
                 <div style="font-size:15px;font-weight:700;margin-bottom:12px;">${s.name}</div>
-                <div class="session-info">Paire: <span>${s.pair.split(':')[1]}</span></div>
+                <div class="session-info">Paire: <span>${s.pair.split(\':\')[1]}</span></div>
                 <div class="session-info">Balance: <span>$${s.balance.toLocaleString()}</span></div>
                 <div class="session-info">Trades: <span>${s.trades ? s.trades.length : 0}</span></div>
-                <div class="session-info">P&L: <span style="color:${(s.pnl||0)>=0?'#22C55E':'#EF4444'}">${(s.pnl||0)>=0?'+':''}\$${(s.pnl||0).toFixed(2)}</span></div>
+                <div class="session-info">P&L: <span style="color:${(s.pnl||0)>=0?\'#22C55E\':\'#EF4444\'}">${(s.pnl||0)>=0?\'+\':\'\'}\$${(s.pnl||0).toFixed(2)}</span></div>
                 <div class="session-info" style="font-size:11px;">Date: <span style="font-weight:400;color:#6B7280;">${s.date}</span></div>
                 <div class="play-btn"><i data-lucide="play" style="width:14px;height:14px;"></i></div>
             </div>
-        `).join('');
+        `).join(\'\');
         lucide.createIcons();
     }
 
     function showNewSessionModal() {
-        document.getElementById('newSessionModal').classList.add('active');
+        document.getElementById(\'newSessionModal\').classList.add(\'active\');
     }
     function hideModal() {
-        document.getElementById('newSessionModal').classList.remove('active');
+        document.getElementById(\'newSessionModal\').classList.remove(\'active\');
     }
 
     function startSession() {
-        const name = document.getElementById('sessionName').value || 'Session ' + (sessions.length+1);
-        const pair = document.getElementById('sessionPair').value;
-        const balance = parseFloat(document.getElementById('sessionBalance').value) || 10000;
-        const tf = document.getElementById('sessionTF').value;
+        const name = document.getElementById(\'sessionName\').value || \'Session \' + (sessions.length+1);
+        const pair = document.getElementById(\'sessionPair\').value;
+        const balance = parseFloat(document.getElementById(\'sessionBalance\').value) || 10000;
+        const tf = document.getElementById(\'sessionTF\').value;
         const session = {
             id: Date.now(), name, pair, balance, tf,
             trades: [], pnl: 0,
-            date: new Date().toLocaleDateString('fr') + ', ' + new Date().toLocaleTimeString('fr')
+            date: new Date().toLocaleDateString(\'fr\') + \', \' + new Date().toLocaleTimeString(\'fr\')
         };
         sessions.push(session);
-        localStorage.setItem('bt_sessions', JSON.stringify(sessions));
+        localStorage.setItem(\'bt_sessions\', JSON.stringify(sessions));
         hideModal();
         openSession(sessions.length - 1);
     }
@@ -571,15 +571,15 @@
     function openSession(idx) {
         currentSession = sessions[idx];
         trades = currentSession.trades || [];
-        document.getElementById('sessionsView').style.display = 'none';
-        document.getElementById('tradingInterface').classList.add('active');
-        document.getElementById('sessionNameDisplay').textContent = currentSession.name;
-        document.getElementById('quitSessionName').textContent = currentSession.name;
-        document.getElementById('currentPairBadge').textContent = currentSession.pair.split(':')[1];
-        document.getElementById('balanceDisplay').textContent = '$' + currentSession.balance.toLocaleString();
+        document.getElementById(\'sessionsView\').style.display = \'none\';
+        document.getElementById(\'tradingInterface\').classList.add(\'active\');
+        document.getElementById(\'sessionNameDisplay\').textContent = currentSession.name;
+        document.getElementById(\'quitSessionName\').textContent = currentSession.name;
+        document.getElementById(\'currentPairBadge\').textContent = currentSession.pair.split(\':\')[1];
+        document.getElementById(\'balanceDisplay\').textContent = \'$\' + currentSession.balance.toLocaleString();
         // Set default TF
-        document.querySelectorAll('.tf-pill').forEach(p => {
-            p.classList.toggle('active', p.getAttribute('onclick').includes(''+ currentSession.tf +'\''));
+        document.querySelectorAll(\'.tf-pill\').forEach(p => {
+            p.classList.toggle(\'active\', p.getAttribute(\'onclick\').includes(\'\'+ currentSession.tf +\'\\\'\'));
         });
         loadTV(currentSession.pair, currentSession.tf);
         updateStats();
@@ -588,11 +588,11 @@
 
     // ===== TRADINGVIEW =====
     function loadTV(symbol, interval) {
-        const chartDiv = document.getElementById('main-chart');
-        chartDiv.innerHTML = '';
-        if(typeof TradingView === 'undefined') {
-            const script = document.createElement('script');
-            script.src = 'https://s3.tradingview.com/tv.js';
+        const chartDiv = document.getElementById(\'main-chart\');
+        chartDiv.innerHTML = \'\';
+        if(typeof TradingView === \'undefined\') {
+            const script = document.createElement(\'script\');
+            script.src = \'https://s3.tradingview.com/tv.js\';
             script.onload = () => createTV(symbol, interval);
             document.head.appendChild(script);
         } else {
@@ -603,22 +603,22 @@
     function createTV(symbol, interval) {
         const h = window.innerHeight - 160;
         tvWidget = new TradingView.widget({
-            container_id: 'main-chart',
+            container_id: \'main-chart\',
             symbol: symbol,
-            interval: interval || '15',
-            timezone: 'Africa/Lagos',
-            theme: 'dark',
-            style: '1',
-            locale: 'fr',
-            toolbar_bg: '#0F0F0F',
+            interval: interval || \'15\',
+            timezone: \'Africa/Lagos\',
+            theme: \'dark\',
+            style: \'1\',
+            locale: \'fr\',
+            toolbar_bg: \'#0F0F0F\',
             enable_publishing: false,
             allow_symbol_change: false,
             hide_side_toolbar: false,
             studies: [],
-            width: '100%',
+            width: \'100%\',
             height: h,
-            backgroundColor: '#0A0A0A',
-            gridColor: 'rgba(255,255,255,0.03)',
+            backgroundColor: \'#0A0A0A\',
+            gridColor: \'rgba(255,255,255,0.03)\',
             overrides: {
                 "paneProperties.background": "#0A0A0A",
                 "paneProperties.backgroundType": "solid",
@@ -627,218 +627,218 @@
     }
 
     function changeTF(btn, tf) {
-        document.querySelectorAll('.tf-pill').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
+        document.querySelectorAll(\'.tf-pill\').forEach(p => p.classList.remove(\'active\'));
+        btn.classList.add(\'active\');
         if(currentSession) loadTV(currentSession.pair, tf);
     }
 
-    function rewindChart() { /* TradingView ne supporte pas le replay via widget externe */ alert('Utilisez les outils TradingView pour naviguer dans le temps'); }
+    function rewindChart() { /* TradingView ne supporte pas le replay via widget externe */ alert(\'Utilisez les outils TradingView pour naviguer dans le temps\'); }
     function togglePlay() { /* Même chose */ }
     function nextCandle() { /* Même chose */ }
 
     // ===== TRADE ENTRY =====
     function calcRR() {
-        const sl = parseFloat(document.getElementById('slPips').value) || 1;
-        const tp = parseFloat(document.getElementById('tpPips').value) || 1;
+        const sl = parseFloat(document.getElementById(\'slPips\').value) || 1;
+        const tp = parseFloat(document.getElementById(\'tpPips\').value) || 1;
         const rr = (tp/sl).toFixed(2);
-        const el = document.getElementById('rrShow');
+        const el = document.getElementById(\'rrShow\');
         el.textContent = rr;
-        el.style.color = rr >= 2 ? '#22C55E' : rr >= 1 ? '#F59E0B' : '#EF4444';
+        el.style.color = rr >= 2 ? \'#22C55E\' : rr >= 1 ? \'#F59E0B\' : \'#EF4444\';
     }
 
     function enterTrade(direction) {
-        const sl = parseFloat(document.getElementById('slPips').value) || 20;
-        const tp = parseFloat(document.getElementById('tpPips').value) || 40;
-        const risk = parseFloat(document.getElementById('riskAmt').value) || 100;
-        const setup = document.getElementById('setupNote').value || '-';
+        const sl = parseFloat(document.getElementById(\'slPips\').value) || 20;
+        const tp = parseFloat(document.getElementById(\'tpPips\').value) || 40;
+        const risk = parseFloat(document.getElementById(\'riskAmt\').value) || 100;
+        const setup = document.getElementById(\'setupNote\').value || \'-\';
         const rr = tp/sl;
         const winProb = 0.55;
         const isWin = Math.random() < winProb;
         const pnl = isWin ? +(risk * rr).toFixed(2) : -risk;
         const trade = {
             id: Date.now(), direction, sl, tp, risk, rr: +rr.toFixed(2),
-            result: isWin ? 'WIN' : 'LOSS', pnl,
-            setup, pair: currentSession.pair.split(':')[1],
-            time: new Date().toLocaleTimeString('fr'),
+            result: isWin ? \'WIN\' : \'LOSS\', pnl,
+            setup, pair: currentSession.pair.split(\':\')[1],
+            time: new Date().toLocaleTimeString(\'fr\'),
             hour: new Date().getHours()
         };
         trades.push(trade);
         currentSession.trades = trades;
         currentSession.pnl = trades.reduce((s,t) => s+t.pnl, 0);
         sessions = sessions.map(s => s.id === currentSession.id ? currentSession : s);
-        localStorage.setItem('bt_sessions', JSON.stringify(sessions));
+        localStorage.setItem(\'bt_sessions\', JSON.stringify(sessions));
         updateStats();
         renderTradesList();
         // Flash animation
-        const btn = direction === 'BUY' ? document.querySelector('.btn-buy-big') : document.querySelector('.btn-sell-big');
-        btn.style.transform = 'scale(0.95)';
-        setTimeout(() => btn.style.transform = '', 150);
+        const btn = direction === \'BUY\' ? document.querySelector(\'.btn-buy-big\') : document.querySelector(\'.btn-sell-big\');
+        btn.style.transform = \'scale(0.95)\';
+        setTimeout(() => btn.style.transform = \'\', 150);
     }
 
     function updateStats() {
         const t = trades;
         const total = t.length;
-        const wins = t.filter(x=>x.result==='WIN').length;
+        const wins = t.filter(x=>x.result===\'WIN\').length;
         const losses = total - wins;
         const wr = total > 0 ? ((wins/total)*100).toFixed(1) : 0;
         const totalPL = t.reduce((s,x)=>s+x.pnl,0);
-        const gp = t.filter(x=>x.result==='WIN').reduce((s,x)=>s+x.pnl,0);
-        const gl = Math.abs(t.filter(x=>x.result==='LOSS').reduce((s,x)=>s+x.pnl,0));
-        const pf = gl>0 ? (gp/gl).toFixed(2) : gp>0 ? '∞' : '0';
+        const gp = t.filter(x=>x.result===\'WIN\').reduce((s,x)=>s+x.pnl,0);
+        const gl = Math.abs(t.filter(x=>x.result===\'LOSS\').reduce((s,x)=>s+x.pnl,0));
+        const pf = gl>0 ? (gp/gl).toFixed(2) : gp>0 ? \'∞\' : \'0\';
         const avgRR = total>0 ? (t.reduce((s,x)=>s+x.rr,0)/total).toFixed(2) : 0;
         let best=0,worst=0,cur=0;
         t.forEach(x=>{
-            if(x.result==='WIN'){cur=cur>=0?cur+1:1;best=Math.max(best,cur);}
+            if(x.result===\'WIN\'){cur=cur>=0?cur+1:1;best=Math.max(best,cur);}
             else{cur=cur<=0?cur-1:-1;worst=Math.min(worst,cur);}
         });
         const newBal = (currentSession ? currentSession.balance : 10000) + totalPL;
-        document.getElementById('st1').textContent=total;
-        document.getElementById('st2').textContent=wins;
-        document.getElementById('st3').textContent=losses;
-        document.getElementById('st4').textContent=wr+'%';
-        document.getElementById('st4').className='sv '+(wr>=50?'g':'r');
-        document.getElementById('st5').textContent=(totalPL>=0?'+':'')+'$'+totalPL.toFixed(2);
-        document.getElementById('st5').className='sv '+(totalPL>=0?'g':'r');
-        document.getElementById('st6').textContent=pf;
-        document.getElementById('st7').textContent=avgRR;
-        document.getElementById('st8').textContent=best+' wins';
-        document.getElementById('st9').textContent=Math.abs(worst)+' losses';
-        document.getElementById('tradesCountDisplay').textContent=total;
-        document.getElementById('wrDisplay').textContent=wr+'%';
-        document.getElementById('pnlDisplay').textContent=(totalPL>=0?'+':'')+'$'+totalPL.toFixed(2);
-        document.getElementById('pnlDisplay').className='balance-value '+(totalPL>=0?'positive':'negative');
-        document.getElementById('balanceDisplay').textContent='$'+newBal.toLocaleString('fr',{minimumFractionDigits:2});
-        document.getElementById('tradesListCount').textContent=total;
+        document.getElementById(\'st1\').textContent=total;
+        document.getElementById(\'st2\').textContent=wins;
+        document.getElementById(\'st3\').textContent=losses;
+        document.getElementById(\'st4\').textContent=wr+\'%\';
+        document.getElementById(\'st4\').className=\'sv \'+(wr>=50?\'g\':\'r\');
+        document.getElementById(\'st5\').textContent=(totalPL>=0?\'+\':\'\')+\'$\'+totalPL.toFixed(2);
+        document.getElementById(\'st5\').className=\'sv \'+(totalPL>=0?\'g\':\'r\');
+        document.getElementById(\'st6\').textContent=pf;
+        document.getElementById(\'st7\').textContent=avgRR;
+        document.getElementById(\'st8\').textContent=best+\' wins\';
+        document.getElementById(\'st9\').textContent=Math.abs(worst)+\' losses\';
+        document.getElementById(\'tradesCountDisplay\').textContent=total;
+        document.getElementById(\'wrDisplay\').textContent=wr+\'%\';
+        document.getElementById(\'pnlDisplay\').textContent=(totalPL>=0?\'+\':\'\')+\'$\'+totalPL.toFixed(2);
+        document.getElementById(\'pnlDisplay\').className=\'balance-value \'+(totalPL>=0?\'positive\':\'negative\');
+        document.getElementById(\'balanceDisplay\').textContent=\'$\'+newBal.toLocaleString(\'fr\',{minimumFractionDigits:2});
+        document.getElementById(\'tradesListCount\').textContent=total;
     }
 
     function renderTradesList() {
-        const el = document.getElementById('tradesList2');
-        if(trades.length===0){el.innerHTML='<div style="text-align:center;color:#374151;font-size:12px;padding:20px;">Aucun trade</div>';return;}
+        const el = document.getElementById(\'tradesList2\');
+        if(trades.length===0){el.innerHTML=\'<div style="text-align:center;color:#374151;font-size:12px;padding:20px;">Aucun trade</div>\';return;}
         el.innerHTML=[...trades].reverse().map(t=>`
             <div class="trade-entry">
                 <div>
-                    <span class="dir-badge ${t.direction==='BUY'?'b':'s'}">${t.direction}</span>
+                    <span class="dir-badge ${t.direction===\'BUY\'?\'b\':\'s\'}">${t.direction}</span>
                     <span style="font-size:10px;color:#6B7280;margin-left:4px;">${t.pair} • ${t.setup}</span>
                 </div>
                 <div style="text-align:right;">
-                    <div class="pnl-val" style="color:${t.pnl>=0?'#22C55E':'#EF4444'}">${t.pnl>=0?'+':''}\$${Math.abs(t.pnl).toFixed(2)}</div>
+                    <div class="pnl-val" style="color:${t.pnl>=0?\'#22C55E\':\'#EF4444\'}">${t.pnl>=0?\'+\':\'\'}\$${Math.abs(t.pnl).toFixed(2)}</div>
                     <div style="font-size:10px;color:#374151;">RR ${t.rr} • ${t.time}</div>
                 </div>
             </div>
-        `).join('');
+        `).join(\'\');
     }
 
     function quitSession() {
-        document.getElementById('tradingInterface').classList.remove('active');
-        document.getElementById('analyticsView').classList.remove('active');
-        document.getElementById('sessionsView').style.display = 'block';
+        document.getElementById(\'tradingInterface\').classList.remove(\'active\');
+        document.getElementById(\'analyticsView\').classList.remove(\'active\');
+        document.getElementById(\'sessionsView\').style.display = \'block\';
         renderSessions();
         lucide.createIcons();
     }
 
     // ===== ANALYTICS =====
     function showAnalytics() {
-        document.getElementById('tradingInterface').classList.remove('active');
-        document.getElementById('analyticsView').classList.add('active');
+        document.getElementById(\'tradingInterface\').classList.remove(\'active\');
+        document.getElementById(\'analyticsView\').classList.add(\'active\');
         renderAnalytics();
     }
     function backToTrading() {
-        document.getElementById('analyticsView').classList.remove('active');
-        document.getElementById('tradingInterface').classList.add('active');
+        document.getElementById(\'analyticsView\').classList.remove(\'active\');
+        document.getElementById(\'tradingInterface\').classList.add(\'active\');
     }
     function switchTab(btn, tab) {
-        document.querySelectorAll('.atab').forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-        ['overview','time','montecarlo'].forEach(t=>{
-            const el=document.getElementById('tab-'+t);
-            if(el) el.style.display=t===tab?'block':'none';
+        document.querySelectorAll(\'.atab\').forEach(b=>b.classList.remove(\'active\'));
+        btn.classList.add(\'active\');
+        [\'overview\',\'time\',\'montecarlo\'].forEach(t=>{
+            const el=document.getElementById(\'tab-\'+t);
+            if(el) el.style.display=t===tab?\'block\':\'none\';
         });
-        if(tab==='montecarlo') renderMonteCarlo();
-        if(tab==='time') renderTimeAnalysis();
+        if(tab===\'montecarlo\') renderMonteCarlo();
+        if(tab===\'time\') renderTimeAnalysis();
     }
 
     function renderAnalytics() {
         const t = trades;
         const total = t.length;
-        const wins = t.filter(x=>x.result==='WIN').length;
+        const wins = t.filter(x=>x.result===\'WIN\').length;
         const wr = total>0?((wins/total)*100).toFixed(1):0;
         const totalPL = t.reduce((s,x)=>s+x.pnl,0);
-        const gp = t.filter(x=>x.result==='WIN').reduce((s,x)=>s+x.pnl,0);
-        const gl = Math.abs(t.filter(x=>x.result==='LOSS').reduce((s,x)=>s+x.pnl,0));
-        const pf = gl>0?(gp/gl).toFixed(2):gp>0?'∞':'0';
+        const gp = t.filter(x=>x.result===\'WIN\').reduce((s,x)=>s+x.pnl,0);
+        const gl = Math.abs(t.filter(x=>x.result===\'LOSS\').reduce((s,x)=>s+x.pnl,0));
+        const pf = gl>0?(gp/gl).toFixed(2):gp>0?\'∞\':\'0\';
         const avgRR = total>0?(t.reduce((s,x)=>s+x.rr,0)/total).toFixed(2):0;
 
         // Summary cards
-        document.getElementById('summaryCards').innerHTML = [
-            {label:'Total Trades',value:total,color:'#fff'},
-            {label:'Win Rate',value:wr+'%',color:wr>=50?'#22C55E':'#EF4444'},
-            {label:'P&L Total',value:(totalPL>=0?'+':'')+'$'+totalPL.toFixed(2),color:totalPL>=0?'#22C55E':'#EF4444'},
-            {label:'Profit Factor',value:pf,color:'#3B82F6'},
+        document.getElementById(\'summaryCards\').innerHTML = [
+            {label:\'Total Trades\',value:total,color:\'#fff\'},
+            {label:\'Win Rate\',value:wr+\'%\',color:wr>=50?\'#22C55E\':\'#EF4444\'},
+            {label:\'P&L Total\',value:(totalPL>=0?\'+\':\'\')+\'$\'+totalPL.toFixed(2),color:totalPL>=0?\'#22C55E\':\'#EF4444\'},
+            {label:\'Profit Factor\',value:pf,color:\'#3B82F6\'},
         ].map(c=>`
             <div class="chart-card" style="text-align:center;">
                 <div style="font-size:11px;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">${c.label}</div>
                 <div style="font-size:28px;font-weight:800;color:${c.color};">${c.value}</div>
             </div>
-        `).join('');
+        `).join(\'\');
 
         // Equity curve
         const equity = [currentSession.balance];
         trades.forEach(x=>equity.push(equity[equity.length-1]+x.pnl));
-        if(document.getElementById('equityAnalChart')){
-            new ApexCharts(document.getElementById('equityAnalChart'),{
-                series:[{name:'Équité',data:equity}],
-                chart:{type:'area',height:220,background:'transparent',toolbar:{show:false}},
-                theme:{mode:'dark'},
-                stroke:{curve:'smooth',width:2,colors:['#22C55E']},
-                fill:{type:'gradient',gradient:{shadeIntensity:1,opacityFrom:0.3,opacityTo:0,stops:[0,100]}},
-                colors:['#22C55E'],
+        if(document.getElementById(\'equityAnalChart\')){
+            new ApexCharts(document.getElementById(\'equityAnalChart\'),{
+                series:[{name:\'Équité\',data:equity}],
+                chart:{type:\'area\',height:220,background:\'transparent\',toolbar:{show:false}},
+                theme:{mode:\'dark\'},
+                stroke:{curve:\'smooth\',width:2,colors:[\'#22C55E\']},
+                fill:{type:\'gradient\',gradient:{shadeIntensity:1,opacityFrom:0.3,opacityTo:0,stops:[0,100]}},
+                colors:[\'#22C55E\'],
                 xaxis:{labels:{show:false}},
-                yaxis:{labels:{formatter:v=>'$'+v.toFixed(0)}},
-                grid:{borderColor:'#1A1A1A'},
-                tooltip:{theme:'dark'}
+                yaxis:{labels:{formatter:v=>\'$\'+v.toFixed(0)}},
+                grid:{borderColor:\'#1A1A1A\'},
+                tooltip:{theme:\'dark\'}
             }).render();
         }
 
         // Overview table
-        document.getElementById('overviewTable').innerHTML = [
-            ['Total des transactions',total],
-            ['Taux de victoire',wr+'%'],
-            ['RR Moyen',avgRR],
-            ['Profit Factor',pf],
-            ['Gain total','+$'+gp.toFixed(2),'g'],
-            ['Perte totale','-$'+gl.toFixed(2),'r'],
-            ['Bénéfice net',(totalPL>=0?'+':'')+'$'+totalPL.toFixed(2),totalPL>=0?'g':'r'],
-            ['Meilleur trade','+$'+(Math.max(...t.map(x=>x.pnl),0)).toFixed(2),'g'],
-            ['Pire trade','$'+(Math.min(...t.map(x=>x.pnl),0)).toFixed(2),'r'],
-        ].map(r=>`<tr><td>${r[0]}</td><td class="${r[2]||''}">${r[1]}</td></tr>`).join('');
+        document.getElementById(\'overviewTable\').innerHTML = [
+            [\'Total des transactions\',total],
+            [\'Taux de victoire\',wr+\'%\'],
+            [\'RR Moyen\',avgRR],
+            [\'Profit Factor\',pf],
+            [\'Gain total\',\'+$\'+gp.toFixed(2),\'g\'],
+            [\'Perte totale\',\'-$\'+gl.toFixed(2),\'r\'],
+            [\'Bénéfice net\',(totalPL>=0?\'+\':\'\')+\'$\'+totalPL.toFixed(2),totalPL>=0?\'g\':\'r\'],
+            [\'Meilleur trade\',\'+$\'+(Math.max(...t.map(x=>x.pnl),0)).toFixed(2),\'g\'],
+            [\'Pire trade\',\'$\'+(Math.min(...t.map(x=>x.pnl),0)).toFixed(2),\'r\'],
+        ].map(r=>`<tr><td>${r[0]}</td><td class="${r[2]||\'\'}">${r[1]}</td></tr>`).join(\'\');
 
         // P&L by period (bar chart)
         const pnlByHour = Array(24).fill(0);
         t.forEach(x=>pnlByHour[x.hour]+=x.pnl);
-        if(document.getElementById('pnlPeriodChart')){
-            new ApexCharts(document.getElementById('pnlPeriodChart'),{
-                series:[{name:'P&L',data:pnlByHour}],
-                chart:{type:'bar',height:220,background:'transparent',toolbar:{show:false}},
-                theme:{mode:'dark'},
-                colors:pnlByHour.map(v=>v>=0?'#22C55E':'#EF4444'),
-                xaxis:{categories:Array.from({length:24},(_,i)=>i+'h'),labels:{style:{fontSize:'10px'}}},
-                grid:{borderColor:'#1A1A1A'},
-                tooltip:{theme:'dark'}
+        if(document.getElementById(\'pnlPeriodChart\')){
+            new ApexCharts(document.getElementById(\'pnlPeriodChart\'),{
+                series:[{name:\'P&L\',data:pnlByHour}],
+                chart:{type:\'bar\',height:220,background:\'transparent\',toolbar:{show:false}},
+                theme:{mode:\'dark\'},
+                colors:pnlByHour.map(v=>v>=0?\'#22C55E\':\'#EF4444\'),
+                xaxis:{categories:Array.from({length:24},(_,i)=>i+\'h\'),labels:{style:{fontSize:\'10px\'}}},
+                grid:{borderColor:\'#1A1A1A\'},
+                tooltip:{theme:\'dark\'}
             }).render();
         }
 
         // RR distribution
         const rrBuckets = {};
         t.forEach(x=>{const k=x.rr.toFixed(1);rrBuckets[k]=(rrBuckets[k]||0)+1;});
-        if(document.getElementById('rrDistChart')){
-            new ApexCharts(document.getElementById('rrDistChart'),{
-                series:[{name:'Trades',data:Object.values(rrBuckets)}],
-                chart:{type:'bar',height:220,background:'transparent',toolbar:{show:false}},
-                theme:{mode:'dark'},
-                colors:['#3B82F6'],
-                xaxis:{categories:Object.keys(rrBuckets),title:{text:'RR',style:{color:'#6B7280'}}},
-                grid:{borderColor:'#1A1A1A'},
-                tooltip:{theme:'dark'}
+        if(document.getElementById(\'rrDistChart\')){
+            new ApexCharts(document.getElementById(\'rrDistChart\'),{
+                series:[{name:\'Trades\',data:Object.values(rrBuckets)}],
+                chart:{type:\'bar\',height:220,background:\'transparent\',toolbar:{show:false}},
+                theme:{mode:\'dark\'},
+                colors:[\'#3B82F6\'],
+                xaxis:{categories:Object.keys(rrBuckets),title:{text:\'RR\',style:{color:\'#6B7280\'}}},
+                grid:{borderColor:\'#1A1A1A\'},
+                tooltip:{theme:\'dark\'}
             }).render();
         }
     }
@@ -849,49 +849,49 @@
         const countByHour = Array(24).fill(0);
         t.forEach(x=>{pnlByHour[x.hour]+=x.pnl;countByHour[x.hour]++;});
 
-        if(document.getElementById('hourlyChart')){
-            new ApexCharts(document.getElementById('hourlyChart'),{
-                series:[{name:'P&L',data:pnlByHour}],
-                chart:{type:'bar',height:260,background:'transparent',toolbar:{show:false}},
-                theme:{mode:'dark'},
-                colors:pnlByHour.map(v=>v>=0?'#22C55E':'#EF4444'),
-                xaxis:{categories:Array.from({length:24},(_,i)=>i+'h')},
-                grid:{borderColor:'#1A1A1A'},tooltip:{theme:'dark'}
+        if(document.getElementById(\'hourlyChart\')){
+            new ApexCharts(document.getElementById(\'hourlyChart\'),{
+                series:[{name:\'P&L\',data:pnlByHour}],
+                chart:{type:\'bar\',height:260,background:\'transparent\',toolbar:{show:false}},
+                theme:{mode:\'dark\'},
+                colors:pnlByHour.map(v=>v>=0?\'#22C55E\':\'#EF4444\'),
+                xaxis:{categories:Array.from({length:24},(_,i)=>i+\'h\')},
+                grid:{borderColor:\'#1A1A1A\'},tooltip:{theme:\'dark\'}
             }).render();
         }
-        if(document.getElementById('tradesHourChart')){
-            new ApexCharts(document.getElementById('tradesHourChart'),{
-                series:[{name:'Trades',data:countByHour}],
-                chart:{type:'bar',height:260,background:'transparent',toolbar:{show:false}},
-                theme:{mode:'dark'},colors:['#06B6D4'],
-                xaxis:{categories:Array.from({length:24},(_,i)=>i+'h')},
-                grid:{borderColor:'#1A1A1A'},tooltip:{theme:'dark'}
+        if(document.getElementById(\'tradesHourChart\')){
+            new ApexCharts(document.getElementById(\'tradesHourChart\'),{
+                series:[{name:\'Trades\',data:countByHour}],
+                chart:{type:\'bar\',height:260,background:\'transparent\',toolbar:{show:false}},
+                theme:{mode:\'dark\'},colors:[\'#06B6D4\'],
+                xaxis:{categories:Array.from({length:24},(_,i)=>i+\'h\')},
+                grid:{borderColor:\'#1A1A1A\'},tooltip:{theme:\'dark\'}
             }).render();
         }
 
         const bestHour = pnlByHour.indexOf(Math.max(...pnlByHour));
         const worstHour = pnlByHour.indexOf(Math.min(...pnlByHour));
         const mostTrades = countByHour.indexOf(Math.max(...countByHour));
-        document.getElementById('timeStats').innerHTML = [
-            {label:'Meilleur moment',value:bestHour+'h00',sub:'+$'+pnlByHour[bestHour].toFixed(2),color:'#22C55E'},
-            {label:'Pire moment',value:worstHour+'h00',sub:'$'+pnlByHour[worstHour].toFixed(2),color:'#EF4444'},
-            {label:'Plus de trades',value:mostTrades+'h00',sub:countByHour[mostTrades]+' trades',color:'#06B6D4'},
-            {label:'Session active',value:getSessionName(),sub:'WAT (UTC+1)',color:'#8B5CF6'},
+        document.getElementById(\'timeStats\').innerHTML = [
+            {label:\'Meilleur moment\',value:bestHour+\'h00\',sub:\'+$\'+pnlByHour[bestHour].toFixed(2),color:\'#22C55E\'},
+            {label:\'Pire moment\',value:worstHour+\'h00\',sub:\'$\'+pnlByHour[worstHour].toFixed(2),color:\'#EF4444\'},
+            {label:\'Plus de trades\',value:mostTrades+\'h00\',sub:countByHour[mostTrades]+\' trades\',color:\'#06B6D4\'},
+            {label:\'Session active\',value:getSessionName(),sub:\'WAT (UTC+1)\',color:\'#8B5CF6\'},
         ].map(c=>`
             <div class="chart-card">
                 <div style="font-size:11px;color:#6B7280;margin-bottom:8px;">${c.label}</div>
                 <div style="font-size:20px;font-weight:800;color:${c.color};">${c.value}</div>
                 <div style="font-size:12px;color:#6B7280;margin-top:4px;">${c.sub}</div>
             </div>
-        `).join('');
+        `).join(\'\');
     }
 
     function getSessionName() {
         const h = new Date().getHours();
-        if(h>=8&&h<10) return 'Frankfurt';
-        if(h>=9&&h<17) return 'Londres';
-        if(h>=14&&h<22) return 'New York';
-        return 'Asie';
+        if(h>=8&&h<10) return \'Frankfurt\';
+        if(h>=9&&h<17) return \'Londres\';
+        if(h>=14&&h<22) return \'New York\';
+        return \'Asie\';
     }
 
     function renderMonteCarlo() {
@@ -905,60 +905,63 @@
             const curve = [currentSession.balance];
             const shuffled = [...pnls].sort(()=>Math.random()-0.5);
             shuffled.forEach(p=>curve.push(curve[curve.length-1]+p));
-            series.push({name:'Sim '+s,data:curve});
+            series.push({name:\'Sim \'+s,data:curve});
             finals.push(curve[curve.length-1]);
         }
         const avgFinal = finals.reduce((a,b)=>a+b,0)/finals.length;
         const maxFinal = Math.max(...finals);
         const minFinal = Math.min(...finals);
-        const wr = t.filter(x=>x.result==='WIN').length/t.length*100;
+        const wr = t.filter(x=>x.result===\'WIN\').length/t.length*100;
 
-        document.getElementById('mcParams').innerHTML=[
-            {l:'Simulations',v:numSim},
-            {l:'Trades/Sim',v:t.length},
-            {l:'Balance initiale',v:'$'+currentSession.balance.toLocaleString()},
-            {l:'Win Rate',v:wr.toFixed(1)+'%'},
-            {l:'Gain moyen',v:'$'+(t.filter(x=>x.result==='WIN').reduce((s,x)=>s+x.pnl,0)/Math.max(t.filter(x=>x.result==='WIN').length,1)).toFixed(2)},
-            {l:'Perte moyenne',v:'-$'+Math.abs(t.filter(x=>x.result==='LOSS').reduce((s,x)=>s+x.pnl,0)/Math.max(t.filter(x=>x.result==='LOSS').length,1)).toFixed(2)},
-        ].map(x=>`<div class="mc-param-box"><div class="mc-param-label">${x.l}</div><div class="mc-param-value">${x.v}</div></div>`).join('');
+        document.getElementById(\'mcParams\').innerHTML=[
+            {l:\'Simulations\',v:numSim},
+            {l:\'Trades/Sim\',v:t.length},
+            {l:\'Balance initiale\',v:\'$\'+currentSession.balance.toLocaleString()},
+            {l:\'Win Rate\',v:wr.toFixed(1)+\'%\'},
+            {l:\'Gain moyen\',v:\'$\'+(t.filter(x=>x.result===\'WIN\').reduce((s,x)=>s+x.pnl,0)/Math.max(t.filter(x=>x.result===\'WIN\').length,1)).toFixed(2)},
+            {l:\'Perte moyenne\',v:\'-$\'+Math.abs(t.filter(x=>x.result===\'LOSS\').reduce((s,x)=>s+x.pnl,0)/Math.max(t.filter(x=>x.result===\'LOSS\').length,1)).toFixed(2)},
+        ].map(x=>`<div class="mc-param-box"><div class="mc-param-label">${x.l}</div><div class="mc-param-value">${x.v}</div></div>`).join(\'\');
 
-        if(document.getElementById('mcChart')){
-            new ApexCharts(document.getElementById('mcChart'),{
+        if(document.getElementById(\'mcChart\')){
+            new ApexCharts(document.getElementById(\'mcChart\'),{
                 series:series.slice(0,20),
-                chart:{type:'line',height:300,background:'transparent',toolbar:{show:false},animations:{enabled:false}},
-                theme:{mode:'dark'},
-                stroke:{width:1,curve:'smooth'},
+                chart:{type:\'line\',height:300,background:\'transparent\',toolbar:{show:false},animations:{enabled:false}},
+                theme:{mode:\'dark\'},
+                stroke:{width:1,curve:\'smooth\'},
                 legend:{show:false},
                 xaxis:{labels:{show:false}},
-                yaxis:{labels:{formatter:v=>'$'+v.toFixed(0)}},
-                grid:{borderColor:'#1A1A1A'},
+                yaxis:{labels:{formatter:v=>\'$\'+v.toFixed(0)}},
+                grid:{borderColor:\'#1A1A1A\'},
                 tooltip:{enabled:false}
             }).render();
         }
 
         const pct = v => ((v-currentSession.balance)/currentSession.balance*100).toFixed(1);
-        document.getElementById('mcStats').innerHTML=[
-            {l:'Solde final moyen',v:'$'+avgFinal.toFixed(2),p:pct(avgFinal)+'%',c:avgFinal>=currentSession.balance?'g':'r'},
-            {l:'Solde final max',v:'$'+maxFinal.toFixed(2),p:'+'+pct(maxFinal)+'%',c:'g'},
-            {l:'Solde final min',v:'$'+minFinal.toFixed(2),p:pct(minFinal)+'%',c:minFinal>=currentSession.balance?'g':'r'},
-            {l:'Simulations profit',v:finals.filter(f=>f>=currentSession.balance).length+'/'+numSim,p:'rentables',c:'g'},
-            {l:'Simulations perte',v:finals.filter(f=>f<currentSession.balance).length+'/'+numSim,p:'en perte',c:'r'},
+        document.getElementById(\'mcStats\').innerHTML=[
+            {l:\'Solde final moyen\',v:\'$\'+avgFinal.toFixed(2),p:pct(avgFinal)+\'%\',c:avgFinal>=currentSession.balance?\'g\':\'r\'},
+            {l:\'Solde final max\',v:\'$\'+maxFinal.toFixed(2),p:\'+\'+pct(maxFinal)+\'%\',c:\'g\'},
+            {l:\'Solde final min\',v:\'$\'+minFinal.toFixed(2),p:pct(minFinal)+\'%\',c:minFinal>=currentSession.balance?\'g\':\'r\'},
+            {l:\'Simulations profit\',v:finals.filter(f=>f>=currentSession.balance).length+\'/\'+numSim,p:\'rentables\',c:\'g\'},
+            {l:\'Simulations perte\',v:finals.filter(f=>f<currentSession.balance).length+\'/\'+numSim,p:\'en perte\',c:\'r\'},
         ].map(x=>`
             <div class="mc-stat">
                 <div class="mc-stat-label">${x.l}</div>
                 <div class="mc-stat-value ${x.c}">${x.v}</div>
                 <div class="mc-stat-pct">${x.p}</div>
             </div>
-        `).join('');
+        `).join(\'\');
     }
 
     function runMonteCarlo() { renderMonteCarlo(); }
 
     // ===== INIT =====
-    window.addEventListener('load', () => {
+    window.addEventListener(\'load\', () => {
         renderSessions();
         lucide.createIcons();
     });
     </script>
 </body>
-</html>
+</html>'''
+
+open('frontend/backtesting.html', 'w', encoding='utf-8').write(content)
+print('Done! New backtesting page created.')
