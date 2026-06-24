@@ -100,7 +100,7 @@ function buildSidebar(current) {
         </button>
         <button class="new-trade-btn" id="sidebarNewTradeBtn" type="button">
             <i data-lucide="plus"></i>
-            <span>+ Nouveau Trade</span>
+            <span>Nouveau Trade</span>
         </button>
         <div class="sidebar-section-label">OUTILS</div>
         ${tools}
