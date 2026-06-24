@@ -343,7 +343,11 @@
                         </select>
                     </div>
                     <div style="margin-left:auto;display:flex;gap:8px;">
-                        <button onclick="showAnalytics()" style="padding:6px 14px;border-radius:8px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:#3B82F6;font-size:12px;font-weight:600;cursor:pointer;">
+                        
+<button onclick="toggleFullscreen()" id="fsBtn" style="padding:6px 12px;border-radius:8px;background:#141414;border:1px solid #1E1E1E;color:#6B7280;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.15s;" title="Plein écran">
+  <i data-lucide="maximize-2" style="width:14px;height:14px;"></i>
+</button>
+<button onclick="showAnalytics()" style="padding:6px 14px;border-radius:8px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:#3B82F6;font-size:12px;font-weight:600;cursor:pointer;">
                             📊 Analytique
                         </button>
                     </div>
@@ -365,7 +369,12 @@
                         <span class="balance-label">Win Rate:</span>
                         <span class="balance-value positive" id="wrDisplay">0%</span>
                     </div>
-                    <div class="balance-item">
+                    
+<div class="balance-item" style="margin-left:auto;">
+  <span class="balance-label">Date & Heure:</span>
+  <span class="balance-value" id="liveDateTime" style="color:#8B5CF6;">--</span>
+</div>
+<div class="balance-item">
                         <span class="balance-label">Session:</span>
                         <span class="balance-value" id="sessionNameDisplay">-</span>
                     </div>
@@ -960,5 +969,39 @@
         lucide.createIcons();
     });
     </script>
-</body>
+
+<script>
+// Fullscreen
+function toggleFullscreen() {
+  const chartArea = document.querySelector('.chart-area');
+  const btn = document.getElementById('fsBtn');
+  if (!document.fullscreenElement) {
+    chartArea.requestFullscreen().then(() => {
+      btn.innerHTML = '<i data-lucide="minimize-2" style="width:14px;height:14px;"></i>';
+      lucide.createIcons();
+    });
+  } else {
+    document.exitFullscreen().then(() => {
+      btn.innerHTML = '<i data-lucide="maximize-2" style="width:14px;height:14px;"></i>';
+      lucide.createIcons();
+    });
+  }
+}
+
+// Live datetime
+function updateDateTime() {
+  const now = new Date();
+  const days = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  const months = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+  const str = days[now.getDay()] + ' ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + 
+    now.getFullYear() + ' ' + 
+    String(now.getHours()).padStart(2,'0') + ':' + 
+    String(now.getMinutes()).padStart(2,'0') + ':' + 
+    String(now.getSeconds()).padStart(2,'0');
+  const el = document.getElementById('liveDateTime');
+  if(el) el.textContent = str;
+}
+setInterval(updateDateTime, 1000);
+updateDateTime();
+</script></body>
 </html>
