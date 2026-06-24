@@ -20,10 +20,10 @@ class API {
   }
 
   static async getAccounts() {
-    return await this.request('GET', '/api/accounts');
+    return await this.request('GET', '/api/accounts/');
   }
   static async createAccount(data) {
-    return await this.request('POST', '/api/accounts', data);
+    return await this.request('POST', '/api/accounts/', data);
   }
   static async updateAccount(id, data) {
     return await this.request('PUT', `/api/accounts/${id}`, data);
@@ -32,7 +32,7 @@ class API {
     return await this.request('DELETE', `/api/accounts/${id}`);
   }
   static async getTrades(accountId = null, period = null) {
-    let url = '/api/trades';
+    let url = '/api/trades/';
     const params = [];
     if (accountId) params.push(`account_id=${accountId}`);
     if (period) params.push(`period=${period}`);
@@ -40,7 +40,7 @@ class API {
     return await this.request('GET', url);
   }
   static async createTrade(data) {
-    return await this.request('POST', '/api/trades', data);
+    return await this.request('POST', '/api/trades/', data);
   }
   static async updateTrade(id, data) {
     return await this.request('PUT', `/api/trades/${id}`, data);
@@ -49,7 +49,7 @@ class API {
     return await this.request('DELETE', `/api/trades/${id}`);
   }
   static async getStats(accountId = null, period = null) {
-    let url = '/api/stats';
+    let url = '/api/stats/';
     const params = [];
     if (accountId) params.push(`account_id=${accountId}`);
     if (period) params.push(`period=${period}`);
