@@ -243,6 +243,32 @@ html, body {
   background: rgba(20,20,28,0.8) !important;
   backdrop-filter: blur(10px) !important;
 }
+</style><style id="fs-css">
+:-webkit-full-screen .sidebar,
+:-webkit-full-screen .navbar,
+:-webkit-full-screen #quitBar,
+:fullscreen .sidebar,
+:fullscreen .navbar,
+:fullscreen #quitBar {
+  display: none !important;
+}
+:-webkit-full-screen #tradingInterface,
+:fullscreen #tradingInterface {
+  position: fixed !important;
+  top: 0 !important; left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 99999 !important;
+  grid-template-columns: 1fr 320px !important;
+}
+:-webkit-full-screen .chart-area,
+:fullscreen .chart-area {
+  height: 100vh !important;
+}
+:-webkit-full-screen #main-chart iframe,
+:fullscreen #main-chart iframe {
+  height: calc(100vh - 120px) !important;
+}
 </style></head>
 <body style="margin:0;background:#0A0A0A;color:#fff;font-family:Inter,sans-serif;">
     <div id="app-layout-root"></div>
@@ -998,22 +1024,16 @@ html, body {
 // Fullscreen
 function toggleFullscreen() {
   const btn = document.getElementById('fsBtn');
-  const tradingUI = document.getElementById('tradingInterface');
-  
+  const el = document.getElementById('tradingInterface');
   if (!document.fullscreenElement) {
-    // Fullscreen sur tout le trading interface
-    tradingUI.requestFullscreen().catch(err => {
-      // Fallback: plein ecran via CSS
-      tradingUI.style.position = 'fixed';
-      tradingUI.style.top = '0';
-      tradingUI.style.left = '0';
-      tradingUI.style.right = '0';
-      tradingUI.style.bottom = '0';
-      tradingUI.style.zIndex = '9999';
-      tradingUI.style.width = '100vw';
-      tradingUI.style.height = '100vh';
-      tradingUI.style.gridTemplateColumns = '1fr 320px';
-    });
+    el.requestFullscreen();
+    if(btn) btn.innerHTML = '<i data-lucide="minimize-2" style="width:14px;height:14px;"></i>';
+  } else {
+    document.exitFullscreen();
+    if(btn) btn.innerHTML = '<i data-lucide="maximize-2" style="width:14px;height:14px;"></i>';
+  }
+  setTimeout(() => lucide.createIcons(), 100);
+});
     if(btn) btn.innerHTML = '<i data-lucide="minimize-2" style="width:14px;height:14px;"></i>';
     lucide.createIcons();
   } else {
