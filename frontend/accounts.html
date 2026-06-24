@@ -694,7 +694,7 @@ document.addEventListener('DOMContentLoaded', function() {
         : 'https://smartreview-y4sq.onrender.com';
       
       const method = data.id ? 'PUT' : 'POST';
-      const url = data.id ? BASE + '/accounts/' + data.id : BASE + '/accounts';
+      const url = data.id ? BASE + '/api/accounts/' + data.id : BASE + '/api/accounts';
       
       const res = await fetch(url, {
         method: method,
@@ -1003,7 +1003,7 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log('Sending payload:', payload);
       
       try {
-        const res = await fetch(ACCT_BASE + '/accounts', {
+        const res = await fetch(ACCT_BASE + '/api/accounts', {
           method: 'POST',
           headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
           body: JSON.stringify(payload)
