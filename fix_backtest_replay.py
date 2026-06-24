@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+content = '''<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -186,12 +186,12 @@
                 <div class="chart-topbar">
                     <div class="pair-badge" id="pairBadge">XAU/USD</div>
                     <div class="tf-pills">
-                        <button class="tf-pill" onclick="changeTF(this,'1min')">M1</button>
-                        <button class="tf-pill" onclick="changeTF(this,'5min')">M5</button>
-                        <button class="tf-pill active" onclick="changeTF(this,'15min')">M15</button>
-                        <button class="tf-pill" onclick="changeTF(this,'1h')">H1</button>
-                        <button class="tf-pill" onclick="changeTF(this,'4h')">H4</button>
-                        <button class="tf-pill" onclick="changeTF(this,'1day')">D1</button>
+                        <button class="tf-pill" onclick="changeTF(this,\'1min\')">M1</button>
+                        <button class="tf-pill" onclick="changeTF(this,\'5min\')">M5</button>
+                        <button class="tf-pill active" onclick="changeTF(this,\'15min\')">M15</button>
+                        <button class="tf-pill" onclick="changeTF(this,\'1h\')">H1</button>
+                        <button class="tf-pill" onclick="changeTF(this,\'4h\')">H4</button>
+                        <button class="tf-pill" onclick="changeTF(this,\'1day\')">D1</button>
                     </div>
                     <div class="replay-controls">
                         <button class="r-btn" onclick="goBack10()" title="Reculer 10 bougies">⏮</button>
@@ -222,7 +222,7 @@
                     <div class="loading-overlay" id="loadingOverlay">
                         <div class="loading-spinner"></div>
                         <div style="color:#6B7280;font-size:13px;">Chargement des données historiques...</div>
-                        <div style="color:#374151;font-size:11px;margin-top:4px;" id="loadingMsg">Connexion à l'API...</div>
+                        <div style="color:#374151;font-size:11px;margin-top:4px;" id="loadingMsg">Connexion à l\'API...</div>
                     </div>
                 </div>
             </div>
@@ -232,8 +232,8 @@
                 <div class="panel-block">
                     <div class="panel-block-title">Entrer un Trade</div>
                     <div class="buy-sell-grid">
-                        <button class="btn-buy-big" onclick="enterTrade('BUY')">▲ BUY</button>
-                        <button class="btn-sell-big" onclick="enterTrade('SELL')">▼ SELL</button>
+                        <button class="btn-buy-big" onclick="enterTrade(\'BUY\')">▲ BUY</button>
+                        <button class="btn-sell-big" onclick="enterTrade(\'SELL\')">▼ SELL</button>
                     </div>
                     <div class="field-row">
                         <div>
@@ -299,7 +299,7 @@
             <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px;" id="anaCards"></div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
                 <div style="background:#141414;border:1px solid #1E1E1E;border-radius:16px;padding:20px;">
-                    <div style="font-size:13px;font-weight:600;margin-bottom:12px;">Courbe d'Équité</div>
+                    <div style="font-size:13px;font-weight:600;margin-bottom:12px;">Courbe d\'Équité</div>
                     <div id="eqChart"></div>
                 </div>
                 <div style="background:#141414;border:1px solid #1E1E1E;border-radius:16px;padding:20px;">
@@ -314,7 +314,7 @@
     <script src="/js/layout.js"></script>
     <script>
     // ===== STATE =====
-    let sessions = JSON.parse(localStorage.getItem('bt_sessions_v2') || '[]');
+    let sessions = JSON.parse(localStorage.getItem(\'bt_sessions_v2\') || \'[]\');
     let currentSession = null;
     let allCandles = [];
     let visibleIndex = 50;
@@ -323,11 +323,11 @@
     let candleSeries = null;
     let isPlaying = false;
     let playTimer = null;
-    let currentTF = '15min';
+    let currentTF = \'15min\';
 
     // ===== SESSIONS =====
     function renderSessions() {
-        const grid = document.getElementById('sessionsGrid');
+        const grid = document.getElementById(\'sessionsGrid\');
         if(!sessions.length) {
             grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:#374151;">
                 <div style="font-size:48px;margin-bottom:16px;">📊</div>
@@ -342,22 +342,22 @@
                 <div class="session-info">Instrument: <span>${s.pair}</span></div>
                 <div class="session-info">Balance: <span>$${s.balance.toLocaleString()}</span></div>
                 <div class="session-info">Trades: <span>${(s.trades||[]).length}</span></div>
-                <div class="session-info">P&L: <span style="color:${(s.pnl||0)>=0?'#22C55E':'#EF4444'}">${(s.pnl||0)>=0?'+':''}\$${((s.pnl||0)).toFixed(2)}</span></div>
+                <div class="session-info">P&L: <span style="color:${(s.pnl||0)>=0?\'#22C55E\':\'#EF4444\'}">${(s.pnl||0)>=0?\'+\':\'\'}\$${((s.pnl||0)).toFixed(2)}</span></div>
                 <div class="session-info" style="font-size:11px;">Créé: <span style="color:#6B7280;font-weight:400;">${s.date}</span></div>
                 <div class="play-btn">▶</div>
             </div>
-        `).join('');
+        `).join(\'\');
     }
 
-    function showNewSessionModal() { document.getElementById('newSessionModal').classList.add('active'); }
-    function hideModal() { document.getElementById('newSessionModal').classList.remove('active'); }
+    function showNewSessionModal() { document.getElementById(\'newSessionModal\').classList.add(\'active\'); }
+    function hideModal() { document.getElementById(\'newSessionModal\').classList.remove(\'active\'); }
 
     function startSession() {
-        const name = document.getElementById('sessionName').value || 'Session '+(sessions.length+1);
-        const pair = document.getElementById('sessionPair').value;
-        const balance = parseFloat(document.getElementById('sessionBalance').value) || 10000;
-        const tf = document.getElementById('sessionTF').value;
-        const session = { id:Date.now(), name, pair, balance, tf, trades:[], pnl:0, date:new Date().toLocaleDateString('fr') };
+        const name = document.getElementById(\'sessionName\').value || \'Session \'+(sessions.length+1);
+        const pair = document.getElementById(\'sessionPair\').value;
+        const balance = parseFloat(document.getElementById(\'sessionBalance\').value) || 10000;
+        const tf = document.getElementById(\'sessionTF\').value;
+        const session = { id:Date.now(), name, pair, balance, tf, trades:[], pnl:0, date:new Date().toLocaleDateString(\'fr\') };
         sessions.push(session);
         saveSessions();
         hideModal();
@@ -367,13 +367,13 @@
     function openSession(idx) {
         currentSession = sessions[idx];
         trades = currentSession.trades || [];
-        currentTF = currentSession.tf || '15min';
-        document.getElementById('sessionsView').style.display = 'none';
-        document.getElementById('tradingInterface').classList.add('active');
-        document.getElementById('pairBadge').textContent = currentSession.pair;
-        document.getElementById('sessDisp').textContent = currentSession.name;
-        document.getElementById('qSessName').textContent = currentSession.name;
-        document.getElementById('balDisp').textContent = '$'+currentSession.balance.toLocaleString();
+        currentTF = currentSession.tf || \'15min\';
+        document.getElementById(\'sessionsView\').style.display = \'none\';
+        document.getElementById(\'tradingInterface\').classList.add(\'active\');
+        document.getElementById(\'pairBadge\').textContent = currentSession.pair;
+        document.getElementById(\'sessDisp\').textContent = currentSession.name;
+        document.getElementById(\'qSessName\').textContent = currentSession.name;
+        document.getElementById(\'balDisp\').textContent = \'$\'+currentSession.balance.toLocaleString();
         updateStats();
         renderTradesList();
         initChart();
@@ -386,28 +386,28 @@
             currentSession.pnl = trades.reduce((s,t)=>s+t.pnl, 0);
             sessions = sessions.map(s => s.id===currentSession.id ? currentSession : s);
         }
-        localStorage.setItem('bt_sessions_v2', JSON.stringify(sessions));
+        localStorage.setItem(\'bt_sessions_v2\', JSON.stringify(sessions));
     }
 
     // ===== CHART =====
     function initChart() {
-        const container = document.getElementById('chart-container');
+        const container = document.getElementById(\'chart-container\');
         if(chart) { chart.remove(); chart = null; }
         
         chart = LightweightCharts.createChart(container, {
             width: container.clientWidth,
             height: container.clientHeight || 500,
-            layout: { background:{type:'solid',color:'#0A0A0A'}, textColor:'#9CA3AF' },
-            grid: { vertLines:{color:'#1A1A1A'}, horzLines:{color:'#1A1A1A'} },
+            layout: { background:{type:\'solid\',color:\'#0A0A0A\'}, textColor:\'#9CA3AF\' },
+            grid: { vertLines:{color:\'#1A1A1A\'}, horzLines:{color:\'#1A1A1A\'} },
             crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
-            rightPriceScale: { borderColor:'#1A1A1A' },
-            timeScale: { borderColor:'#1A1A1A', timeVisible:true, secondsVisible:false },
+            rightPriceScale: { borderColor:\'#1A1A1A\' },
+            timeScale: { borderColor:\'#1A1A1A\', timeVisible:true, secondsVisible:false },
         });
         
         candleSeries = chart.addCandlestickSeries({
-            upColor:'#22C55E', downColor:'#EF4444',
-            borderUpColor:'#22C55E', borderDownColor:'#EF4444',
-            wickUpColor:'#22C55E', wickDownColor:'#EF4444',
+            upColor:\'#22C55E\', downColor:\'#EF4444\',
+            borderUpColor:\'#22C55E\', borderDownColor:\'#EF4444\',
+            wickUpColor:\'#22C55E\', wickDownColor:\'#EF4444\',
         });
 
         // Resize observer
@@ -421,11 +421,11 @@
             if(param.time && candleSeries) {
                 const data = param.seriesData.get(candleSeries);
                 if(data) {
-                    document.getElementById('candleInfo').innerHTML = `
-                        <span>O:<span style="color:${data.close>=data.open?'#22C55E':'#EF4444'}">${data.open.toFixed(5)}</span></span>
+                    document.getElementById(\'candleInfo\').innerHTML = `
+                        <span>O:<span style="color:${data.close>=data.open?\'#22C55E\':\'#EF4444\'}">${data.open.toFixed(5)}</span></span>
                         <span>H:<span style="color:#22C55E">${data.high.toFixed(5)}</span></span>
                         <span>L:<span style="color:#EF4444">${data.low.toFixed(5)}</span></span>
-                        <span>C:<span style="color:${data.close>=data.open?'#22C55E':'#EF4444'}">${data.close.toFixed(5)}</span></span>
+                        <span>C:<span style="color:${data.close>=data.open?\'#22C55E\':\'#EF4444\'}">${data.close.toFixed(5)}</span></span>
                     `;
                 }
             }
@@ -434,11 +434,11 @@
 
     // ===== DATA LOADING =====
     async function loadCandles(pair, tf) {
-        document.getElementById('loadingOverlay').style.display = 'flex';
-        document.getElementById('loadingMsg').textContent = 'Chargement de '+pair+'...';
+        document.getElementById(\'loadingOverlay\').style.display = \'flex\';
+        document.getElementById(\'loadingMsg\').textContent = \'Chargement de \'+pair+\'...\';
         
         // Convertir pair pour Twelve Data API
-        const symbol = pair.replace('/', '');
+        const symbol = pair.replace(\'/\', \'\');
         const interval = tf;
         
         try {
@@ -447,9 +447,9 @@
             const res = await fetch(url);
             const data = await res.json();
             
-            if(data.status === 'error' || !data.values) {
+            if(data.status === \'error\' || !data.values) {
                 // Fallback: générer des données réalistes
-                document.getElementById('loadingMsg').textContent = 'Génération de données simulées...';
+                document.getElementById(\'loadingMsg\').textContent = \'Génération de données simulées...\';
                 allCandles = generateRealisticCandles(pair, 500);
             } else {
                 allCandles = data.values.reverse().map(v => ({
@@ -461,24 +461,24 @@
                 }));
             }
         } catch(e) {
-            document.getElementById('loadingMsg').textContent = 'Mode simulation activé';
+            document.getElementById(\'loadingMsg\').textContent = \'Mode simulation activé\';
             allCandles = generateRealisticCandles(pair, 500);
         }
         
         visibleIndex = Math.min(100, allCandles.length);
         displayCandles();
-        document.getElementById('loadingOverlay').style.display = 'none';
+        document.getElementById(\'loadingOverlay\').style.display = \'none\';
         updateDateTime();
     }
 
     function generateRealisticCandles(pair, count) {
         const candles = [];
-        let price = pair.includes('XAU')||pair.includes('GOLD') ? 2000 :
-                    pair.includes('BTC') ? 45000 :
-                    pair.includes('NAS') ? 17000 :
-                    pair.includes('US30') ? 38000 : 1.1;
+        let price = pair.includes(\'XAU\')||pair.includes(\'GOLD\') ? 2000 :
+                    pair.includes(\'BTC\') ? 45000 :
+                    pair.includes(\'NAS\') ? 17000 :
+                    pair.includes(\'US30\') ? 38000 : 1.1;
         const now = Math.floor(Date.now()/1000);
-        const tfSecs = currentTF==='1min'?60:currentTF==='5min'?300:currentTF==='15min'?900:currentTF==='1h'?3600:currentTF==='4h'?14400:86400;
+        const tfSecs = currentTF===\'1min\'?60:currentTF===\'5min\'?300:currentTF===\'15min\'?900:currentTF===\'1h\'?3600:currentTF===\'4h\'?14400:86400;
         
         for(let i=count;i>=0;i--) {
             const volatility = price * 0.002;
@@ -506,15 +506,15 @@
         const candle = allCandles[visibleIndex-1];
         if(!candle) return;
         const d = new Date(candle.time * 1000);
-        const days = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
-        const months = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
-        document.getElementById('dtDisp').textContent = days[d.getDay()]+' '+d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear()+' '+String(d.getHours()).padStart(2,'0')+ ':'+String(d.getMinutes()).padStart(2,'0');
+        const days = [\'Dim\',\'Lun\',\'Mar\',\'Mer\',\'Jeu\',\'Ven\',\'Sam\'];
+        const months = [\'Jan\',\'Fév\',\'Mar\',\'Avr\',\'Mai\',\'Jun\',\'Jul\',\'Aoû\',\'Sep\',\'Oct\',\'Nov\',\'Déc\'];
+        document.getElementById(\'dtDisp\').textContent = days[d.getDay()]+\' \'+d.getDate()+\' \'+months[d.getMonth()]+\' \'+d.getFullYear()+\' \'+String(d.getHours()).padStart(2,\'0\')+ \':\'+String(d.getMinutes()).padStart(2,\'0\');
     }
 
     // ===== REPLAY CONTROLS =====
     function goForward1() {
         if(visibleIndex < allCandles.length) { visibleIndex++; displayCandles(); }
-        else { stopPlay(); alert('Fin des données historiques'); }
+        else { stopPlay(); alert(\'Fin des données historiques\'); }
     }
     function goBack1() {
         if(visibleIndex > 2) { visibleIndex--; displayCandles(); }
@@ -529,34 +529,34 @@
     }
     function togglePlay() {
         isPlaying = !isPlaying;
-        const btn = document.getElementById('playBtn');
+        const btn = document.getElementById(\'playBtn\');
         if(isPlaying) {
-            btn.textContent = '⏸';
-            btn.classList.add('active');
+            btn.textContent = \'⏸\';
+            btn.classList.add(\'active\');
             playTimer = setInterval(() => {
                 if(visibleIndex < allCandles.length) { visibleIndex++; displayCandles(); }
                 else { stopPlay(); }
-            }, parseInt(document.getElementById('speedSelect').value));
+            }, parseInt(document.getElementById(\'speedSelect\').value));
         } else { stopPlay(); }
     }
     function stopPlay() {
         isPlaying = false;
         clearInterval(playTimer);
-        const btn = document.getElementById('playBtn');
-        if(btn) { btn.textContent = '▶'; btn.classList.remove('active'); }
+        const btn = document.getElementById(\'playBtn\');
+        if(btn) { btn.textContent = \'▶\'; btn.classList.remove(\'active\'); }
     }
 
     function changeTF(btn, tf) {
         currentTF = tf;
-        document.querySelectorAll('.tf-pill').forEach(p=>p.classList.remove('active'));
-        btn.classList.add('active');
+        document.querySelectorAll(\'.tf-pill\').forEach(p=>p.classList.remove(\'active\'));
+        btn.classList.add(\'active\');
         stopPlay();
         if(currentSession) loadCandles(currentSession.pair, tf);
     }
 
     // ===== FULLSCREEN =====
     function toggleFS() {
-        const el = document.getElementById('tradingInterface');
+        const el = document.getElementById(\'tradingInterface\');
         if(!document.fullscreenElement) {
             el.requestFullscreen && el.requestFullscreen();
         } else {
@@ -566,35 +566,35 @@
 
     // ===== TRADE ENTRY =====
     function calcRR() {
-        const sl = parseFloat(document.getElementById('slPips').value)||1;
-        const tp = parseFloat(document.getElementById('tpPips').value)||1;
+        const sl = parseFloat(document.getElementById(\'slPips\').value)||1;
+        const tp = parseFloat(document.getElementById(\'tpPips\').value)||1;
         const rr = (tp/sl).toFixed(2);
-        const el = document.getElementById('rrShow');
+        const el = document.getElementById(\'rrShow\');
         el.textContent = rr;
-        el.style.color = rr>=2?'#22C55E':rr>=1?'#F59E0B':'#EF4444';
+        el.style.color = rr>=2?\'#22C55E\':rr>=1?\'#F59E0B\':\'#EF4444\';
     }
 
     function enterTrade(direction) {
         if(!allCandles.length) return;
         const currentCandle = allCandles[visibleIndex-1];
-        const sl = parseFloat(document.getElementById('slPips').value)||20;
-        const tp = parseFloat(document.getElementById('tpPips').value)||40;
-        const risk = parseFloat(document.getElementById('riskAmt').value)||100;
-        const setup = document.getElementById('setupNote').value||'-';
+        const sl = parseFloat(document.getElementById(\'slPips\').value)||20;
+        const tp = parseFloat(document.getElementById(\'tpPips\').value)||40;
+        const risk = parseFloat(document.getElementById(\'riskAmt\').value)||100;
+        const setup = document.getElementById(\'setupNote\').value||\'-\';
         const rr = tp/sl;
         const entryPrice = currentCandle.close;
         
         // Simuler le résultat basé sur les prochaines bougies
-        let result = 'LOSS', pnl = -risk;
+        let result = \'LOSS\', pnl = -risk;
         const futureCandles = allCandles.slice(visibleIndex, visibleIndex+20);
         
         for(const fc of futureCandles) {
-            if(direction==='BUY') {
-                if(fc.high >= entryPrice + tp*0.0001) { result='WIN'; pnl=+(risk*rr).toFixed(2); break; }
-                if(fc.low <= entryPrice - sl*0.0001) { result='LOSS'; pnl=-risk; break; }
+            if(direction===\'BUY\') {
+                if(fc.high >= entryPrice + tp*0.0001) { result=\'WIN\'; pnl=+(risk*rr).toFixed(2); break; }
+                if(fc.low <= entryPrice - sl*0.0001) { result=\'LOSS\'; pnl=-risk; break; }
             } else {
-                if(fc.low <= entryPrice - tp*0.0001) { result='WIN'; pnl=+(risk*rr).toFixed(2); break; }
-                if(fc.high >= entryPrice + sl*0.0001) { result='LOSS'; pnl=-risk; break; }
+                if(fc.low <= entryPrice - tp*0.0001) { result=\'WIN\'; pnl=+(risk*rr).toFixed(2); break; }
+                if(fc.high >= entryPrice + sl*0.0001) { result=\'LOSS\'; pnl=-risk; break; }
             }
         }
         
@@ -602,7 +602,7 @@
             id:Date.now(), direction, sl, tp, risk, rr:+rr.toFixed(2),
             result, pnl, setup, pair:currentSession.pair,
             entryPrice:+entryPrice.toFixed(5),
-            time:document.getElementById('dtDisp').textContent,
+            time:document.getElementById(\'dtDisp\').textContent,
             hour:new Date(currentCandle.time*1000).getHours()
         };
         
@@ -612,12 +612,12 @@
         renderTradesList();
         
         // Flash animation
-        const btn = direction==='BUY' ? document.querySelector('.btn-buy-big') : document.querySelector('.btn-sell-big');
-        btn.style.opacity='0.6';
-        setTimeout(()=>btn.style.opacity='',200);
+        const btn = direction===\'BUY\' ? document.querySelector(\'.btn-buy-big\') : document.querySelector(\'.btn-sell-big\');
+        btn.style.opacity=\'0.6\';
+        setTimeout(()=>btn.style.opacity=\'\',200);
         
         // Avancer quelques bougies pour voir le résultat
-        const advance = result==='WIN' ? Math.floor(futureCandles.length*0.3)+1 : Math.floor(futureCandles.length*0.6)+1;
+        const advance = result===\'WIN\' ? Math.floor(futureCandles.length*0.3)+1 : Math.floor(futureCandles.length*0.6)+1;
         visibleIndex = Math.min(allCandles.length, visibleIndex + Math.min(advance, 10));
         displayCandles();
     }
@@ -625,57 +625,57 @@
     function updateStats() {
         const t = trades;
         const total = t.length;
-        const wins = t.filter(x=>x.result==='WIN').length;
+        const wins = t.filter(x=>x.result===\'WIN\').length;
         const losses = total-wins;
         const wr = total>0?((wins/total)*100).toFixed(1):0;
         const totalPL = t.reduce((s,x)=>s+x.pnl,0);
-        const gp = t.filter(x=>x.result==='WIN').reduce((s,x)=>s+x.pnl,0);
-        const gl = Math.abs(t.filter(x=>x.result==='LOSS').reduce((s,x)=>s+x.pnl,0));
-        const pf = gl>0?(gp/gl).toFixed(2):gp>0?'∞':'0';
+        const gp = t.filter(x=>x.result===\'WIN\').reduce((s,x)=>s+x.pnl,0);
+        const gl = Math.abs(t.filter(x=>x.result===\'LOSS\').reduce((s,x)=>s+x.pnl,0));
+        const pf = gl>0?(gp/gl).toFixed(2):gp>0?\'∞\':\'0\';
         const avgRR = total>0?(t.reduce((s,x)=>s+x.rr,0)/total).toFixed(2):0;
         let best=0,worst=0,cur=0;
-        t.forEach(x=>{if(x.result==='WIN'){cur=cur>=0?cur+1:1;best=Math.max(best,cur);}else{cur=cur<=0?cur-1:-1;worst=Math.min(worst,cur);}});
+        t.forEach(x=>{if(x.result===\'WIN\'){cur=cur>=0?cur+1:1;best=Math.max(best,cur);}else{cur=cur<=0?cur-1:-1;worst=Math.min(worst,cur);}});
         const newBal = currentSession.balance + totalPL;
         
-        document.getElementById('st1').textContent=total;
-        document.getElementById('st2').textContent=wins;
-        document.getElementById('st3').textContent=losses;
-        document.getElementById('st4').textContent=wr+'%';
-        document.getElementById('st4').className='sv '+(wr>=50?'g':'r');
-        document.getElementById('st5').textContent=(totalPL>=0?'+':'')+'$'+totalPL.toFixed(2);
-        document.getElementById('st5').className='sv '+(totalPL>=0?'g':'r');
-        document.getElementById('st6').textContent=pf;
-        document.getElementById('st7').textContent=avgRR;
-        document.getElementById('st8').textContent=best+' wins';
-        document.getElementById('st9').textContent=Math.abs(worst)+' losses';
-        document.getElementById('trDisp').textContent=total;
-        document.getElementById('wrDisp').textContent=wr+'%';
-        document.getElementById('pnlDisp').textContent=(totalPL>=0?'+':'')+'$'+totalPL.toFixed(2);
-        document.getElementById('pnlDisp').className='bv '+(totalPL>=0?'g':'r');
-        document.getElementById('balDisp').textContent='$'+newBal.toLocaleString('fr',{minimumFractionDigits:2,maximumFractionDigits:2});
-        document.getElementById('tCount').textContent=total;
+        document.getElementById(\'st1\').textContent=total;
+        document.getElementById(\'st2\').textContent=wins;
+        document.getElementById(\'st3\').textContent=losses;
+        document.getElementById(\'st4\').textContent=wr+\'%\';
+        document.getElementById(\'st4\').className=\'sv \'+(wr>=50?\'g\':\'r\');
+        document.getElementById(\'st5\').textContent=(totalPL>=0?\'+\':\'\')+\'$\'+totalPL.toFixed(2);
+        document.getElementById(\'st5\').className=\'sv \'+(totalPL>=0?\'g\':\'r\');
+        document.getElementById(\'st6\').textContent=pf;
+        document.getElementById(\'st7\').textContent=avgRR;
+        document.getElementById(\'st8\').textContent=best+\' wins\';
+        document.getElementById(\'st9\').textContent=Math.abs(worst)+\' losses\';
+        document.getElementById(\'trDisp\').textContent=total;
+        document.getElementById(\'wrDisp\').textContent=wr+\'%\';
+        document.getElementById(\'pnlDisp\').textContent=(totalPL>=0?\'+\':\'\')+\'$\'+totalPL.toFixed(2);
+        document.getElementById(\'pnlDisp\').className=\'bv \'+(totalPL>=0?\'g\':\'r\');
+        document.getElementById(\'balDisp\').textContent=\'$\'+newBal.toLocaleString(\'fr\',{minimumFractionDigits:2,maximumFractionDigits:2});
+        document.getElementById(\'tCount\').textContent=total;
     }
 
     function renderTradesList() {
-        const el = document.getElementById('tradesList');
-        if(!trades.length){el.innerHTML='<div style="text-align:center;color:#374151;font-size:12px;padding:20px;">Aucun trade</div>';return;}
+        const el = document.getElementById(\'tradesList\');
+        if(!trades.length){el.innerHTML=\'<div style="text-align:center;color:#374151;font-size:12px;padding:20px;">Aucun trade</div>\';return;}
         el.innerHTML=[...trades].reverse().map(t=>`
             <div class="trade-entry">
                 <div>
-                    <span class="dir-badge ${t.direction==='BUY'?'b':'s'}">${t.direction}</span>
+                    <span class="dir-badge ${t.direction===\'BUY\'?\'b\':\'s\'}">${t.direction}</span>
                     <span style="font-size:10px;color:#6B7280;margin-left:4px;">${t.pair}</span>
                     <div style="font-size:10px;color:#374151;margin-top:2px;">${t.setup} @ ${t.entryPrice}</div>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-weight:700;color:${t.pnl>=0?'#22C55E':'#EF4444'}">${t.pnl>=0?'+':''}\$${Math.abs(t.pnl).toFixed(2)}</div>
+                    <div style="font-weight:700;color:${t.pnl>=0?\'#22C55E\':\'#EF4444\'}">${t.pnl>=0?\'+\':\'\'}\$${Math.abs(t.pnl).toFixed(2)}</div>
                     <div style="font-size:10px;color:#374151;">RR ${t.rr}</div>
                 </div>
             </div>
-        `).join('');
+        `).join(\'\');
     }
 
     function resetSession() {
-        if(confirm('Réinitialiser cette session ?')) {
+        if(confirm(\'Réinitialiser cette session ?\')) {
             trades = [];
             visibleIndex = 50;
             saveSessions();
@@ -687,49 +687,52 @@
 
     function quitSession() {
         stopPlay();
-        document.getElementById('tradingInterface').classList.remove('active');
-        document.getElementById('analyticsView').style.display = 'none';
-        document.getElementById('sessionsView').style.display = 'block';
+        document.getElementById(\'tradingInterface\').classList.remove(\'active\');
+        document.getElementById(\'analyticsView\').style.display = \'none\';
+        document.getElementById(\'sessionsView\').style.display = \'block\';
         renderSessions();
     }
 
     // ===== ANALYTICS =====
     function showAnalytics() {
         stopPlay();
-        document.getElementById('tradingInterface').classList.remove('active');
-        const av = document.getElementById('analyticsView');
-        av.style.display = 'block';
+        document.getElementById(\'tradingInterface\').classList.remove(\'active\');
+        const av = document.getElementById(\'analyticsView\');
+        av.style.display = \'block\';
         const t = trades;
         const total = t.length;
-        const wins = t.filter(x=>x.result==='WIN').length;
+        const wins = t.filter(x=>x.result===\'WIN\').length;
         const wr = total>0?((wins/total)*100).toFixed(1):0;
         const totalPL = t.reduce((s,x)=>s+x.pnl,0);
-        const gp = t.filter(x=>x.result==='WIN').reduce((s,x)=>s+x.pnl,0);
-        const gl = Math.abs(t.filter(x=>x.result==='LOSS').reduce((s,x)=>s+x.pnl,0));
-        const pf = gl>0?(gp/gl).toFixed(2):gp>0?'∞':'0';
+        const gp = t.filter(x=>x.result===\'WIN\').reduce((s,x)=>s+x.pnl,0);
+        const gl = Math.abs(t.filter(x=>x.result===\'LOSS\').reduce((s,x)=>s+x.pnl,0));
+        const pf = gl>0?(gp/gl).toFixed(2):gp>0?\'∞\':\'0\';
         
-        document.getElementById('anaCards').innerHTML=[
-            {l:'Trades',v:total,c:'#fff'},{l:'Win Rate',v:wr+'%',c:wr>=50?'#22C55E':'#EF4444'},
-            {l:'P&L',v:(totalPL>=0?'+':'')+'$'+totalPL.toFixed(2),c:totalPL>=0?'#22C55E':'#EF4444'},
-            {l:'Profit Factor',v:pf,c:'#3B82F6'}
-        ].map(c=>`<div style="background:#141414;border:1px solid #1E1E1E;border-radius:14px;padding:20px;text-align:center;"><div style="font-size:11px;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">${c.l}</div><div style="font-size:28px;font-weight:800;color:${c.c};">${c.v}</div></div>`).join('');
+        document.getElementById(\'anaCards\').innerHTML=[
+            {l:\'Trades\',v:total,c:\'#fff\'},{l:\'Win Rate\',v:wr+\'%\',c:wr>=50?\'#22C55E\':\'#EF4444\'},
+            {l:\'P&L\',v:(totalPL>=0?\'+\':\'\')+\'$\'+totalPL.toFixed(2),c:totalPL>=0?\'#22C55E\':\'#EF4444\'},
+            {l:\'Profit Factor\',v:pf,c:\'#3B82F6\'}
+        ].map(c=>`<div style="background:#141414;border:1px solid #1E1E1E;border-radius:14px;padding:20px;text-align:center;"><div style="font-size:11px;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">${c.l}</div><div style="font-size:28px;font-weight:800;color:${c.c};">${c.v}</div></div>`).join(\'\');
         
         const equity=[currentSession.balance];
         trades.forEach(x=>equity.push(equity[equity.length-1]+x.pnl));
         setTimeout(()=>{
-            new ApexCharts(document.getElementById('eqChart'),{series:[{name:'Équité',data:equity}],chart:{type:'area',height:200,background:'transparent',toolbar:{show:false}},theme:{mode:'dark'},stroke:{curve:'smooth',width:2,colors:['#22C55E']},fill:{type:'gradient',gradient:{opacityFrom:0.3,opacityTo:0}},colors:['#22C55E'],xaxis:{labels:{show:false}},yaxis:{labels:{formatter:v=>'$'+v.toFixed(0)}},grid:{borderColor:'#1A1A1A'},tooltip:{theme:'dark'}}).render();
+            new ApexCharts(document.getElementById(\'eqChart\'),{series:[{name:\'Équité\',data:equity}],chart:{type:\'area\',height:200,background:\'transparent\',toolbar:{show:false}},theme:{mode:\'dark\'},stroke:{curve:\'smooth\',width:2,colors:[\'#22C55E\']},fill:{type:\'gradient\',gradient:{opacityFrom:0.3,opacityTo:0}},colors:[\'#22C55E\'],xaxis:{labels:{show:false}},yaxis:{labels:{formatter:v=>\'$\'+v.toFixed(0)}},grid:{borderColor:\'#1A1A1A\'},tooltip:{theme:\'dark\'}}).render();
             const pnlByHour=Array(24).fill(0);trades.forEach(x=>pnlByHour[x.hour]+=x.pnl);
-            new ApexCharts(document.getElementById('hrChart'),{series:[{name:'P&L',data:pnlByHour}],chart:{type:'bar',height:200,background:'transparent',toolbar:{show:false}},theme:{mode:'dark'},colors:pnlByHour.map(v=>v>=0?'#22C55E':'#EF4444'),xaxis:{categories:Array.from({length:24},(_,i)=>i+'h')},grid:{borderColor:'#1A1A1A'},tooltip:{theme:'dark'}}).render();
+            new ApexCharts(document.getElementById(\'hrChart\'),{series:[{name:\'P&L\',data:pnlByHour}],chart:{type:\'bar\',height:200,background:\'transparent\',toolbar:{show:false}},theme:{mode:\'dark\'},colors:pnlByHour.map(v=>v>=0?\'#22C55E\':\'#EF4444\'),xaxis:{categories:Array.from({length:24},(_,i)=>i+\'h\')},grid:{borderColor:\'#1A1A1A\'},tooltip:{theme:\'dark\'}}).render();
         }, 100);
     }
     function backToTrading() {
-        document.getElementById('analyticsView').style.display='none';
-        document.getElementById('tradingInterface').classList.add('active');
+        document.getElementById(\'analyticsView\').style.display=\'none\';
+        document.getElementById(\'tradingInterface\').classList.add(\'active\');
     }
 
     // ===== INIT =====
-    window.addEventListener('load', () => { renderSessions(); lucide.createIcons(); });
-    window.addEventListener('resize', () => { if(chart) chart.applyOptions({width:document.getElementById('chart-container').clientWidth}); });
+    window.addEventListener(\'load\', () => { renderSessions(); lucide.createIcons(); });
+    window.addEventListener(\'resize\', () => { if(chart) chart.applyOptions({width:document.getElementById(\'chart-container\').clientWidth}); });
     </script>
 </body>
-</html>
+</html>'''
+
+open('frontend/backtesting.html', 'w', encoding='utf-8').write(content)
+print('Done! Complete backtest rewrite with Lightweight Charts + replay controls')
