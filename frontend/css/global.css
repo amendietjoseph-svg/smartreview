@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --bg-primary: #0A0A0A;
+  --bg-primary: #060d0a;
   --bg-secondary: #0F0F0F;
   --bg-card: #141414;
   --bg-card-hover: #1A1A1A;
@@ -413,7 +413,7 @@ aside.sidebar.collapsed .backend-status .status-text { display: none; }
   padding-left: 240px;
   min-height: 100vh;
   transition: padding-left 0.25s ease;
-  background: #0A0A0A;
+  background: linear-gradient(135deg, #050d0a 0%, #0a0a1a 50%, #120a0f 100%);
 }
 .app-wrapper.sidebar-collapsed { padding-left: 60px; }
 

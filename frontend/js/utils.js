@@ -195,7 +195,7 @@ async function loadAccountsIntoSelector() {
         
     } catch (error) {
         console.error('// Error loading accounts - suppressed:', error);
-        selector.innerHTML = '<option value="">Erreur de chargement</option>';
+        selector.innerHTML = '<option value="">Aucun compte</option>';
     }
 }
 
