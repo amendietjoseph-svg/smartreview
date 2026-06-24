@@ -1,5 +1,5 @@
 /**
- * Chart utilities for SmartReview
+ * Chart utilities for SmartFX-Review
  * Uses ApexCharts for all visualizations
  */
 

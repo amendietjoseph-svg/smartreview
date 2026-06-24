@@ -1,5 +1,5 @@
 /**
- * Accounts Management for SmartReview
+ * Accounts Management for SmartFX-Review
  * Handles multi-account management, prop firm dashboard, and account comparison
  */
 

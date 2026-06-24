@@ -1,5 +1,5 @@
 /**
- * SmartReview — Shared layout (navbar + collapsible sidebar)
+ * SmartFX-Review — Shared layout (navbar + collapsible sidebar)
  */
 
 const NAVBAR_LINKS = [
@@ -55,7 +55,7 @@ function buildNavbar(current) {
                 <polyline points="6,22 12,14 17,18 22,10 26,10" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
                 <circle cx="26" cy="10" r="2.5" fill="#000"/>
             </svg>
-            <span class="navbar-logo-text">SmartReview</span>
+            <span class="navbar-logo-text">SmartFX-Review</span>
         </a>
         <div class="navbar-nav">${links}</div>
         <div class="navbar-right">

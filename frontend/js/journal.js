@@ -1,5 +1,5 @@
 /**
- * Enhanced Journal functionality for SmartReview
+ * Enhanced Journal functionality for SmartFX-Review
  * Handles trade listing, filtering, CRUD operations, real-time calculations
  */
 

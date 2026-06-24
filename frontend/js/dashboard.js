@@ -1,5 +1,5 @@
 /**
- * Dashboard functionality for SmartReview - Ultra-Premium Design
+ * Dashboard functionality for SmartFX-Review - Ultra-Premium Design
  * Handles loading stats, rendering charts, empty states, and backend status
  */
 

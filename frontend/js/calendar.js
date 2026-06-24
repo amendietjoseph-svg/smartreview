@@ -1,5 +1,5 @@
 /**
- * Calendar functionality for SmartReview
+ * Calendar functionality for SmartFX-Review
  * Handles month, week, and year views, heatmaps, statistics, and day details
  */
 

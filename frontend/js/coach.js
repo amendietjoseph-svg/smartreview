@@ -1,5 +1,5 @@
 /**
- * AI Coach functionality for SmartReview
+ * AI Coach functionality for SmartFX-Review
  * Handles AI analysis, edge detection, reports, and streaming responses
  */
 

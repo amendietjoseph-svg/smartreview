@@ -1,5 +1,5 @@
 /**
- * Utility functions for SmartReview
+ * Utility functions for SmartFX-Review
  */
 
 // Check authentication

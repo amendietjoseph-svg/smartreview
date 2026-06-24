@@ -1,5 +1,5 @@
 /**
- * Advanced Statistics for SmartReview
+ * Advanced Statistics for SmartFX-Review
  * Handles all charts, filtering, and data visualization
  */
 
