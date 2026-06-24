@@ -1,4 +1,8 @@
-"""
+with open('backend/main.py', 'r', encoding='utf-8') as f:
+    c = f.read()
+
+# Ajouter middleware pour eviter les redirections slash
+new_main = '''"""
 Main FastAPI application for SmartFX-Review
 """
 import os
@@ -59,3 +63,26 @@ if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8001))
     uvicorn.run(app, host="0.0.0.0", port=port)
+'''
+
+with open('backend/main.py', 'w', encoding='utf-8') as f:
+    f.write(new_main)
+print('main.py updated!')
+
+# Fix router pour eviter redirect slash
+with open('backend/routers/accounts.py', 'r', encoding='utf-8') as f:
+    c = f.read()
+
+# Ajouter route sans slash aussi
+c = c.replace(
+    '@router.post("/"',
+    '@router.post("", include_in_schema=True)\n@router.post("/"'
+)
+c = c.replace(
+    '@router.get("/"',
+    '@router.get("", include_in_schema=True)\n@router.get("/"'
+)
+
+with open('backend/routers/accounts.py', 'w', encoding='utf-8') as f:
+    f.write(c)
+print('accounts.py updated!')

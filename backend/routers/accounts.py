@@ -12,6 +12,7 @@ from schemas import AccountCreate, AccountUpdate, Account as AccountSchema
 router = APIRouter()
 
 
+@router.post("", include_in_schema=True)
 @router.post("/", response_model=AccountSchema)
 def create_account(account: AccountCreate, db: Session = Depends(get_db)):
     """
@@ -27,6 +28,7 @@ def create_account(account: AccountCreate, db: Session = Depends(get_db)):
     return db_account
 
 
+@router.get("", include_in_schema=True)
 @router.get("/", response_model=List[AccountSchema])
 def get_accounts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """
