@@ -220,7 +220,30 @@
         .mc-stat-value.r { color:#EF4444; }
         .mc-stat-pct { font-size:11px; color:#6B7280; margin-top:2px; }
     </style>
-</head>
+<style id="bg-fix">
+html, body {
+  min-height: 100vh !important;
+  width: 100% !important;
+  background: linear-gradient(135deg, #050d0a 0%, #0a0a1a 50%, #120a0f 100%) !important;
+  background-attachment: fixed !important;
+}
+.app-wrapper, .main-content, .content-area {
+  background: transparent !important;
+}
+.sidebar {
+  background: rgba(8,8,12,0.95) !important;
+}
+.navbar {
+  background: rgba(6,10,8,0.95) !important;
+  backdrop-filter: blur(20px) !important;
+}
+.kpi-card, .card, .chart-card, .session-card,
+.trade-panel, .panel-block, .modal-box,
+.settings-card, .login-card {
+  background: rgba(20,20,28,0.8) !important;
+  backdrop-filter: blur(10px) !important;
+}
+</style></head>
 <body style="margin:0;background:#0A0A0A;color:#fff;font-family:Inter,sans-serif;">
     <div id="app-layout-root"></div>
     <div class="app-wrapper" id="appWrapper">
