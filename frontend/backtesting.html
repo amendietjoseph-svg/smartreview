@@ -397,6 +397,9 @@ html, body {
 <button onclick="toggleFullscreen()" id="fsBtn" style="padding:6px 12px;border-radius:8px;background:#141414;border:1px solid #1E1E1E;color:#6B7280;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.15s;" title="Plein écran">
   <i data-lucide="maximize-2" style="width:14px;height:14px;"></i>
 </button>
+<button id="fsBtn" onclick="toggleFullscreen()" style="padding:6px 10px;border-radius:8px;background:#141414;border:1px solid #1E1E1E;color:#6B7280;cursor:pointer;display:flex;align-items:center;gap:4px;margin-left:8px;" title="Plein ecran">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+</button>
 <button onclick="showAnalytics()" style="padding:6px 14px;border-radius:8px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:#3B82F6;font-size:12px;font-weight:600;cursor:pointer;">
                             📊 Analytique
                         </button>
@@ -1066,5 +1069,35 @@ function updateDateTime() {
 }
 setInterval(updateDateTime, 1000);
 updateDateTime();
-</script></body>
+</script>
+<script id="fs-script">
+function toggleFullscreen() {
+  const el = document.getElementById('tradingInterface');
+  const btn = document.getElementById('fsBtn');
+  if (!document.fullscreenElement) {
+    if(el.requestFullscreen) el.requestFullscreen();
+    else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    btn.style.color = '#22C55E';
+  } else {
+    if(document.exitFullscreen) document.exitFullscreen();
+    else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    btn.style.color = '#6B7280';
+  }
+}
+document.addEventListener('fullscreenchange', function() {
+  const sidebar = document.querySelector('.sidebar');
+  const navbar = document.querySelector('.navbar');
+  const quitBar = document.getElementById('quitBar');
+  if(document.fullscreenElement) {
+    if(sidebar) sidebar.style.display = 'none';
+    if(navbar) navbar.style.display = 'none';
+    if(quitBar) quitBar.style.left = '0';
+  } else {
+    if(sidebar) sidebar.style.display = '';
+    if(navbar) navbar.style.display = '';
+    if(quitBar) quitBar.style.left = '';
+  }
+});
+</script>
+</body>
 </html>
