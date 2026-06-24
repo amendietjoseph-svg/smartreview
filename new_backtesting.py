@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+content = open('frontend/backtesting.html', 'r', encoding='utf-8').read()
+
+# Nouveau contenu backtesting inspiré TradersCasa
+new_content = '''<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -229,12 +232,12 @@
                         <option value="BINANCE:ETHUSDT">ETH/USDT</option>
                     </select>
                     <div style="display:flex;gap:4px;">
-                        <button class="tf-btn" onclick="changeTF(this,'1')">M1</button>
-                        <button class="tf-btn" onclick="changeTF(this,'5')">M5</button>
-                        <button class="tf-btn" onclick="changeTF(this,'15')">M15</button>
-                        <button class="tf-btn active" onclick="changeTF(this,'60')">H1</button>
-                        <button class="tf-btn" onclick="changeTF(this,'240')">H4</button>
-                        <button class="tf-btn" onclick="changeTF(this,'D')">D1</button>
+                        <button class="tf-btn" onclick="changeTF(this,\'1\')">M1</button>
+                        <button class="tf-btn" onclick="changeTF(this,\'5\')">M5</button>
+                        <button class="tf-btn" onclick="changeTF(this,\'15\')">M15</button>
+                        <button class="tf-btn active" onclick="changeTF(this,\'60\')">H1</button>
+                        <button class="tf-btn" onclick="changeTF(this,\'240\')">H4</button>
+                        <button class="tf-btn" onclick="changeTF(this,\'D\')">D1</button>
                     </div>
                     <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
                         <span style="font-size:12px;color:#6B7280;" id="currentPrice">--</span>
@@ -250,8 +253,8 @@
                 <div class="panel-section">
                     <div class="panel-title">Entrer un Trade</div>
                     <div class="trade-btns">
-                        <button class="btn-buy" onclick="enterTrade('BUY')">▲ BUY</button>
-                        <button class="btn-sell" onclick="enterTrade('SELL')">▼ SELL</button>
+                        <button class="btn-buy" onclick="enterTrade(\'BUY\')">▲ BUY</button>
+                        <button class="btn-sell" onclick="enterTrade(\'SELL\')">▼ SELL</button>
                     </div>
                     <div class="input-group">
                         <div class="input-label">Stop Loss (pips)</div>
@@ -336,28 +339,28 @@
     <script>
         // TradingView Widget
         let tvWidget = null;
-        let currentSymbol = 'FX:EURUSD';
-        let currentTF = '60';
-        let trades = JSON.parse(localStorage.getItem('backtest_trades') || '[]');
+        let currentSymbol = \'FX:EURUSD\';
+        let currentTF = \'60\';
+        let trades = JSON.parse(localStorage.getItem(\'backtest_trades\') || \'[]\');
 
         function initTV() {
             if (tvWidget) tvWidget.remove();
             tvWidget = new TradingView.widget({
-                container_id: 'tv-chart',
+                container_id: \'tv-chart\',
                 symbol: currentSymbol,
                 interval: currentTF,
-                timezone: 'Africa/Lagos',
-                theme: 'dark',
-                style: '1',
-                locale: 'fr',
-                toolbar_bg: '#0F0F0F',
+                timezone: \'Africa/Lagos\',
+                theme: \'dark\',
+                style: \'1\',
+                locale: \'fr\',
+                toolbar_bg: \'#0F0F0F\',
                 enable_publishing: false,
                 hide_side_toolbar: false,
                 allow_symbol_change: true,
-                studies: ['RSI@tv-basicstudies', 'MASimple@tv-basicstudies'],
-                width: '100%',
+                studies: [\'RSI@tv-basicstudies\', \'MASimple@tv-basicstudies\'],
+                width: \'100%\',
                 height: window.innerHeight - 120,
-                backgroundColor: '#0A0A0A',
+                backgroundColor: \'#0A0A0A\',
             });
         }
 
@@ -368,27 +371,27 @@
 
         function changeTF(btn, tf) {
             currentTF = tf;
-            document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            document.querySelectorAll(\'.tf-btn\').forEach(b => b.classList.remove(\'active\'));
+            btn.classList.add(\'active\');
             initTV();
         }
 
         // RR Calculator
-        document.getElementById('slInput').addEventListener('input', updateRR);
-        document.getElementById('tpInput').addEventListener('input', updateRR);
+        document.getElementById(\'slInput\').addEventListener(\'input\', updateRR);
+        document.getElementById(\'tpInput\').addEventListener(\'input\', updateRR);
 
         function updateRR() {
-            const sl = parseFloat(document.getElementById('slInput').value) || 1;
-            const tp = parseFloat(document.getElementById('tpInput').value) || 1;
+            const sl = parseFloat(document.getElementById(\'slInput\').value) || 1;
+            const tp = parseFloat(document.getElementById(\'tpInput\').value) || 1;
             const rr = (tp / sl).toFixed(2);
-            document.getElementById('rrDisplay').textContent = rr;
-            document.getElementById('rrDisplay').style.color = rr >= 2 ? '#22C55E' : rr >= 1 ? '#F59E0B' : '#EF4444';
+            document.getElementById(\'rrDisplay\').textContent = rr;
+            document.getElementById(\'rrDisplay\').style.color = rr >= 2 ? \'#22C55E\' : rr >= 1 ? \'#F59E0B\' : \'#EF4444\';
         }
 
         function enterTrade(direction) {
-            const sl = parseFloat(document.getElementById('slInput').value) || 20;
-            const tp = parseFloat(document.getElementById('tpInput').value) || 40;
-            const risk = parseFloat(document.getElementById('riskInput').value) || 100;
+            const sl = parseFloat(document.getElementById(\'slInput\').value) || 20;
+            const tp = parseFloat(document.getElementById(\'tpInput\').value) || 40;
+            const risk = parseFloat(document.getElementById(\'riskInput\').value) || 100;
             const rr = tp / sl;
             
             // Simuler WIN/LOSS basé sur probabilité
@@ -400,54 +403,54 @@
                 id: Date.now(),
                 direction,
                 sl, tp, risk, rr: rr.toFixed(2),
-                result: isWin ? 'WIN' : 'LOSS',
+                result: isWin ? \'WIN\' : \'LOSS\',
                 pnl: pnl.toFixed(2),
-                symbol: currentSymbol.split(':')[1],
-                time: new Date().toLocaleTimeString('fr')
+                symbol: currentSymbol.split(\':\')[1],
+                time: new Date().toLocaleTimeString(\'fr\')
             };
             
             trades.push(trade);
-            localStorage.setItem('backtest_trades', JSON.stringify(trades));
+            localStorage.setItem(\'backtest_trades\', JSON.stringify(trades));
             updateStats();
             renderTrades();
         }
 
         function updateStats() {
             const total = trades.length;
-            const wins = trades.filter(t => t.result === 'WIN').length;
+            const wins = trades.filter(t => t.result === \'WIN\').length;
             const wr = total > 0 ? ((wins/total)*100).toFixed(1) : 0;
             const totalPL = trades.reduce((s,t) => s + parseFloat(t.pnl), 0);
-            const grossProfit = trades.filter(t=>t.result==='WIN').reduce((s,t)=>s+parseFloat(t.pnl),0);
-            const grossLoss = Math.abs(trades.filter(t=>t.result==='LOSS').reduce((s,t)=>s+parseFloat(t.pnl),0));
-            const pf = grossLoss > 0 ? (grossProfit/grossLoss).toFixed(2) : grossProfit > 0 ? '∞' : '0';
+            const grossProfit = trades.filter(t=>t.result===\'WIN\').reduce((s,t)=>s+parseFloat(t.pnl),0);
+            const grossLoss = Math.abs(trades.filter(t=>t.result===\'LOSS\').reduce((s,t)=>s+parseFloat(t.pnl),0));
+            const pf = grossLoss > 0 ? (grossProfit/grossLoss).toFixed(2) : grossProfit > 0 ? \'∞\' : \'0\';
             const avgRR = total > 0 ? (trades.reduce((s,t)=>s+parseFloat(t.rr),0)/total).toFixed(2) : 0;
             
             // Séries
             let bestStreak = 0, worstStreak = 0, cur = 0;
             trades.forEach(t => {
-                if(t.result==='WIN') { cur = cur >= 0 ? cur+1 : 1; bestStreak = Math.max(bestStreak,cur); }
+                if(t.result===\'WIN\') { cur = cur >= 0 ? cur+1 : 1; bestStreak = Math.max(bestStreak,cur); }
                 else { cur = cur <= 0 ? cur-1 : -1; worstStreak = Math.min(worstStreak,cur); }
             });
 
-            document.getElementById('statTotal').textContent = total;
-            document.getElementById('statWR').textContent = wr + '%';
-            document.getElementById('statWR').className = 'stat-value ' + (wr >= 50 ? 'positive' : 'negative');
-            document.getElementById('statPL').textContent = (totalPL >= 0 ? '+' : '') + '$' + totalPL.toFixed(2);
-            document.getElementById('statPL').className = 'stat-value ' + (totalPL >= 0 ? 'positive' : 'negative');
-            document.getElementById('statPF').textContent = pf;
-            document.getElementById('statRR').textContent = avgRR;
-            document.getElementById('statBest').textContent = bestStreak + ' wins';
-            document.getElementById('statWorst').textContent = Math.abs(worstStreak) + ' losses';
+            document.getElementById(\'statTotal\').textContent = total;
+            document.getElementById(\'statWR\').textContent = wr + \'%\';
+            document.getElementById(\'statWR\').className = \'stat-value \' + (wr >= 50 ? \'positive\' : \'negative\');
+            document.getElementById(\'statPL\').textContent = (totalPL >= 0 ? \'+\' : \'\') + \'$\' + totalPL.toFixed(2);
+            document.getElementById(\'statPL\').className = \'stat-value \' + (totalPL >= 0 ? \'positive\' : \'negative\');
+            document.getElementById(\'statPF\').textContent = pf;
+            document.getElementById(\'statRR\').textContent = avgRR;
+            document.getElementById(\'statBest\').textContent = bestStreak + \' wins\';
+            document.getElementById(\'statWorst\').textContent = Math.abs(worstStreak) + \' losses\';
             
             const progress = Math.min(100, (wins/Math.max(total,1))*100);
-            document.getElementById('progressFill').style.width = progress + '%';
-            document.getElementById('progressPct').textContent = wr + '%';
+            document.getElementById(\'progressFill\').style.width = progress + \'%\';
+            document.getElementById(\'progressPct\').textContent = wr + \'%\';
         }
 
         function renderTrades() {
-            const list = document.getElementById('tradesList');
+            const list = document.getElementById(\'tradesList\');
             if(trades.length === 0) {
-                list.innerHTML = '<div class="empty-trades">Aucun trade — Cliquez BUY ou SELL</div>';
+                list.innerHTML = \'<div class="empty-trades">Aucun trade — Cliquez BUY ou SELL</div>\';
                 return;
             }
             list.innerHTML = [...trades].reverse().map(t => `
@@ -457,17 +460,17 @@
                         <span style="font-size:11px;color:#6B7280;margin-left:6px;">${t.symbol}</span>
                     </div>
                     <div style="text-align:right;">
-                        <div style="font-size:13px;font-weight:700;color:${parseFloat(t.pnl)>=0?'#22C55E':'#EF4444'}">${parseFloat(t.pnl)>=0?'+':''}\$${t.pnl}</div>
+                        <div style="font-size:13px;font-weight:700;color:${parseFloat(t.pnl)>=0?\'#22C55E\':\'#EF4444\'}">${parseFloat(t.pnl)>=0?\'+\':\'\'}\$${t.pnl}</div>
                         <div style="font-size:10px;color:#374151;">RR ${t.rr} • ${t.time}</div>
                     </div>
                 </div>
-            `).join('');
+            `).join(\'\');
         }
 
         function resetBacktest() {
-            if(confirm('Réinitialiser tous les trades du backtest ?')) {
+            if(confirm(\'Réinitialiser tous les trades du backtest ?\')) {
                 trades = [];
-                localStorage.removeItem('backtest_trades');
+                localStorage.removeItem(\'backtest_trades\');
                 updateStats();
                 renderTrades();
             }
@@ -476,20 +479,20 @@
         // Déterminer session
         function getSession() {
             const h = new Date().getUTCHours();
-            if(h >= 7 && h < 9) return {name:'FRANKFURT', color:'#F59E0B'};
-            if(h >= 7 && h < 16) return {name:'LONDON', color:'#3B82F6'};
-            if(h >= 12 && h < 21) return {name:'NEW YORK', color:'#22C55E'};
-            return {name:'ASIA', color:'#8B5CF6'};
+            if(h >= 7 && h < 9) return {name:\'FRANKFURT\', color:\'#F59E0B\'};
+            if(h >= 7 && h < 16) return {name:\'LONDON\', color:\'#3B82F6\'};
+            if(h >= 12 && h < 21) return {name:\'NEW YORK\', color:\'#22C55E\'};
+            return {name:\'ASIA\', color:\'#8B5CF6\'};
         }
         const session = getSession();
-        const badge = document.getElementById('sessionBadge');
+        const badge = document.getElementById(\'sessionBadge\');
         badge.textContent = session.name;
-        badge.style.background = session.color + '20';
+        badge.style.background = session.color + \'20\';
         badge.style.color = session.color;
-        badge.style.borderColor = session.color + '40';
+        badge.style.borderColor = session.color + \'40\';
 
         // Init
-        window.addEventListener('load', () => {
+        window.addEventListener(\'load\', () => {
             initTV();
             updateStats();
             renderTrades();
@@ -497,4 +500,7 @@
         lucide.createIcons();
     </script>
 </body>
-</html>
+</html>'''
+
+open('frontend/backtesting.html', 'w', encoding='utf-8').write(new_content)
+print('Backtesting rewritten!')
