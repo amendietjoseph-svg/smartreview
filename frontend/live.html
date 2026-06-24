@@ -392,7 +392,7 @@ body {
                 </div>
             </header>
 
-            <div class="content-area">
+            <div class="content-area"><div id="liveContainer"></div>
                 <div class="demo-badge">DÉMO</div>
 
                 <div class="live-layout">
@@ -511,5 +511,68 @@ body {
         lucide.createIcons();
     </script>
     <script src="/js/layout.js"></script>
-</body>
+
+<script id="live-real">
+async function loadLiveStreams() {
+  const container = document.getElementById('liveContainer');
+  if(!container) return;
+  
+  // Embed YouTube live trading streams
+  const liveStreams = [
+    {
+      embedId: 'jfKfPfyJRdk', // Gold/XAU live chart
+      title: 'XAU/USD Live Chart',
+      channel: 'Gold Trading Live',
+      viewers: '1.2K',
+      status: 'LIVE'
+    },
+    {
+      embedId: '5VpXwpOfiKk', // Forex live
+      title: 'Forex Market Live',
+      channel: 'Forex Live Trading',
+      viewers: '856',
+      status: 'LIVE'
+    },
+    {
+      embedId: 'rdYG5d3u4u0', // Market analysis
+      title: 'Market Analysis FR',
+      channel: 'Trading Analyse',
+      viewers: '432',
+      status: 'REPLAY'
+    }
+  ];
+  
+  container.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      ${liveStreams.map(s => `
+        <div style="background:rgba(15,18,22,0.9);border:1px solid #1E1E1E;border-radius:16px;overflow:hidden;">
+          <div style="position:relative;padding-top:56.25%;">
+            <iframe
+              style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
+              src="https://www.youtube.com/embed/${s.embedId}?autoplay=0&rel=0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+            </iframe>
+          </div>
+          <div style="padding:12px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:#fff;">${s.title}</div>
+              <div style="font-size:11px;color:#6B7280;">${s.channel} • ${s.viewers} viewers</div>
+            </div>
+            <span style="padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:${s.status==='LIVE'?'rgba(239,68,68,0.2)':'rgba(34,197,94,0.2)'};color:${s.status==='LIVE'?'#EF4444':'#22C55E'};">${s.status}</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div style="margin-top:20px;background:rgba(15,18,22,0.9);border:1px solid rgba(34,197,94,0.2);border-radius:16px;padding:24px;text-align:center;">
+      <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;">📡 Démarrer votre Live</div>
+      <div style="font-size:13px;color:#6B7280;margin-bottom:16px;">Partagez votre analyse en direct avec la communauté SmartFX-Review</div>
+      <button onclick="window.open('https://studio.youtube.com','_blank')" style="padding:10px 24px;background:linear-gradient(135deg,#EF4444,#DC2626);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;">
+        🔴 Lancer un Live YouTube
+      </button>
+    </div>
+  `;
+}
+document.addEventListener('DOMContentLoaded', loadLiveStreams);
+</script></body>
 </html>

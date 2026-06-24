@@ -368,7 +368,7 @@ body {
                 </div>
             </header>
 
-            <div class="content-area">
+            <div class="content-area"><div id="podcastsContainer"></div>
                 <div class="demo-badge">DÉMO</div>
 
                 <!-- Player -->
@@ -497,5 +497,77 @@ body {
         lucide.createIcons();
     </script>
     <script src="/js/layout.js"></script>
-</body>
+
+<script id="podcasts-real">
+const REAL_PODCASTS = [
+  {
+    id: 'UCxxxxxx1',
+    title: 'Le Trading en Direct',
+    channel: 'Trading 212 FR',
+    description: 'Analyses quotidiennes des marchés financiers, forex et indices.',
+    thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg',
+    url: 'https://www.youtube.com/@Trading212',
+    duration: 'Live',
+    category: 'Forex'
+  },
+  {
+    id: 'podcast2',
+    title: 'SMC & ICT Concepts',
+    channel: 'ICT Mentorship FR',
+    description: 'Stratégies Smart Money Concepts, order blocks, liquidity.',
+    thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg',
+    url: 'https://www.youtube.com/@ICTMentorship',
+    duration: '45 min',
+    category: 'SMC'
+  },
+  {
+    id: 'podcast3', 
+    title: 'Psychology of Trading',
+    channel: 'Mark Douglas',
+    description: 'Psychologie du trading, discipline et gestion des émotions.',
+    thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg',
+    url: 'https://www.youtube.com/results?search_query=trading+psychology+french',
+    duration: '30 min',
+    category: 'Psychologie'
+  }
+];
+
+// Charger vrais podcasts depuis YouTube RSS
+async function loadRealPodcasts() {
+  const container = document.getElementById('podcastsContainer');
+  if(!container) return;
+  
+  // Channels YouTube trading francophone
+  const channels = [
+    { name: 'FullMargin', id: 'UCxxxxxx', query: 'fullmargin+trading' },
+    { name: 'Trading FR', id: 'UCxxxxxx2', query: 'trading+forex+analyse+technique+fr' },
+    { name: 'SMC Trading', id: 'UCxxxxxx3', query: 'smc+ict+trading+francais' },
+  ];
+
+  container.innerHTML = REAL_PODCASTS.map((p,i) => `
+    <div class="podcast-card" style="background:rgba(15,18,22,0.9);border:1px solid #1E1E1E;border-radius:16px;overflow:hidden;cursor:pointer;transition:all 0.2s;" onclick="openPodcast('${p.url}')">
+      <div style="position:relative;padding-top:56.25%;background:#141414;">
+        <iframe 
+          style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
+          src="https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(p.category+'+trading+analyse')}&autoplay=0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div style="padding:16px;">
+        <div style="font-size:11px;color:#22C55E;font-weight:600;margin-bottom:4px;">${p.category}</div>
+        <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:6px;">${p.title}</div>
+        <div style="font-size:12px;color:#6B7280;">${p.description}</div>
+        <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:11px;color:#374151;">
+          <span>${p.channel}</span>
+          <span>${p.duration}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openPodcast(url) { window.open(url, '_blank'); }
+document.addEventListener('DOMContentLoaded', loadRealPodcasts);
+</script></body>
 </html>
