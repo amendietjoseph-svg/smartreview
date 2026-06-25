@@ -33,8 +33,8 @@
         .btn-cancel { padding:12px 20px; background:#1A1A1A; border:1px solid #1E1E1E; color:#6B7280; border-radius:10px; font-size:14px; cursor:pointer; }
 
         .trading-interface { display:none; }
-        .trading-interface.active { display:grid; grid-template-columns:1fr 320px; height:calc(100vh - 60px); }
-        .chart-area { display:flex; flex-direction:column; background:#0A0A0A; border-right:1px solid #1A1A1A; }
+        .trading-interface.active { display:grid; grid-template-columns:1fr 320px; height:calc(100vh - 60px); overflow:hidden; }
+        .chart-area { display:flex; flex-direction:column; background:#131722; border-right:1px solid #2a2e39; min-width:0; overflow:hidden; }
         .chart-topbar { display:flex; align-items:center; gap:8px; padding:8px 12px; background:#0F0F0F; border-bottom:1px solid #1A1A1A; flex-shrink:0; flex-wrap:wrap; }
         .pair-badge { background:#141414; border:1px solid #1E1E1E; border-radius:8px; padding:6px 12px; font-size:13px; font-weight:700; color:#fff; }
         .tf-pills { display:flex; gap:3px; }
@@ -54,7 +54,7 @@
         .bv.g { color:#22C55E; }
         .bv.r { color:#EF4444; }
         
-        #chart-container { flex:1; position:relative; min-height:0; }
+        #chart-container { flex:1; position:relative; min-height:0; overflow:hidden; }
         .loading-overlay { position:absolute; inset:0; background:rgba(10,10,10,0.9); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10; }
         .loading-spinner { width:40px; height:40px; border:3px solid #1E1E1E; border-top-color:#22C55E; border-radius:50%; animation:spin 1s linear infinite; margin-bottom:12px; }
         @keyframes spin { to { transform:rotate(360deg); } }
@@ -311,7 +311,7 @@ body {
         <button class="tool-btn" title="Zoom" onclick="setTool(this)">⊕</button>
         <button class="tool-btn" title="Aimant" onclick="setTool(this)">⚇</button>
       </div>
-      <div id="chart-inner">
+      <div id="chart-inner" style="position:absolute;left:36px;right:0;top:0;bottom:0;">
                     <div class="loading-overlay" id="loadingOverlay">
                         <div class="loading-spinner"></div>
                         <div style="color:#6B7280;font-size:13px;">Chargement des données historiques...</div>
