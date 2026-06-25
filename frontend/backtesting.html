@@ -180,6 +180,30 @@ body {
 .sidebar-item.active, .nav-item.active {
   background: rgba(34,197,94,0.12) !important;
 }
+</style><style id="chart-simple-fix">
+.trading-interface.active {
+  display: grid !important;
+  grid-template-columns: 1fr 320px !important;
+  height: calc(100vh - 60px) !important;
+  overflow: hidden !important;
+}
+.chart-area {
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  background: #131722 !important;
+}
+#chart-container {
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+.trade-panel {
+  overflow-y: auto !important;
+  height: 100% !important;
+  background: #1e222d !important;
+}
 </style></head>
 <body style="margin:0;background:#0A0A0A;color:#fff;font-family:Inter,sans-serif;">
     <div id="app-layout-root"></div>
@@ -331,9 +355,7 @@ body {
                     <div class="candle-info" id="candleInfo"></div>
                 </div>
                 <div id="chart-container" style="position:relative;">
-      <div class="drawing-tools">
-        <button class="tool-btn active" title="Curseur" onclick="setTool(this)">✛</button>
-        <div class="tool-separator"></div>
+      
         <button class="tool-btn" title="Ligne de tendance" onclick="setTool(this)">╱</button>
         <button class="tool-btn" title="Horizontal" onclick="setTool(this)">─</button>
         <button class="tool-btn" title="Rectangle" onclick="setTool(this)">▭</button>
@@ -345,7 +367,7 @@ body {
         <button class="tool-btn" title="Zoom" onclick="setTool(this)">⊕</button>
         <button class="tool-btn" title="Aimant" onclick="setTool(this)">⚇</button>
       </div>
-      <div id="chart-inner" style="position:absolute;left:36px;right:0;top:0;bottom:0;">
+      
                     <div class="loading-overlay" id="loadingOverlay">
                         <div class="loading-spinner"></div>
                         <div style="color:#6B7280;font-size:13px;">Chargement des données historiques...</div>
