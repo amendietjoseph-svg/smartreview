@@ -6,7 +6,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from database import init_db
-from routers import trades, stats, accounts, ai_coach, auth
+from routers import trades, stats, accounts, ai_coach, auth, import_trades
 
 app = FastAPI(
     title="SmartFX-Review API",
@@ -34,6 +34,7 @@ app.include_router(stats.router, prefix="/api/stats", tags=["stats"])
 app.include_router(accounts.router, prefix="/api/accounts", tags=["accounts"])
 app.include_router(ai_coach.router, prefix="/api/ai", tags=["ai-coach"])
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+app.include_router(import_trades.router, prefix="/api/import", tags=["import"])
 
 @app.exception_handler(404)
 async def not_found_handler(request: Request, exc):

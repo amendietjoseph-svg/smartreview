@@ -1266,5 +1266,296 @@ async function wakeBackend() {
 // Ping toutes les 10 minutes pour garder le backend actif
 wakeBackend();
 setInterval(wakeBackend, 10 * 60 * 1000);
+</script>
+<style id="import-style">
+.import-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.import-modal.active { display: flex; }
+.import-box {
+  background: #1e222d;
+  border: 1px solid #2a2e39;
+  border-radius: 20px;
+  padding: 32px;
+  width: 90%;
+  max-width: 500px;
+}
+.import-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.import-subtitle {
+  font-size: 13px;
+  color: #787b86;
+  margin-bottom: 24px;
+}
+.import-dropzone {
+  border: 2px dashed #2a2e39;
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 16px;
+}
+.import-dropzone:hover, .import-dropzone.dragover {
+  border-color: #26a69a;
+  background: rgba(38,166,154,0.05);
+}
+.import-dropzone svg { color: #787b86; margin-bottom: 12px; }
+.import-dropzone p { color: #787b86; font-size: 13px; }
+.import-dropzone strong { color: #26a69a; }
+.import-format-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.format-btn {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #2a2e39;
+  background: #131722;
+  color: #787b86;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.15s;
+  text-align: center;
+}
+.format-btn.active {
+  border-color: #26a69a;
+  color: #26a69a;
+  background: rgba(38,166,154,0.1);
+}
+.import-account-select {
+  width: 100%;
+  background: #131722;
+  border: 1px solid #2a2e39;
+  border-radius: 8px;
+  color: #fff;
+  padding: 10px 12px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  font-family: Inter, sans-serif;
+}
+.import-actions {
+  display: flex;
+  gap: 10px;
+}
+.import-btn {
+  flex: 1;
+  padding: 12px;
+  background: linear-gradient(135deg, #26a69a, #1a8a7e);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.import-cancel {
+  padding: 12px 20px;
+  background: #1a1a1a;
+  border: 1px solid #2a2e39;
+  color: #787b86;
+  border-radius: 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.import-progress {
+  display: none;
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(38,166,154,0.1);
+  border: 1px solid rgba(38,166,154,0.3);
+  border-radius: 8px;
+  font-size: 13px;
+  color: #26a69a;
+  text-align: center;
+}
+.import-result {
+  display: none;
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  text-align: center;
+}
+.import-result.success {
+  background: rgba(38,166,154,0.1);
+  border: 1px solid rgba(38,166,154,0.3);
+  color: #26a69a;
+}
+.import-result.error {
+  background: rgba(239,83,80,0.1);
+  border: 1px solid rgba(239,83,80,0.3);
+  color: #ef5350;
+}
+</style>
+
+<!-- IMPORT MODAL -->
+<div class="import-modal" id="importModal">
+  <div class="import-box">
+    <div class="import-title">📥 Importer des Trades</div>
+    <div class="import-subtitle">Importez votre historique depuis MT4, MT5 ou un fichier CSV</div>
+    
+    <div class="import-format-btns">
+      <div class="format-btn active" onclick="selectFormat(this,'mt5')">📊 MT5</div>
+      <div class="format-btn" onclick="selectFormat(this,'mt4')">📈 MT4</div>
+    </div>
+    
+    <select class="import-account-select" id="importAccountId">
+      <option value="1">Chargement des comptes...</option>
+    </select>
+    
+    <div class="import-dropzone" id="importDropzone" onclick="document.getElementById('importFileInput').click()">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 12px;display:block;">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+      <p>Glissez votre fichier ici ou <strong>cliquez pour parcourir</strong></p>
+      <p style="font-size:11px;margin-top:6px;">Fichiers CSV acceptés (MT4/MT5 History Export)</p>
+    </div>
+    <input type="file" id="importFileInput" accept=".csv" style="display:none">
+    
+    <div class="import-progress" id="importProgress">⏳ Import en cours...</div>
+    <div class="import-result" id="importResult"></div>
+    
+    <div class="import-actions">
+      <button class="import-cancel" onclick="closeImportModal()">Annuler</button>
+      <button class="import-btn" onclick="startImport()">📥 Importer</button>
+    </div>
+  </div>
+</div>
+
+<script id="import-script">
+const IMPORT_BASE = window.location.hostname === 'localhost'
+  ? 'http://localhost:8001'
+  : 'https://smartreview-y4sq.onrender.com';
+
+let selectedFormat = 'mt5';
+let selectedFile = null;
+
+function selectFormat(btn, format) {
+  document.querySelectorAll('.format-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedFormat = format;
+}
+
+function openImportModal() {
+  document.getElementById('importModal').classList.add('active');
+  // Charger les comptes
+  fetch(IMPORT_BASE + '/api/accounts/')
+    .then(r => r.json())
+    .then(accounts => {
+      const sel = document.getElementById('importAccountId');
+      if(accounts && accounts.length > 0) {
+        sel.innerHTML = accounts.map(a => 
+          `<option value="${a.id}">${a.name}</option>`
+        ).join('');
+      } else {
+        sel.innerHTML = '<option value="1">Compte par défaut</option>';
+      }
+    })
+    .catch(() => {
+      document.getElementById('importAccountId').innerHTML = '<option value="1">Compte par défaut</option>';
+    });
+}
+
+function closeImportModal() {
+  document.getElementById('importModal').classList.remove('active');
+  selectedFile = null;
+  document.getElementById('importFileInput').value = '';
+  document.getElementById('importProgress').style.display = 'none';
+  document.getElementById('importResult').style.display = 'none';
+}
+
+// Drag and drop
+const dropzone = document.getElementById('importDropzone');
+if(dropzone) {
+  dropzone.addEventListener('dragover', e => {
+    e.preventDefault();
+    dropzone.classList.add('dragover');
+  });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if(file) handleFile(file);
+  });
+}
+
+document.getElementById('importFileInput')?.addEventListener('change', function() {
+  if(this.files[0]) handleFile(this.files[0]);
+});
+
+function handleFile(file) {
+  selectedFile = file;
+  const dropzone = document.getElementById('importDropzone');
+  dropzone.innerHTML = `
+    <div style="color:#26a69a;font-size:24px;margin-bottom:8px;">✓</div>
+    <p style="color:#26a69a;font-weight:600;">${file.name}</p>
+    <p style="font-size:11px;color:#787b86;">${(file.size/1024).toFixed(1)} KB</p>
+  `;
+}
+
+async function startImport() {
+  if(!selectedFile) {
+    alert('Veuillez sélectionner un fichier CSV');
+    return;
+  }
+  
+  const accountId = document.getElementById('importAccountId').value;
+  const progress = document.getElementById('importProgress');
+  const result = document.getElementById('importResult');
+  
+  progress.style.display = 'block';
+  result.style.display = 'none';
+  
+  const formData = new FormData();
+  formData.append('file', selectedFile);
+  formData.append('account_id', accountId);
+  
+  try {
+    const res = await fetch(`${IMPORT_BASE}/api/import/mt5?account_id=${accountId}`, {
+      method: 'POST',
+      body: formData
+    });
+    
+    const data = await res.json();
+    progress.style.display = 'none';
+    
+    if(res.ok) {
+      result.className = 'import-result success';
+      result.style.display = 'block';
+      result.innerHTML = `✓ ${data.imported} trades importés depuis ${data.format}`;
+      setTimeout(() => {
+        closeImportModal();
+        window.location.reload();
+      }, 2000);
+    } else {
+      result.className = 'import-result error';
+      result.style.display = 'block';
+      result.innerHTML = '✗ ' + (data.detail || 'Erreur lors de l\'import');
+    }
+  } catch(e) {
+    progress.style.display = 'none';
+    result.className = 'import-result error';
+    result.style.display = 'block';
+    result.innerHTML = '✗ Erreur réseau: ' + e.message;
+  }
+}
 </script></body>
 </html>
