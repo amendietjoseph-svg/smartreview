@@ -1,4 +1,5 @@
-
+# Nouveau global.css complet
+css = """
 :root {
   --bg-primary: #0a0a0a;
   --bg-card: #141618;
@@ -574,3 +575,8 @@ input[type=range]::-webkit-slider-thumb {
   .main-content { margin-left: 0; }
   .kpi-grid { grid-template-columns: 1fr 1fr; }
 }
+"""
+
+with open('frontend/css/global.css', 'w', encoding='utf-8') as f:
+    f.write(css)
+print('global.css rewritten!')

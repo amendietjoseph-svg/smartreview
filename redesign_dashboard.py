@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+dashboard_html = """<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -549,4 +549,8 @@ window.addEventListener('load', () => {
 });
 </script>
 </body>
-</html>
+</html>"""
+
+with open('frontend/index.html', 'w', encoding='utf-8') as f:
+    f.write(dashboard_html)
+print('index.html rewritten!')
