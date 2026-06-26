@@ -1,4 +1,4 @@
-
+layout_js = """
 const BASE_URL = window.location.hostname === 'localhost'
   ? 'http://localhost:8001'
   : 'https://smartreview-y4sq.onrender.com';
@@ -230,3 +230,8 @@ document.addEventListener('DOMContentLoaded', function() {
   if(typeof lucide !== 'undefined') lucide.createIcons();
   initializeCommon();
 });
+"""
+
+with open('frontend/js/layout.js', 'w', encoding='utf-8') as f:
+    f.write(layout_js)
+print('layout.js rewritten!')
